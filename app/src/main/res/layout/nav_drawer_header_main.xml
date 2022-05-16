@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="176dp"
+    android:padding="16dp"
+    android:gravity="bottom"
+    android:id="@+id/nav_header_layout">
+
+    <ImageView
+        android:id="@+id/nav_head_avatar"
+        android:layout_width="100dp"
+        android:layout_height="80dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/nav_head_appname"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/avatr"
+        tools:srcCompat="@drawable/avatr"
+        android:contentDescription="@string/nav_head_avatar" />
+
+    <TextView
+        android:id="@+id/nav_head_appname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/nav_head_avatar"
+        app:layout_constraintBottom_toTopOf="@id/nav_head_username"
+        app:layout_constraintStart_toStartOf="parent"
+        android:paddingTop="10dp"
+        android:text="@string/app_name"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/nav_head_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/nav_head_appname"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/name"
+        android:textColor="@color/black"
+        android:textSize="20sp" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

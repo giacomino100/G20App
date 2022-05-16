@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1036561329267",
+    "project_id": "g20app-7ea2d",
+    "storage_bucket": "g20app-7ea2d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1036561329267:android:b2e247b562e27efb728e06",
+        "android_client_info": {
+          "package_name": "it.polito.g20app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1036561329267-4enslurbtjd3uppdv3lqbgdbv8597cos.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "it.polito.g20app",
+            "certificate_hash": "5cbb176ee38316fa0ef33d11c7e19e63b9616730"
+          }
+        },
+        {
+          "client_id": "1036561329267-553b65ikj5ts1ofio55579qadqrr0pai.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfFJH6i88k_GoJE7B3pUefjI_ljT3gS54"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1036561329267-553b65ikj5ts1ofio55579qadqrr0pai.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

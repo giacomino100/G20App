@@ -1,0 +1,57 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">G20App</string>
+    <string name="image_profile">image profile</string>
+    <string name="full_name">full name</string>
+    <string name="nickname">nickname</string>
+    <string name="email">email</string>
+    <string name="mario22">Mario22</string>
+    <string name="mario_rossi_polito_it">mario.rossi@polito.it</string>
+    <string name="corso_duca_degli_abruzzi_torino">Corso Duca degli Abruzzi, Torino</string>
+    <string name="other">Other</string>
+    <string name="mario_rossi">Mario Rossi</string>
+    <string name="skills">Skills</string>
+    <string name="i_take_care_of_baby">I take care of your babies</string>
+    <string name="babysitting">BabySitting</string>
+    <string name="a_good_english_teacher">A good english teacher that has studied in london for 10 years, my motherlanguage is italian tho</string>
+    <string name="english">English</string>
+    <string name="edit">edit</string>
+    <string name="check">Check</string>
+    <string name="name">Name</string>
+    <string name="email1">email</string>
+    <string name="todo">TODO</string>
+    <string name="nickname1">Nickname</string>
+    <string name="skill2">Skill2</string>
+    <string name="description1" tools:ignore="Typos">Description1</string>
+    <string name="description2">Description2</string>
+    <string name="location">Location</string>
+    <string name="skill1" tools:ignore="Typos">Skill1</string>
+    <string name="descrizione">descrizione</string>
+    <string name="error">error</string>
+    <string name="imagebutton2">imageButton2</string>
+    <string name="name_and_surname">Name and surname</string>
+    <string name="description">Description</string>
+    <string name="skill">Skill</string>
+    <string name="your_skills">Your skills</string>
+    <string name="camera">Camera</string>
+    <string name="gallery">Gallery</string>
+    <string name="string_gallery" />
+    <string name="home">Show profile</string>
+    <string name="title">Title</string>
+    <string name="delete">delete</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="open">open</string>
+    <string name="close">close</string>
+    <string name="add_adv">add_adv</string>
+    <string name="create_new_time_slot">Create New Time Slot</string>
+    <string name="edit_time_slot">Edit Time Slot</string>
+    <string name="duration">Duration (es: 2h)</string>
+    <string name="set_date_and_time">Set date and time</string>
+    <string name="_05_05_2022">05/05/2022</string>
+    <string name="time_slot_title">Time Slot Title</string>
+    <string name="nav_head_avatar">nav_head_avatar</string>
+    <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
+    <string name="facebook_application_id" translatable="false">YOUR_APP_ID</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">fbYOUR_APP_ID</string>
+    <string name="default_web_client_id_auth" >1036561329267-553b65ikj5ts1ofio55579qadqrr0pai.apps.googleusercontent.com</string>
+
+</resources>
