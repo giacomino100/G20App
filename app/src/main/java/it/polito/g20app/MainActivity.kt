@@ -31,6 +31,11 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var googleSignInClient: GoogleSignInClient
 
+    companion object {
+        private const val TAG = "GoogleActivity"
+        private const val RC_SIGN_IN = 9001
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -119,13 +124,16 @@ class MainActivity : AppCompatActivity() {
     }
     // [END signin]
 
+    // [START signOut]
+    private fun signOut() {
+        //TODO: da collegare con un bottone
+        Firebase.auth.signOut()
+    }
+    // [END signOut]
+
+
     private fun updateUI(user: FirebaseUser?) {
 
-    }
-
-    companion object {
-        private const val TAG = "GoogleActivity"
-        private const val RC_SIGN_IN = 9001
     }
 
 }
