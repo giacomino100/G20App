@@ -39,8 +39,14 @@ class MainActivity: AppCompatActivity() {
 
     private lateinit var oneTapClient: SignInClient
     private lateinit var signInRequest: BeginSignInRequest
-    private val REQ_ONE_TAP = 2  // Can be any integer unique to the Activity
-    private var showOneTapUI = true
+
+    companion object {
+        private const val TAG = "GoogleActivity"
+        private const val RC_SIGN_IN = 9001
+        private const val REQ_ONE_TAP = 2  // Can be any integer unique to the Activity
+        private var showOneTapUI = true
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,13 +62,18 @@ class MainActivity: AppCompatActivity() {
                     .setServerClientId(getString(R.string.default_web_client_id_auth))
                     // Show all accounts on the device.
                     .setFilterByAuthorizedAccounts(true)
-                    .build())
+                    .build()
+            )
             .build()
 
         // [START initialize_auth]
         // Initialize Firebase Auth
         auth = Firebase.auth
         // [END initialize_auth]
+        Log.d(
+            "signout",
+            "onCreate of Main Activity the user is: " + auth.currentUser?.displayName.toString()
+        )
 
         // [START config_signin]
         // Configure Google Sign In
@@ -74,16 +85,17 @@ class MainActivity: AppCompatActivity() {
         gsc = GoogleSignIn.getClient(this, gso)
         // [END config_signin]
 
+        //setting one tap login
         val acct = GoogleSignIn.getLastSignedInAccount(this)
 
         if (acct != null) {
-            findViewById<Button>(R.id.login_button).isEnabled = false
             oneTapClient.beginSignIn(signInRequest)
                 .addOnSuccessListener(this) { result ->
                     try {
                         startIntentSenderForResult(
                             result.pendingIntent.intentSender, REQ_ONE_TAP,
-                            null, 0, 0, 0, null)
+                            null, 0, 0, 0, null
+                        )
                     } catch (e: IntentSender.SendIntentException) {
                         Log.e(TAG, "Couldn't start One Tap UI: ${e.localizedMessage}")
                     }
@@ -93,17 +105,17 @@ class MainActivity: AppCompatActivity() {
                     // do nothing and continue presenting the signed-out UI.
                     Log.d(TAG, e.localizedMessage)
                 }
-        } else {
-            findViewById<Button>(R.id.login_button).isEnabled = true
-            findViewById<Button>(R.id.login_button).setOnClickListener{
-                signIn()
-            }
+        }
+
+        findViewById<Button>(R.id.login_button).setOnClickListener {
+            signIn()
         }
     }
 
     fun signIn(){
-        var signInIntent = gsc.getSignInIntent();
-        startActivityForResult(signInIntent,1000);
+        Log.d("signout", "In signIn the user is: " + auth.currentUser?.displayName.toString())
+        val signInIntent = gsc.getSignInIntent();
+        startActivityForResult(signInIntent,RC_SIGN_IN);
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -118,8 +130,10 @@ class MainActivity: AppCompatActivity() {
                     val password = credential.password
                     when {
                         idToken != null -> {
-                            // Got an ID token from Google. Use it to authenticate
-                            // with your backend.
+                            // Got an ID token from Google
+                            // Google Sign In was successful, authenticate with Firebase
+                            Log.d(TAG, "firebaseAuthWithGoogle:$idToken")
+                            firebaseAuthWithGoogle(idToken)
                             Log.d(TAG, "Got ID token.")
                         }
                         else -> {
@@ -133,23 +147,18 @@ class MainActivity: AppCompatActivity() {
                             Log.d(TAG, "One-tap dialog was closed.")
                             // Don't re-prompt the user.
                             showOneTapUI = false
-                            findViewById<Button>(R.id.login_button).isEnabled = true
-                            findViewById<Button>(R.id.login_button).setOnClickListener{
-                                signIn()
-                            }
                         }
                         CommonStatusCodes.NETWORK_ERROR -> {
                             Log.d(TAG, "One-tap encountered a network error.")
                             // Try again or just ignore.
                         }
                         else -> {
-                            Log.d(TAG, "Couldn't get credential from result." +
-                                    " (${e.localizedMessage})")
+                            Log.d(TAG, "Couldn't get credential from result." + " (${e.localizedMessage})")
                         }
                     }
                 }
             }
-            1000 -> {
+            RC_SIGN_IN -> {
                 var task = GoogleSignIn.getSignedInAccountFromIntent(data);
                 try {
                     // Google Sign In was successful, authenticate with Firebase
@@ -163,7 +172,6 @@ class MainActivity: AppCompatActivity() {
         }
     }
 
-
     // [START auth_with_google]
     private fun firebaseAuthWithGoogle(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
@@ -174,8 +182,10 @@ class MainActivity: AppCompatActivity() {
                     Log.d(TAG, "signInWithCredential:success")
                     val user = auth.currentUser
                     updateUI(user)
+
                     val intent = Intent(this, FirebaseActivity::class.java)
                     startActivity(intent)
+                    Toast.makeText(this, "Welcome ${user?.displayName}", Toast.LENGTH_LONG ).show()
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "signInWithCredential:failure", task.exception)
@@ -183,10 +193,7 @@ class MainActivity: AppCompatActivity() {
                 }
             }
     }
-    companion object {
-        private const val TAG = "GoogleActivity"
-        private const val RC_SIGN_IN = 9001
-    }
+
 
     private fun updateUI(user: FirebaseUser?) {
 
