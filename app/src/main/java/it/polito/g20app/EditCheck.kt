@@ -28,6 +28,8 @@ class EditCheck : Fragment() {
         val linkSignIn = "https://firebase.google.com/docs/auth/android/google-signin"
         val linkVideo = "https://www.youtube.com/watch?v=clU6s0M88OE"
 
+        //https://www.youtube.com/watch?v=3Jp5_pb5Adc
+
     }
 
 

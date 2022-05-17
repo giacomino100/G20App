@@ -1,10 +1,13 @@
 package it.polito.g20app
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -95,6 +98,16 @@ class FirebaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         //questo metodo invece ci serve per abilitare un listener quando clicchiamo il menu laterale
         navView.setNavigationItemSelectedListener(this)
 
+        //SETTING SIGNOUT BUTTON
+        headerView.findViewById<Button>(R.id.signout_button).setOnClickListener {
+            Log.d("signout", "Inside the on click listener")
+            signOut()
+            Log.d("signout", "Now the user is: " + (auth.currentUser?.displayName ?: "nothing"))
+            //redirect to main activity
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
+
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -119,6 +132,12 @@ class FirebaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         return navController.navigateUp(appBarConfiguration)  || super.onSupportNavigateUp()
 
     }
+
+    // [START signOut]
+    private fun signOut() {
+        Firebase.auth.signOut()
+    }
+    // [END signOut]
 
 
 }

@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "GoogleActivity"
-        private const val RC_SIGN_IN = 9001
+        private const val RC_SIGN_IN = 89
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,6 +56,7 @@ class MainActivity : AppCompatActivity() {
         // Initialize Firebase Auth
         auth = Firebase.auth
         // [END initialize_auth]
+        Log.d("signin", "Now the user is: " + (auth.currentUser?.displayName ?: "nothing"))
 
         //google sign in button
         binding.loginButton.setOnClickListener {
@@ -70,7 +71,9 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         // Check if user is signed in (non-null) and update UI accordingly.
         val currentUser = auth.currentUser
-        updateUI(currentUser)
+        if(currentUser != null){
+            updateUI(currentUser)
+        }
     }
 
     // [START onactivityresult]
@@ -124,12 +127,7 @@ class MainActivity : AppCompatActivity() {
     }
     // [END signin]
 
-    // [START signOut]
-    private fun signOut() {
-        //TODO: da collegare con un bottone
-        Firebase.auth.signOut()
-    }
-    // [END signOut]
+
 
 
     private fun updateUI(user: FirebaseUser?) {
