@@ -77,6 +77,7 @@ class FirebaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         auth = Firebase.auth
         // [END initialize_auth]
 
+        Log.d("codice_token", auth.uid.toString())
         //SETTING NAMES
         val tv1: TextView = headerView.findViewById(R.id.nav_head_username)
         if (json != null) {

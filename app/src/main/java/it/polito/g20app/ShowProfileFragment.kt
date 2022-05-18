@@ -1,21 +1,24 @@
 package it.polito.g20app
 
-import android.content.Context.MODE_PRIVATE
-import android.graphics.Bitmap
 import android.os.Bundle
+import android.provider.MediaStore.MediaColumns.DOCUMENT_ID
 import android.util.Log
 import android.view.*
-import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import org.json.JSONException
-import org.json.JSONObject
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 private var currentPhotoPath: String? = null
 
 class ShowProfileFragment : Fragment(R.layout.fragment_home) {
     private var photo: Photo = Photo()
+    private val db = Firebase.firestore
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -23,17 +26,6 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
         savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_home, container, false)
-
-        //LOADING shared preferences
-        Log.d("load", "caricamento SP show profile")
-        val sharedPrefR = this.activity?.getPreferences(MODE_PRIVATE)
-        val profileInfo = "{'full name' : '${getString(R.string.full_name)}', nickname : '${getString(R.string.nickname)}', " +
-                "email : '${getString(R.string.email)}', location : '${getString(R.string.location)}', skill1 : '${getString(R.string.skill1)}'," +
-                " skill2 : '${getString(R.string.skill2)}', description1 : '${getString(R.string.description1)}', " +
-                "description2 : '${getString(R.string.description2)}', " + "path: '${currentPhotoPath.toString()}'}"
-
-        val json = sharedPrefR?.getString("profile", profileInfo)?.let { JSONObject(it) }
-        val img: ImageView = root.findViewById(R.id.imageView)
 
         val tv1: TextView = root.findViewById(R.id.fullname)
         val tv2: TextView = root.findViewById(R.id.nickname)
@@ -44,28 +36,50 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
         val tv7: TextView = root.findViewById(R.id.description1)
         val tv8: TextView = root.findViewById(R.id.description2)
 
-        if(json != null){
-            tv1.text = (json.get("full name").toString())
-            tv2.text = (json.get("nickname").toString())
-            tv3.text = (json.get("email").toString())
-            tv4.text = (json.get("location").toString())
-            tv5.text = (json.get("skill1").toString())
-            tv6.text = (json.get("skill2").toString())
-            tv7.text = (json.get("description1").toString())
-            tv8.text = (json.get("description2").toString())
+        // [START initialize_auth]
+        // Initialize Firebase Auth
+        auth = Firebase.auth
+        // [END initialize_auth]
 
-            try {
-                if(json.get("path").toString() == "null")
-                    currentPhotoPath = null
-                else
-                    currentPhotoPath = json.get("path").toString()
-            } catch (e : JSONException) {
-                println(e)
+        val docData = hashMapOf(
+            "fullname" to "Pietro Ubertini!",
+            "nickname" to "Uberts94",
+            "email" to "ubertinipietro@gmail.com",
+            "location" to "torino",
+            "skill1" to "skill 1",
+            "skill2" to "skill 2",
+            "description1" to "description 1",
+            "description2" to "description 2"
+        )
+
+        val docref = db.collection("profiles").document(auth.uid.toString())
+        docref.get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val document = task.result
+                if(document != null) {
+                    if (document.exists()) {
+                        Log.d("TAG", "Document already exists.")
+                        tv1.text = document.data!!["fullname"].toString()
+                        tv2.text = document.data!!["nickname"].toString()
+                        tv3.text = document.data!!["email"].toString()
+                        tv4.text = document.data!!["location"].toString()
+                        tv5.text = document.data!!["skill1"].toString()
+                        tv6.text = document.data!!["skill2"].toString()
+                        tv7.text = document.data!!["description1"].toString()
+                        tv8.text = document.data!!["description2"].toString()
+                    } else {
+                        Log.d("TAG", "Document doesn't exist.")
+                        db.collection("profiles").document(auth.uid.toString()).set(docData)
+                            .addOnSuccessListener {
+                                Toast.makeText(this.requireContext(), "Data Saved", Toast.LENGTH_SHORT)
+                            }.addOnFailureListener {
+                                Toast.makeText(this.requireContext(), "Error", Toast.LENGTH_LONG)
+                            }
+                    }
+                }
+            } else {
+                Log.d("TAG", "Error: ", task.exception)
             }
-        }
-        if(currentPhotoPath != null){
-            val bitmap: Bitmap? = photo.loadImageFromStorage(currentPhotoPath, "icon")
-            img.setImageBitmap(bitmap)
         }
 
         return root

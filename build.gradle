@@ -13,7 +13,7 @@ buildscript {
 
         // Add this line
         classpath 'com.google.gms:google-services:4.3.10'
-
+        classpath 'com.google.firebase:firebase-bom:30.0.1'
     }
 }
 
