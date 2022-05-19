@@ -42,14 +42,14 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
         // [END initialize_auth]
 
         val docData = hashMapOf(
-            "fullname" to "Pietro Ubertini!",
-            "nickname" to "Uberts94",
-            "email" to "ubertinipietro@gmail.com",
-            "location" to "torino",
-            "skill1" to "skill 1",
-            "skill2" to "skill 2",
-            "description1" to "description 1",
-            "description2" to "description 2"
+            "fullname" to auth.currentUser!!.displayName,
+            "nickname" to "",
+            "email" to "",
+            "location" to "",
+            "skill1" to "",
+            "skill2" to "",
+            "description1" to "",
+            "description2" to "",
         )
 
         val docref = db.collection("profiles").document(auth.uid.toString())
@@ -115,6 +115,7 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
 
                 var bundle = Bundle()
 
+                bundle.putString("uid", auth.uid.toString())
                 bundle.putString("full name", fullname)
                 bundle.putString("nickname", nickname)
                 bundle.putString("email", email)

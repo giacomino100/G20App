@@ -1,7 +1,6 @@
 package it.polito.g20app
 
 import android.content.ActivityNotFoundException
-import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -11,16 +10,17 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.drawToBitmap
 import androidx.fragment.app.Fragment
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import org.json.JSONException
-import org.json.JSONObject
 
 
 private const val REQUEST_IMAGE_CAPTURE = 1
@@ -28,6 +28,8 @@ private const val REQUEST_ACTION_PICK = 2
 
 private const val name = "icon"
 private var currentPhotoPath: String? = null
+private val db = Firebase.firestore
+private lateinit var auth: FirebaseAuth
 
 class EditProfileFragment : Fragment(R.layout.fragment_edit) {
 
@@ -78,107 +80,80 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
             }
         }
 
-        //setting save button
-        val saveButton = root.findViewById<Button>(R.id.save_button)
-        tv1.setOnClickListener {
-            saveButton.setEnabled(true)
-            saveButton.setClickable(true)
-        }
-        tv2.setOnClickListener {
-            saveButton.setEnabled(true)
-            saveButton.setClickable(true)
-        }
-        tv3.setOnClickListener {
-            saveButton.setEnabled(true)
-            saveButton.setClickable(true)
-            Log.d("email","funzia")
-        }
-        tv4.setOnClickListener {
-            saveButton.setEnabled(true)
-            saveButton.setClickable(true)
-        }
-        tv5.setOnClickListener {
-            saveButton.setEnabled(true)
-            saveButton.setClickable(true)
-        }
-        tv6.setOnClickListener {
-            saveButton.setEnabled(true)
-            saveButton.setClickable(true)
-        }
-        tv7.setOnClickListener {
-            saveButton.setEnabled(true)
-            saveButton.setClickable(true)
-        }
-        tv8.setOnClickListener {
-            saveButton.setEnabled(true)
-            saveButton.setClickable(true)
-        }
-
-        //IMPLEMENTAZIONE TASTO PER MODIFICARE LA FOTO DEL PROFILO
-        root.findViewById<ImageButton>(R.id.imageButton2)?.setOnClickListener {
-            val popupMenu = PopupMenu(this.requireContext(), it)
-            popupMenu.setOnMenuItemClickListener {
-                when (it.itemId) {
-                    R.id.menu_open_camera -> {
-                        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                        try {
-                            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
-                        } catch (e: ActivityNotFoundException) {
-                            println(e)
+            //IMPLEMENTAZIONE TASTO PER MODIFICARE LA FOTO DEL PROFILO
+            root.findViewById<ImageButton>(R.id.imageButton2)?.setOnClickListener {
+                val popupMenu = PopupMenu(this.requireContext(), it)
+                popupMenu.setOnMenuItemClickListener {
+                    when (it.itemId) {
+                        R.id.menu_open_camera -> {
+                            val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                            try {
+                                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+                            } catch (e: ActivityNotFoundException) {
+                                println(e)
+                            }
+                            true
                         }
-                        true
+                        R.id.menu_open_gallery -> {
+                            val galleryIntent = Intent(Intent.ACTION_PICK)
+                            galleryIntent.type = "image/*"
+                            startActivityForResult(galleryIntent, REQUEST_ACTION_PICK)
+                            true
+                        }
+                        else -> false
                     }
-                    R.id.menu_open_gallery -> {
-                        val galleryIntent = Intent(Intent.ACTION_PICK)
-                        galleryIntent.type = "image/*"
-                        startActivityForResult(galleryIntent, REQUEST_ACTION_PICK)
-                        true
-                    }
-                    else -> false
                 }
-            }
-            popupMenu.inflate(R.menu.photo_menu)
-            popupMenu.show()
-        }
-
-
-        saveButton.setOnClickListener {
-            saveButton.setClickable(false)
-            saveButton.setEnabled(false)
-            val tvFullName = view?.findViewById<TextView>(R.id.edit_fullname)
-            val tvNickname = view?.findViewById<TextView>(R.id.edit_nickname)
-            val tvEmail = view?.findViewById<TextView>(R.id.edit_email)
-            val tvLocation = view?.findViewById<TextView>(R.id.edit_location)
-            val tvSkill1 = view?.findViewById<TextView>(R.id.edit_skill1)
-            val tvSkill2 = view?.findViewById<TextView>(R.id.edit_skill2)
-            val tvDescr1 = view?.findViewById<TextView>(R.id.edit_description1)
-            val tvDescr2 = view?.findViewById<TextView>(R.id.edit_description2)
-
-            val profileInfo = "" +
-                    "{'full name' : '${tvFullName?.text}', " +
-                    "nickname : '${tvNickname?.text}', " +
-                    "email : '${tvEmail?.text}', " +
-                    "location : '${tvLocation?.text}', " +
-                    "skill1 : '${tvSkill1?.text}'," +
-                    "skill2 : '${tvSkill2?.text}', " +
-                    "description1 : '${tvDescr1?.text}', " +
-                    "description2 : '${tvDescr2?.text}'," +
-                    " " + "path: '${currentPhotoPath}'}"
-            val json = JSONObject(profileInfo)
-
-            val sharedPref = activity?.getPreferences(MODE_PRIVATE)
-            if (sharedPref != null) {
-                with(sharedPref.edit()) {
-                    putString("profile", json.toString())
-                    Log.d("load", json.toString())
-                    apply()
-                }
+                popupMenu.inflate(R.menu.photo_menu)
+                popupMenu.show()
             }
 
-        }
+        requireActivity()
+            .onBackPressedDispatcher
+            .addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    //Updating data on db
+                    val docData = hashMapOf(
+                        "fullname" to view?.findViewById<EditText>(R.id.edit_fullname)!!.text.toString(),
+                        "nickname" to view?.findViewById<EditText>(R.id.edit_nickname)!!.text.toString(),
+                        "email" to view?.findViewById<EditText>(R.id.edit_email)!!.text.toString(),
+                        "location" to view?.findViewById<EditText>(R.id.edit_location)!!.text.toString(),
+                        "skill1" to view?.findViewById<EditText>(R.id.edit_skill1)!!.text.toString(),
+                        "skill2" to view?.findViewById<EditText>(R.id.edit_skill2)!!.text.toString(),
+                        "description1" to view?.findViewById<EditText>(R.id.edit_description1)!!.text.toString(),
+                        "description2" to view?.findViewById<EditText>(R.id.edit_description2)!!.text.toString(),
+                    )
 
+                    //Updating db
+                    arguments.let {
+                        Log.d("testBundle", it!!.get("uid").toString())
+                        val docref = db.collection("profiles").document(it!!.get("uid").toString())
+                        docref.get().addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                db.collection("profiles").document(it!!.get("uid").toString()).set(docData)
+                                    .addOnSuccessListener {
+                                        Toast.makeText(view!!.context, "Data Saved", Toast.LENGTH_SHORT)
+                                    }.addOnFailureListener {
+                                        Toast.makeText(view!!.context, "Error", Toast.LENGTH_LONG)
+                                    }
+                            } else {
+                                Log.d("TAG", "Error: ", task.exception)
+                            }
+                        }
+                    }
+
+                    //Management snackbar
+                    val root = view!!.rootView
+                    Snackbar.make(root, "Profile updated", Snackbar.LENGTH_LONG).show()
+
+                    if (isEnabled) {
+                        isEnabled = false
+                        requireActivity().onBackPressed()
+                    }
+                }
+            }
+            )
         return root
-    }
+        }
 
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
