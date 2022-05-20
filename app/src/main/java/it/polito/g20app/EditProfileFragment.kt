@@ -133,9 +133,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
                             if (task.isSuccessful) {
                                 db.collection("profiles").document(it!!.get("uid").toString()).set(docData)
                                     .addOnSuccessListener {
-                                        Toast.makeText(view!!.context, "Data Saved", Toast.LENGTH_SHORT)
                                     }.addOnFailureListener {
-                                        Toast.makeText(view!!.context, "Error", Toast.LENGTH_LONG)
                                     }
                             } else {
                                 Log.d("TAG", "Error: ", task.exception)
@@ -151,6 +149,8 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
                         isEnabled = false
                         requireActivity().onBackPressed()
                     }
+
+
                 }
             }
             )

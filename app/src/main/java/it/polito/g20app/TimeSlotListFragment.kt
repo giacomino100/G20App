@@ -32,37 +32,6 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
         val fab = root.findViewById<FloatingActionButton>(R.id.fab)
         rv.layoutManager = LinearLayoutManager(root.context)
 
-        val l = mutableListOf<TimeSlot>()
-
-        val prova = TimeSlot()
-        val prova1 = TimeSlot()
-        val prova2 = TimeSlot()
-
-
-        prova.id = 1
-        prova.title = "titolo"
-        prova.description = "descrizione"
-        prova.dateAndTime = "Data personale"
-        prova.location = "Torino"
-        prova.duration = "2h"
-
-        prova1.id = 2
-        prova1.title = "titolo1"
-        prova1.description = "descrizione1"
-        prova1.dateAndTime = "Data personale1"
-        prova1.location = "Torino1"
-        prova1.duration = "2h1"
-
-        prova2.id = 3
-        prova2.title = "titolo2"
-        prova2.description = "descrizione2"
-        prova2.dateAndTime = "Data personale2"
-        prova2.location = "Torino2"
-        prova2.duration = "2h2"
-
-        //l.add(prova)
-        //l.add(prova1)
-
         //defining ViewModel
         vm.value.observe(viewLifecycleOwner) {
             it.let {

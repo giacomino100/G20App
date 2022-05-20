@@ -52,6 +52,6 @@
     <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
     <string name="facebook_application_id" translatable="false">YOUR_APP_ID</string>
     <string name="facebook_login_protocol_scheme" translatable="false">fbYOUR_APP_ID</string>
-    <string name="default_web_client_id_auth" >1036561329267-553b65ikj5ts1ofio55579qadqrr0pai.apps.googleusercontent.com</string>
+    <string name="default_web_client_id_auth">1036561329267-553b65ikj5ts1ofio55579qadqrr0pai.apps.googleusercontent.com</string>
 
 </resources>

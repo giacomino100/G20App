@@ -62,6 +62,7 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
                 if(document != null) {
                     if (document.exists()) {
                         Log.d("backbutton", "Document already exists.")
+                        //TODO: quando aggiorno un dato e dopo faccio la get non si prendono i dati aggiornati
                         tv1.text = document.data!!["fullname"].toString()
                         tv2.text = document.data!!["nickname"].toString()
                         tv3.text = document.data!!["email"].toString()
@@ -88,7 +89,6 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
         return root
 
     }
-
 
     /* Enable option menu with icon for edit profile */
     override fun onCreate(savedInstanceState: Bundle?) {
