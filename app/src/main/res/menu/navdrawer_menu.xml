@@ -4,6 +4,9 @@
     tools:showIn="navigation_view">
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_skills_list"
+            android:title="All skills" />
+        <item
             android:id="@+id/nav_adv_list"
             android:title="My time slots" />
         <item

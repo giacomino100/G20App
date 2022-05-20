@@ -89,11 +89,11 @@ class FirebaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_adv_list
+                R.id.nav_skills_list
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setCheckedItem(R.id.nav_adv_list)
+        navView.setCheckedItem(R.id.nav_skills_list)
 
         //questo metodo invece ci serve per abilitare un listener quando clicchiamo il menu laterale
         navView.setNavigationItemSelectedListener(this)
@@ -115,10 +115,10 @@ class FirebaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         val drawerLayout: DrawerLayout = binding.drawerLayout
 
         if(item.itemId == R.id.nav_adv_list){
-            //This if is only a reminder that this is the home of app
+            findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.action_nav_skills_list_to_nav_adv_list)
         }
         if(item.itemId == R.id.nav_show_profile){
-            findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.action_nav_adv_list_to_nav_show_profile)
+            findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.action_nav_skills_list_to_nav_show_profile)
         }
 
         drawerLayout.closeDrawer(GravityCompat.START)

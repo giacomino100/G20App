@@ -7,8 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.navigation.NavigationView
 
 class SkillsFragment : Fragment() {
+
+    val viewModel by viewModels<SkillVM>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,20 +27,24 @@ class SkillsFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val root = inflater.inflate(R.layout.fragment_skills, container, false)
-        val viewModel by viewModels<SkillVM>()
-        val tv = root.findViewById<TextView>(R.id.id_skill)
-        viewModel.courses.observe(this.requireActivity()) {
-            tv.text = it.joinToString("\n"){it.name}
+        activity?.findViewById<NavigationView?>(R.id.nav_view)?.setCheckedItem(R.id.nav_skills_list)
+
+        (activity as FirebaseActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        val rv = root.findViewById<RecyclerView>(R.id.rv_skill)
+        rv.layoutManager = LinearLayoutManager(root.context)
+
+        viewModel.skills.observe(viewLifecycleOwner) {
+            it.let {
+                //TODO if the list is empty we have to show a message
+                val adapter = SkillAdapter(it as MutableList<Skill>)
+                rv.adapter = adapter
+            }
         }
-
         return root
-
-
-
     }
 
     companion object {
-
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             SkillsFragment().apply {

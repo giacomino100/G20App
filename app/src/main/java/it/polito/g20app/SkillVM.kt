@@ -1,5 +1,6 @@
 package it.polito.g20app
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,9 +8,15 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 
+data class Skill(
+    var id: String = " ",
+    var name: String = " ",
+    var description: String = " "
+)
+
 class SkillVM: ViewModel(){
-    private val _courses = MutableLiveData<List<Skill>>()
-    val courses : LiveData<List<Skill>> = _courses
+    private val _skills = MutableLiveData<List<Skill>>()
+    val skills : LiveData<List<Skill>> = _skills
 
     private var l: ListenerRegistration
     private val db: FirebaseFirestore
@@ -19,22 +26,16 @@ class SkillVM: ViewModel(){
         l = db.collection("skills")
             .addSnapshotListener { v, e ->
                 if (e==null) {
-                    _courses.value = v!!.mapNotNull { d -> d.toSkill() }
-                } else _courses.value = emptyList()
+                    _skills.value = v!!.mapNotNull { d -> d.toSkill() }
+                } else _skills.value = emptyList()
             }
     }
 
-    data class Skill(
-        var id: String = " ",
-        var name: String = " ",
-        var description: String = " "
-    )
-
     fun DocumentSnapshot.toSkill(): Skill? {
         return try {
-            val id = ""
-            val name = get("Title") as String
-            val description = get("Description") as String
+            val id = id
+            val name = get("name") as String
+            val description = get("description") as String
             Skill(id, name, description)
         } catch (e: Exception) {
             e.printStackTrace()
