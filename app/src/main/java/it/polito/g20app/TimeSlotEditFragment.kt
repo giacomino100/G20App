@@ -31,6 +31,7 @@ class TimeSlotEditFragment : Fragment() {
 
         // android:configChanges="orientation|screenSize" da aggiungere sotto activity nel manifest
         // serve per avere la stessa toolbar quando ruotiamo lo schermo
+
         (activity as FirebaseActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         (activity as FirebaseActivity).supportActionBar?.setHomeButtonEnabled(false)
 
@@ -79,8 +80,6 @@ class TimeSlotEditFragment : Fragment() {
     private fun updateTimeInView() {
         view?.findViewById<TextView>(R.id.slot_date_and_time_edit)?.text = cal.time.toString()
         Log.d("data", cal.time.toString())
-
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -102,7 +101,7 @@ class TimeSlotEditFragment : Fragment() {
                 //CASO ADD: in questo if andiamo a creare un nuovo time slot
 
                 //title of action bar changed
-                (activity as MainActivity).supportActionBar?.setTitle(R.string.create_new_time_slot)
+                (activity as FirebaseActivity).supportActionBar?.setTitle(R.string.create_new_time_slot)
 
                 Log.d("back","bundle is empty")
                 requireActivity()
@@ -148,7 +147,7 @@ class TimeSlotEditFragment : Fragment() {
                 Log.d("back","bundle is not empty")
 
                 //title of action bar changed
-                (activity as MainActivity).supportActionBar?.setTitle(R.string.edit_time_slot)
+                (activity as FirebaseActivity).supportActionBar?.setTitle(R.string.edit_time_slot)
 
                 //settaggio campi nella edit
                 view.findViewById<EditText>(R.id.slot_title_edit).setText(it.getString("title"))

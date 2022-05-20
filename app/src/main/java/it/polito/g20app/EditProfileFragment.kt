@@ -29,7 +29,6 @@ private const val REQUEST_ACTION_PICK = 2
 private const val name = "icon"
 private var currentPhotoPath: String? = null
 private val db = Firebase.firestore
-private lateinit var auth: FirebaseAuth
 
 class EditProfileFragment : Fragment(R.layout.fragment_edit) {
 
@@ -41,6 +40,9 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
         savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_edit, container, false)
+
+        //Questa riga per disattivare il tasto back nella toolbar
+        (activity as FirebaseActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
         //set data from bundle
         val tv1: TextView = root.findViewById(R.id.edit_fullname)

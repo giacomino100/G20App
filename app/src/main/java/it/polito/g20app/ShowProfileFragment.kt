@@ -27,6 +27,7 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
     ): View? {
         val root = inflater.inflate(R.layout.fragment_home, container, false)
 
+        Log.d("backbutton", "carico on create view ")
         val tv1: TextView = root.findViewById(R.id.fullname)
         val tv2: TextView = root.findViewById(R.id.nickname)
         val tv3: TextView = root.findViewById(R.id.email)
@@ -40,6 +41,8 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
         // Initialize Firebase Auth
         auth = Firebase.auth
         // [END initialize_auth]
+        Log.d("backbutton", "the user is: ${auth.currentUser?.displayName}")
+
 
         val docData = hashMapOf(
             "fullname" to auth.currentUser!!.displayName,
@@ -58,7 +61,7 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
                 val document = task.result
                 if(document != null) {
                     if (document.exists()) {
-                        Log.d("TAG", "Document already exists.")
+                        Log.d("backbutton", "Document already exists.")
                         tv1.text = document.data!!["fullname"].toString()
                         tv2.text = document.data!!["nickname"].toString()
                         tv3.text = document.data!!["email"].toString()
@@ -68,7 +71,7 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
                         tv7.text = document.data!!["description1"].toString()
                         tv8.text = document.data!!["description2"].toString()
                     } else {
-                        Log.d("TAG", "Document doesn't exist.")
+                        Log.d("backbutton", "Document doesn't exist.")
                         db.collection("profiles").document(auth.uid.toString()).set(docData)
                             .addOnSuccessListener {
                                 Toast.makeText(this.requireContext(), "Data Saved", Toast.LENGTH_SHORT)
