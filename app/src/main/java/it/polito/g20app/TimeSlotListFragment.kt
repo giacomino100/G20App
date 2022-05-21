@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
@@ -43,8 +44,7 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
         //defining ViewModel
         vm.value.observe(viewLifecycleOwner) {
             it.let {
-                //TODO if the list is empty we have to show a message
-                //TODO recuperare i time slot solo della skill selezionata
+                root.findViewById<TextView>(R.id.alert).isVisible = it.isEmpty()
                 val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>)
                 rv.adapter = adapter
             }

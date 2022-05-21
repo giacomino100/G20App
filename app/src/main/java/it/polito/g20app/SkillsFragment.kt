@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -35,8 +36,9 @@ class SkillsFragment : Fragment() {
         rv.layoutManager = LinearLayoutManager(root.context)
 
         viewModel.skills.observe(viewLifecycleOwner) {
+            root.findViewById<TextView>(R.id.alert_skill).isVisible = it.isEmpty()
+
             it.let {
-                //TODO if the list is empty we have to show a message
                 val adapter = SkillAdapter(it as MutableList<Skill>)
                 rv.adapter = adapter
             }
