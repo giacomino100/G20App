@@ -26,13 +26,11 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
     ): View? {
         // Inflate the layout for this fragment
         val root = inflater.inflate(R.layout.fragment_time_slot_details, container, false)
-        //questa view dovrà avere un menu che permette di modificarne i campi
-
         //recupero dati dal Bundle
         arguments.let {
             if (it != null) {
                 id1 = it.getString("id")!!.toInt()
-                var timeSlot = TimeSlot()
+                var timeSlot: TimeSlot
                 vm.get(id1).observe(viewLifecycleOwner){
                     timeSlot = it
                     root.findViewById<TextView>(R.id.slot_title).text = timeSlot.title

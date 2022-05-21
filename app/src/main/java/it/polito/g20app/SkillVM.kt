@@ -1,6 +1,5 @@
 package it.polito.g20app
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,6 +12,7 @@ import com.google.firebase.ktx.Firebase
 
 data class Skill(
     var id: String = " ",
+    var idUser: String = " ",
     var name: String = " ",
     var description: String = " "
 )
@@ -29,7 +29,6 @@ class SkillVM: ViewModel(){
 
         db = FirebaseFirestore.getInstance()
         l = db.collection("skills")
-            .whereNotEqualTo("idUser", auth.uid) //skills of other users
             .addSnapshotListener { v, e ->
                 if (e==null) {
                     _skills.value = v!!.mapNotNull { d -> d.toSkill() }
@@ -40,9 +39,10 @@ class SkillVM: ViewModel(){
     fun DocumentSnapshot.toSkill(): Skill? {
         return try {
             val id = id
+            val idUser = get("idUser") as String
             val name = get("name") as String
             val description = get("description") as String
-            Skill(id, name, description)
+            Skill(id, idUser, name, description)
         } catch (e: Exception) {
             e.printStackTrace()
             null

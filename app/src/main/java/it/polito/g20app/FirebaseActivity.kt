@@ -46,6 +46,7 @@ class FirebaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
 
         //FASE DI INIZIALIZZAZIONE DEL HEADER DEL MENU
+
         //Caricamento shared preferences
         val sharedPrefR = this.getPreferences(Context.MODE_PRIVATE)
         val profileInfo = "{'full name' : '${getString(R.string.full_name)}', nickname : '${getString(R.string.nickname)}', " +
@@ -100,9 +101,7 @@ class FirebaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
         //SETTING SIGNOUT BUTTON
         headerView.findViewById<Button>(R.id.signout_button).setOnClickListener {
-            Log.d("signout", "Inside the on click listener")
             signOut()
-            Log.d("signout", "Now the user is: " + (auth.currentUser?.displayName ?: "nothing"))
             //redirect to main activity
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)

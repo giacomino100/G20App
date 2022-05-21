@@ -34,29 +34,11 @@ class SkillsFragment : Fragment() {
 
         (activity as FirebaseActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-
-
         val rv = root.findViewById<RecyclerView>(R.id.rv_skill)
         rv.layoutManager = LinearLayoutManager(root.context)
 
-        viewModel.skills.observe(viewLifecycleOwner) {
-            root.findViewById<TextView>(R.id.alert_skill).isVisible = it.isEmpty()
-
-            it.let {
-                val adapter = SkillAdapter(it as MutableList<Skill>)
-                rv.adapter = adapter
-            }
-        }
+        //TODO caricare dal db tutti i time slot di un idUser con un idSkill (Recuperabili dal bundle), guardare cosa arriva da SkillVM
         return root
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            SkillsFragment().apply {
-                arguments = Bundle().apply {
-
-                }
-            }
-    }
 }

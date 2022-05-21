@@ -1,6 +1,7 @@
 package it.polito.g20app
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,13 +30,6 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
         (activity as FirebaseActivity).supportActionBar?.setHomeButtonEnabled(true)
         (activity as FirebaseActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        //setting name and description of skill in this fragment
-        arguments.let{
-            if (it != null){
-                root.findViewById<TextView>(R.id.skill_title).text = it.get("name").toString()
-                root.findViewById<TextView>(R.id.skill_description).text = it.get("description").toString()
-            }
-        }
 
         val rv = root.findViewById<RecyclerView>(R.id.rv)
         val fab = root.findViewById<FloatingActionButton>(R.id.fab)

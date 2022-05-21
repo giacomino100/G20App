@@ -45,12 +45,10 @@ class SkillAdapter(val data: MutableList<Skill>): RecyclerView.Adapter<SkillAdap
             //cliccando sull'edit si apre il TimeSlotDetailsFragment
             //passaggio di informazioni tra fragment with a Bundle
             val bundle = Bundle()
-            bundle.putString("id",item.id)
+            bundle.putString("id", item.id)
             bundle.putString("name", item.name)
             bundle.putString("description", item.description)
-
-            //TODO: passare dati ad un fragment che mostri i dettagli di una skill
-            it.findNavController().navigate(R.id.action_nav_skills_list_to_nav_adv_list, bundle)
+            it.findNavController().navigate(R.id.action_nav_skills_list_to_nav_skill_details, bundle)
         }
     }
 
