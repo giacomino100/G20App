@@ -11,6 +11,8 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 class SkillsFragment : Fragment() {
 
@@ -31,6 +33,8 @@ class SkillsFragment : Fragment() {
         activity?.findViewById<NavigationView?>(R.id.nav_view)?.setCheckedItem(R.id.nav_skills_list)
 
         (activity as FirebaseActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+
 
         val rv = root.findViewById<RecyclerView>(R.id.rv_skill)
         rv.layoutManager = LinearLayoutManager(root.context)

@@ -43,8 +43,9 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
 
         //defining ViewModel
         vm.value.observe(viewLifecycleOwner) {
+            //this row is needed to show the message in case the list is empty
+            root.findViewById<TextView>(R.id.alert).isVisible = it.isEmpty()
             it.let {
-                root.findViewById<TextView>(R.id.alert).isVisible = it.isEmpty()
                 val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>)
                 rv.adapter = adapter
             }
