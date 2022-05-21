@@ -32,12 +32,8 @@ class SkillDetailsFragment : Fragment() {
         rv.layoutManager = LinearLayoutManager(root.context)
 
         //defining ViewModel
-        vm.value.observe(viewLifecycleOwner) {
-           it.let {
-                val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>)
-                rv.adapter = adapter
-            }
-        }
+        //TODO caricare dal db tutti i time slot di un idUser con un idSkill (Recuperabili dal bundle), guardare cosa arriva da SkillVM
+
         return root
     }
 
