@@ -44,6 +44,8 @@ class TimeSlotEditFragment : Fragment() {
         (activity as FirebaseActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         (activity as FirebaseActivity).supportActionBar?.setHomeButtonEnabled(false)
 
+
+
         return inflater.inflate(R.layout.fragment_time_slot_edit, container, false)
 
     }
@@ -108,6 +110,13 @@ class TimeSlotEditFragment : Fragment() {
 
         }
 
+        //load skills
+        vm_skill.userSkills.observe(viewLifecycleOwner){
+            Log.d("loadSkills", it[0].name)
+            view.findViewById<CheckBox>(R.id.checkBox1).text = it[0].name
+            view.findViewById<CheckBox>(R.id.checkBox2).text = it[1].name
+        }
+
         //costrutto necessario per leggere dai dati passati dal bundle
         arguments?.let { it ->
             if(it.isEmpty){
@@ -130,6 +139,8 @@ class TimeSlotEditFragment : Fragment() {
                             view.findViewById<EditText>(R.id.slot_duration_edit).text = view.findViewById<EditText>(R.id.slot_duration_edit).text
                             view.findViewById<EditText>(R.id.slot_location_edit).text = view.findViewById<EditText>(R.id.slot_location_edit).text
 
+
+
                             val adv = TimeSlot()
 
                             adv.title = view.findViewById<EditText>(R.id.slot_title_edit).text.toString()
@@ -137,6 +148,7 @@ class TimeSlotEditFragment : Fragment() {
                             adv.dateAndTime = view.findViewById<TextView>(R.id.slot_date_and_time_edit).text.toString()
                             adv.duration = view.findViewById<EditText>(R.id.slot_duration_edit).text.toString()
                             adv.location = view.findViewById<EditText>(R.id.slot_location_edit).text.toString()
+
 
                             //insert into db
                             Log.d("new adv", adv.toString())
@@ -185,11 +197,6 @@ class TimeSlotEditFragment : Fragment() {
 
                             // if you want onBackPressed() to be called as normal afterwards
 
-                            //il testo cambia ed è corretto ma poi nella lista a schermo
-                            //ovviamente no perché quella va a prendere dal db
-                            //se facciamo qui la update dovrebbe essere tutto a posto
-
-                            //proviamo l'update
 
                             //funziona l'update
                             updatedTimeSlot.id = it.getString("id")!!.toInt()
