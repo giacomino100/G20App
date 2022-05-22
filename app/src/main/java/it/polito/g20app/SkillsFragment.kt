@@ -39,7 +39,6 @@ class SkillsFragment : Fragment() {
 
         viewModel.skills.observe(viewLifecycleOwner) {
             root.findViewById<TextView>(R.id.alert_skill).isVisible = it.isEmpty()
-
             it.let {
                 val adapter = SkillAdapter(it as MutableList<Skill>)
                 rv.adapter = adapter

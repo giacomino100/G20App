@@ -16,8 +16,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.drawToBitmap
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import org.json.JSONException
@@ -33,6 +35,8 @@ private val db = Firebase.firestore
 class EditProfileFragment : Fragment(R.layout.fragment_edit) {
 
     private var photo: Photo = Photo()
+    private var auth: FirebaseAuth = Firebase.auth
+    val viewModel by viewModels<SkillVM>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,17 +59,13 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
         val tv8: TextView = root.findViewById(R.id.edit_description2)
         val img: ImageView = root.findViewById(R.id.imageView)
 
-        arguments.let {
-            if (it != null) {
-                tv1.text = (it.get("full name").toString())
-                tv2.text = (it.get("nickname").toString())
-                tv3.text = (it.get("email").toString())
-                tv4.text = (it.get("location").toString())
-                tv5.text = (it.get("skill1").toString())
-                tv6.text = (it.get("skill2").toString())
-                tv7.text = (it.get("description1").toString())
-                tv8.text = (it.get("description2").toString())
+        var idSkill1: String = " "
+        var idSkill2: String = " "
 
+        var idUser = " "
+        arguments.let{
+            if (it != null) {
+                idUser = it.get("idUser").toString()
                 try {
                     if (it.get("path").toString() == "null")
                         currentPhotoPath = null
@@ -82,8 +82,33 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
             }
         }
 
-            //IMPLEMENTAZIONE TASTO PER MODIFICARE LA FOTO DEL PROFILO
-            root.findViewById<ImageButton>(R.id.imageButton2)?.setOnClickListener {
+        db
+            .collection("profiles")
+            .document(idUser)
+            .get()
+            .addOnSuccessListener {
+                tv1.text = (it.get("fullname").toString())
+                tv2.text = (it.get("nickname").toString())
+                tv3.text = (it.get("email").toString())
+                tv4.text = (it.get("location").toString())
+            }
+
+        //qui dentro carico dal db le skill di uno user
+        //mi memorizzo dentro due varibili l'id delle skill che coincidono con l'id del documento,
+        // cosi all'id del documento nella posizione zero corrisponde il primo campo di text e cosi per il secondo.
+        // QUando vado a salvarli utilizzo questi idskill per recuperare il documento da aggiornare
+        viewModel.userSkills.observe(viewLifecycleOwner){
+            idSkill1 = it[0].id
+            idSkill2 = it[1].id
+
+            tv5.text = it[0].name
+            tv6.text = it[1].name
+            tv7.text = it[0].description
+            tv8.text = it[1].description
+        }
+
+        //IMPLEMENTAZIONE TASTO PER MODIFICARE LA FOTO DEL PROFILO
+        root.findViewById<ImageButton>(R.id.imageButton2)?.setOnClickListener {
                 val popupMenu = PopupMenu(this.requireContext(), it)
                 popupMenu.setOnMenuItemClickListener {
                     when (it.itemId) {
@@ -118,29 +143,46 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
                         "fullname" to view?.findViewById<EditText>(R.id.edit_fullname)!!.text.toString(),
                         "nickname" to view?.findViewById<EditText>(R.id.edit_nickname)!!.text.toString(),
                         "email" to view?.findViewById<EditText>(R.id.edit_email)!!.text.toString(),
-                        "location" to view?.findViewById<EditText>(R.id.edit_location)!!.text.toString(),
-                        "skill1" to view?.findViewById<EditText>(R.id.edit_skill1)!!.text.toString(),
-                        "skill2" to view?.findViewById<EditText>(R.id.edit_skill2)!!.text.toString(),
-                        "description1" to view?.findViewById<EditText>(R.id.edit_description1)!!.text.toString(),
-                        "description2" to view?.findViewById<EditText>(R.id.edit_description2)!!.text.toString(),
+                        "location" to view?.findViewById<EditText>(R.id.edit_location)!!.text.toString()
                     )
 
-                    //Updating db
-                    arguments.let {
-                        Log.d("testBundle", it!!.get("uid").toString())
-                        val docref = db.collection("profiles").document(it!!.get("uid").toString())
-                        docref.get().addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                db.collection("profiles").document(it!!.get("uid").toString()).set(docData)
-                                    .addOnSuccessListener {
-                                    }.addOnFailureListener {
-                                    }
-                            } else {
-                                Log.d("TAG", "Error: ", task.exception)
-                            }
+                    //Updating db of profile
+                    val docref = db.collection("profiles").document(idUser)
+                    docref.get().addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            db.collection("profiles").document(idUser).set(docData)
+                                .addOnSuccessListener {
+                                }.addOnFailureListener {
+                                }
+                        } else {
+                            Log.d("TAG", "Error: ", task.exception)
                         }
                     }
 
+                    val skill1Updated = hashMapOf(
+                        "idUser" to idUser,
+                        "name" to view?.findViewById<EditText>(R.id.edit_skill1)!!.text.toString(),
+                        "description" to view?.findViewById<EditText>(R.id.edit_description1)!!.text.toString()
+                    )
+                    db
+                        .collection("skills")
+                        .document(idSkill1)
+                        .set(skill1Updated)
+                        .addOnSuccessListener {
+
+                        }
+                    val skill2Updated = hashMapOf(
+                        "idUser" to idUser,
+                        "name" to view?.findViewById<EditText>(R.id.edit_skill2)!!.text.toString(),
+                        "description" to view?.findViewById<EditText>(R.id.edit_description2)!!.text.toString()
+                    )
+                    db
+                        .collection("skills")
+                        .document(idSkill2)
+                        .set(skill2Updated)
+                        .addOnSuccessListener {
+
+                        }
                     //Management snackbar
                     val root = view!!.rootView
                     Snackbar.make(root, "Profile updated", Snackbar.LENGTH_LONG).show()

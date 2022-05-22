@@ -32,6 +32,7 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
         val tv2: TextView = root.findViewById(R.id.nickname)
         val tv3: TextView = root.findViewById(R.id.email)
         val tv4: TextView = root.findViewById(R.id.location)
+
         val tv5: TextView = root.findViewById(R.id.skill1)
         val tv6: TextView = root.findViewById(R.id.skill2)
         val tv7: TextView = root.findViewById(R.id.description1)
@@ -49,14 +50,13 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
             "nickname" to "",
             "email" to "",
             "location" to "",
-            "skill1" to "",
-            "skill2" to "",
-            "description1" to "",
-            "description2" to "",
         )
 
-        val docref = db.collection("profiles").document(auth.uid.toString())
-        docref.get().addOnCompleteListener { task ->
+        db
+            .collection("profiles")
+            .document(auth.uid.toString())
+            .get()
+            .addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val document = task.result
                 if(document != null) {
@@ -67,15 +67,32 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
                         tv2.text = document.data!!["nickname"].toString()
                         tv3.text = document.data!!["email"].toString()
                         tv4.text = document.data!!["location"].toString()
-                        tv5.text = document.data!!["skill1"].toString()
-                        tv6.text = document.data!!["skill2"].toString()
-                        tv7.text = document.data!!["description1"].toString()
-                        tv8.text = document.data!!["description2"].toString()
                     } else {
                         Log.d("backbutton", "Document doesn't exist.")
+                        //quando si fa il login non esiste il documento nel DB. Viene creato quando si va in show profile
+                        //creando il documento per Default vengono create due skill, quelle specifiche dell'utente
+
+                        //CREAZIONE NUOVO DOCUMENTO PER UN NUOVO UTENTE
                         db.collection("profiles").document(auth.uid.toString()).set(docData)
                             .addOnSuccessListener {
-                                Toast.makeText(this.requireContext(), "Data Saved", Toast.LENGTH_SHORT)
+                                //SE IL DOCUMENTO VIENE CREATO CORRETTAMENTE SI CREANO LE DUE SKILL VUOTE
+                                val skill1 = hashMapOf(
+                                    "idUser" to auth.uid.toString(),
+                                    "name" to "",
+                                    "description" to ""
+                                )
+                                db.collection("skills").document().set(skill1)
+                                    .addOnSuccessListener {
+                                        val skill2 = hashMapOf(
+                                            "idUser" to auth.uid.toString(),
+                                            "name" to "",
+                                            "description" to ""
+                                        )
+                                        db.collection("skills").document().set(skill2)
+                                            .addOnSuccessListener {
+                                                Toast.makeText(this.requireContext(), "Data Saved", Toast.LENGTH_SHORT).show()
+                                            }
+                                    }
                             }.addOnFailureListener {
                                 Toast.makeText(this.requireContext(), "Error", Toast.LENGTH_LONG)
                             }
@@ -107,26 +124,9 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
         return when (item.itemId) {
             R.id.edit_profile_icon -> {
                 //Opening edit profile fragment
-                val fullname = view?.findViewById<TextView>(R.id.fullname)?.text.toString()
-                val nickname = view?.findViewById<TextView>(R.id.nickname)?.text.toString()
-                val email = view?.findViewById<TextView>(R.id.email)?.text.toString()
-                val location = view?.findViewById<TextView>(R.id.location)?.text.toString()
-                val skill1 = view?.findViewById<TextView>(R.id.skill1)?.text.toString()
-                val skill2 = view?.findViewById<TextView>(R.id.skill2)?.text.toString()
-                val description1 = view?.findViewById<TextView>(R.id.description1)?.text.toString()
-                val description2 = view?.findViewById<TextView>(R.id.description2)?.text.toString()
-
                 var bundle = Bundle()
 
-                bundle.putString("uid", auth.uid.toString())
-                bundle.putString("full name", fullname)
-                bundle.putString("nickname", nickname)
-                bundle.putString("email", email)
-                bundle.putString("location", location)
-                bundle.putString("skill1", skill1)
-                bundle.putString("skill2", skill2)
-                bundle.putString("description1", description1)
-                bundle.putString("description2", description2)
+                bundle.putString("idUser", auth.uid.toString())
                 bundle.putString("path", currentPhotoPath)
 
                 findNavController().navigate(R.id.action_nav_show_profile_to_nav_edit_profile, bundle)
