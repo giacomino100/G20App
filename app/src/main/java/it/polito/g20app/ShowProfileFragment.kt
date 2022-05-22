@@ -7,6 +7,7 @@ import android.view.*
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -19,6 +20,7 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
     private var photo: Photo = Photo()
     private val db = Firebase.firestore
     private lateinit var auth: FirebaseAuth
+    val viewModel by viewModels<SkillVM>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -102,6 +104,19 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
                 Log.d("TAG", "Error: ", task.exception)
             }
         }
+
+        //caricamento skill
+        // qui dentro carico dal db le skill di uno user
+        // mi memorizzo dentro due varibili l'id delle skill che coincidono con l'id del documento,
+        // cosi all'id del documento nella posizione zero corrisponde il primo campo di text e cosi per il secondo.
+        // QUando vado a salvarli utilizzo questi idskill per recuperare il documento da aggiornare
+        viewModel.userSkills.observe(viewLifecycleOwner){
+            tv5.text = it[0].name
+            tv6.text = it[1].name
+            tv7.text = it[0].description
+            tv8.text = it[1].description
+        }
+
 
         return root
 

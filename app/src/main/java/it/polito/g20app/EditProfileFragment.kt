@@ -93,8 +93,8 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
                 tv4.text = (it.get("location").toString())
             }
 
-        //qui dentro carico dal db le skill di uno user
-        //mi memorizzo dentro due varibili l'id delle skill che coincidono con l'id del documento,
+        // qui dentro carico dal db le skill di uno user
+        // mi memorizzo dentro due varibili l'id delle skill che coincidono con l'id del documento,
         // cosi all'id del documento nella posizione zero corrisponde il primo campo di text e cosi per il secondo.
         // QUando vado a salvarli utilizzo questi idskill per recuperare il documento da aggiornare
         viewModel.userSkills.observe(viewLifecycleOwner){
