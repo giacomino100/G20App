@@ -14,28 +14,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "items")
-class TimeSlot {
-    @PrimaryKey(autoGenerate = true)
-    var id:Int = 0
-    @ColumnInfo(name = "title")
-    var title:String = ""
-    @ColumnInfo(name = "description")
-    var description:String = ""
-    @ColumnInfo(name = "dateAndTime")
-    var dateAndTime:String = ""
-    @ColumnInfo(name = "duration")
-    var duration:String = ""
-    @ColumnInfo(name = "location")
-    var location:String = ""
-
-    override fun toString() = "{ id:$id, title:\"$title\", description:\"$description\", dateAndTime:\"$dateAndTime\", duration: \"$duration\", location:\"$location\"}"
-}
-
-
 class TimeSlotAdapter(val data: MutableList<TimeSlot>): RecyclerView.Adapter<TimeSlotAdapter.TimeSlotViewHolder>() {
     var displayData = data.toMutableList()
-
 
     class TimeSlotViewHolder(v: View): RecyclerView.ViewHolder(v) {
         private val title: TextView = v.findViewById(R.id.slot_title)
@@ -53,7 +33,7 @@ class TimeSlotAdapter(val data: MutableList<TimeSlot>): RecyclerView.Adapter<Tim
                 bundle.putString("id", timeslot.id.toString())
                 bundle.putString("title", timeslot.title)
                 bundle.putString("description", timeslot.description)
-                bundle.putString("dateAndTime", timeslot.dateAndTime)
+                bundle.putString("dateAndTime", timeslot.date)
                 bundle.putString("duration", timeslot.duration)
                 bundle.putString("location", timeslot.location)
                 it.findNavController().navigate(R.id.action_nav_adv_list_to_timeSlotEditFragment, bundle)
@@ -77,18 +57,11 @@ class TimeSlotAdapter(val data: MutableList<TimeSlot>): RecyclerView.Adapter<Tim
     override fun onBindViewHolder(holder: TimeSlotViewHolder, position: Int) {
         val item = displayData[position]
 
-//        notifyItemInserted(position)
         holder.bind(item) {
             //cliccando sull'edit si apre il TimeSlotDetailsFragment
             //passaggio di informazioni tra fragment with a Bundle
             val bundle = Bundle()
-            bundle.putString("id",item.id.toString())
-            bundle.putString("title", item.title)
-            bundle.putString("description", item.description)
-            bundle.putString("dateAndTime", item.dateAndTime)
-            bundle.putString("duration", item.duration)
-            bundle.putString("location", item.location)
-
+            bundle.putString("id", item.id)
             it.findNavController().navigate(R.id.action_nav_adv_list_to_nav_slot_details, bundle)
         }
     }

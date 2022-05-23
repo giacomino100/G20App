@@ -64,6 +64,19 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/slot_duration" />
+        app:layout_constraintTop_toBottomOf="@id/slot_duration"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/slot_skill"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:gravity="center_vertical"
+        android:text="@string/skill"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/slot_location" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

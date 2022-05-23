@@ -110,11 +110,17 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
         // mi memorizzo dentro due varibili l'id delle skill che coincidono con l'id del documento,
         // cosi all'id del documento nella posizione zero corrisponde il primo campo di text e cosi per il secondo.
         // QUando vado a salvarli utilizzo questi idskill per recuperare il documento da aggiornare
-        viewModel.userSkills.observe(viewLifecycleOwner){
-            tv5.text = it[0].name
-            tv6.text = it[1].name
-            tv7.text = it[0].description
-            tv8.text = it[1].description
+        viewModel.skills.observe(viewLifecycleOwner){
+            lateinit var userSkill: MutableList<Skill>
+            it.map { skill ->
+                if(skill.idUser == auth.uid){
+                    userSkill.add(skill)
+                }
+            }
+            tv5.text = userSkill[0].name
+            tv6.text = userSkill[1].name
+            tv7.text = userSkill[0].description
+            tv8.text = userSkill[1].description
         }
 
 

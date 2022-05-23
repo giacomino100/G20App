@@ -11,12 +11,14 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 class SkillsFragment : Fragment() {
 
     val viewModel by viewModels<SkillVM>()
+    private var auth: FirebaseAuth = Firebase.auth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,11 +41,18 @@ class SkillsFragment : Fragment() {
 
         viewModel.skills.observe(viewLifecycleOwner) {
             root.findViewById<TextView>(R.id.alert_skill).isVisible = it.isEmpty()
-            it.let {
+            var otherSkills: MutableList<Skill> = mutableListOf()
+            it.map { skill ->
+                if(skill.idUser != auth.uid){
+                    otherSkills.add(skill)
+                }
+            }
+            otherSkills.let {
                 val adapter = SkillAdapter(it as MutableList<Skill>)
                 rv.adapter = adapter
             }
         }
+
         return root
     }
 

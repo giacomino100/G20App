@@ -14,10 +14,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
 
     val vm by viewModels<TimeSlotVM>()
+    private var auth: FirebaseAuth = Firebase.auth
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,13 +37,21 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
 
         val rv = root.findViewById<RecyclerView>(R.id.rv)
         val fab = root.findViewById<FloatingActionButton>(R.id.fab)
+
         rv.layoutManager = LinearLayoutManager(root.context)
 
         //defining ViewModel
-        vm.value.observe(viewLifecycleOwner) {
+        vm.timeSlots.observe(viewLifecycleOwner) {
             //this row is needed to show the message in case the list is empty
             root.findViewById<TextView>(R.id.alert).isVisible = it.isEmpty()
-            it.let {
+            val mySlots = mutableListOf<TimeSlot>()
+            it.map {
+                if(it.idUser == auth.uid){
+                 mySlots.add(it)
+                }
+            }
+
+            mySlots.let {
                 val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>)
                 rv.adapter = adapter
             }

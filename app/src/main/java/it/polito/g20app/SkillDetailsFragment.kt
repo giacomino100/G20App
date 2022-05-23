@@ -33,7 +33,24 @@ class SkillDetailsFragment : Fragment() {
 
         //defining ViewModel
         //TODO caricare dal db tutti i time slot di un idUser con un idSkill (Recuperabili dal bundle), guardare cosa arriva da SkillVM
+        var idSkill = " "
+        arguments.let {
+            idSkill = it?.getString("id").toString()
+        }
 
+        vm.timeSlots.observe(viewLifecycleOwner){
+            val mySlots = mutableListOf<TimeSlot>()
+            it.map {
+                if(it.idSkill == idSkill){
+                    mySlots.add(it)
+                }
+            }
+
+            mySlots.let {
+                val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>)
+                rv.adapter = adapter
+            }
+        }
         return root
     }
 

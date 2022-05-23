@@ -97,14 +97,20 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
         // mi memorizzo dentro due varibili l'id delle skill che coincidono con l'id del documento,
         // cosi all'id del documento nella posizione zero corrisponde il primo campo di text e cosi per il secondo.
         // QUando vado a salvarli utilizzo questi idskill per recuperare il documento da aggiornare
-        viewModel.userSkills.observe(viewLifecycleOwner){
-            idSkill1 = it[0].id
-            idSkill2 = it[1].id
+        viewModel.skills.observe(viewLifecycleOwner){
+            lateinit var userSkill: MutableList<Skill>
+            it.map { skill ->
+                if(skill.idUser == idUser){
+                    userSkill.add(skill)
+                }
+            }
+            idSkill1 = userSkill[0].id
+            idSkill2 = userSkill[1].id
 
-            tv5.text = it[0].name
-            tv6.text = it[1].name
-            tv7.text = it[0].description
-            tv8.text = it[1].description
+            tv5.text = userSkill[0].name
+            tv6.text = userSkill[1].name
+            tv7.text = userSkill[0].description
+            tv8.text = userSkill[1].description
         }
 
         //IMPLEMENTAZIONE TASTO PER MODIFICARE LA FOTO DEL PROFILO

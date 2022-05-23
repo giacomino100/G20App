@@ -7,18 +7,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 
-
-/**
- * A simple [Fragment] subclass.
- * Use the [TimeSlotDetailsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
 
-    private var id1: Int = 0
+    private var id1: String = " "
 
     val vm by viewModels<TimeSlotVM>()
-
+    val vm_skill by viewModels<SkillVM>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -26,28 +20,35 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
     ): View? {
         // Inflate the layout for this fragment
         val root = inflater.inflate(R.layout.fragment_time_slot_details, container, false)
-        //recupero dati dal Bundle
-        arguments.let {
-            if (it != null) {
-                id1 = it.getString("id")!!.toInt()
-                var timeSlot: TimeSlot
-                vm.get(id1).observe(viewLifecycleOwner){
-                    timeSlot = it
-                    root.findViewById<TextView>(R.id.slot_title).text = timeSlot.title
-                    root.findViewById<TextView>(R.id.slot_description).text = timeSlot.description
-                    root.findViewById<TextView>(R.id.slot_date_and_time).text = timeSlot.dateAndTime
-                    root.findViewById<TextView>(R.id.slot_duration).text = timeSlot.duration
-                    root.findViewById<TextView>(R.id.slot_location).text = timeSlot.location
-                }
+        //recupero id del time slot dal Bundle
+         arguments.let {
+             if (it != null) {
+                 id1 = it.getString("id").toString()
+             }
+         }
 
-            }
 
-        }
+        var idSkill = " "
+         vm.timeSlots.observe(viewLifecycleOwner){ list ->
+             list.map {
+                 if(it.id == id1){
+                     root.findViewById<TextView>(R.id.slot_title).text = it.title
+                     root.findViewById<TextView>(R.id.slot_description).text = it.description
+                     root.findViewById<TextView>(R.id.slot_date_and_time).text = it.date
+                     root.findViewById<TextView>(R.id.slot_duration).text = it.duration
+                     root.findViewById<TextView>(R.id.slot_location).text = it.location
+                     idSkill = it.idSkill
+                 }
+             }
+         }
+
+        //recuper skill dal db
+        val nameSkill = vm_skill.skills.value?.filter { it.id == idSkill }?.map{ it.name}
+        root.findViewById<TextView>(R.id.slot_skill).text = nameSkill.toString()
 
         return root
 
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
