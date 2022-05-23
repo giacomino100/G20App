@@ -22,7 +22,6 @@ class SkillVM: ViewModel(){
     private val _skills = MutableLiveData<List<Skill>>()
     val skills : LiveData<List<Skill>> = _skills
 
-
     private var auth: FirebaseAuth = Firebase.auth
 
     private var l1: ListenerRegistration

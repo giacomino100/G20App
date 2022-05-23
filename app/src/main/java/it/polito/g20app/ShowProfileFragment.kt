@@ -96,7 +96,7 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
                                             }
                                     }
                             }.addOnFailureListener {
-                                Toast.makeText(this.requireContext(), "Error", Toast.LENGTH_LONG)
+                                Toast.makeText(this.requireContext(), "Error", Toast.LENGTH_LONG).show()
                             }
                     }
                 }
@@ -111,8 +111,8 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
         // cosi all'id del documento nella posizione zero corrisponde il primo campo di text e cosi per il secondo.
         // QUando vado a salvarli utilizzo questi idskill per recuperare il documento da aggiornare
         viewModel.skills.observe(viewLifecycleOwner){
-            lateinit var userSkill: MutableList<Skill>
-            it.map { skill ->
+            val userSkill: MutableList<Skill> = mutableListOf()
+            it.forEach { skill ->
                 if(skill.idUser == auth.uid){
                     userSkill.add(skill)
                 }

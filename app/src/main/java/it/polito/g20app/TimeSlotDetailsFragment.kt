@@ -27,7 +27,7 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
              }
          }
 
-
+        //Loading time slot dal db
         var idSkill = " "
          vm.timeSlots.observe(viewLifecycleOwner){ list ->
              list.map {
@@ -42,7 +42,7 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
              }
          }
 
-        //recuper skill dal db
+        //Recupero skill dal db
         val nameSkill = vm_skill.skills.value?.filter { it.id == idSkill }?.map{ it.name}
         root.findViewById<TextView>(R.id.slot_skill).text = nameSkill.toString()
 
