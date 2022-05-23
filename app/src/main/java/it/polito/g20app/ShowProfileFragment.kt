@@ -34,12 +34,12 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
         val tv2: TextView = root.findViewById(R.id.nickname)
         val tv3: TextView = root.findViewById(R.id.email)
         val tv4: TextView = root.findViewById(R.id.location)
-
         val tv5: TextView = root.findViewById(R.id.skill1)
         val tv6: TextView = root.findViewById(R.id.skill2)
         val tv7: TextView = root.findViewById(R.id.description1)
         val tv8: TextView = root.findViewById(R.id.description2)
 
+        Log.d("savedInstanceState", savedInstanceState.toString())
         // [START initialize_auth]
         // Initialize Firebase Auth
         auth = Firebase.auth
@@ -47,11 +47,12 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
         Log.d("backbutton", "the user is: ${auth.currentUser?.displayName}")
 
 
+
         val docData = hashMapOf(
             "fullname" to auth.currentUser!!.displayName,
-            "nickname" to "",
-            "email" to "",
-            "location" to "",
+            "nickname" to "uberts94",
+            "email" to "pietro.ubertini@polito.it",
+            "location" to "torino",
         )
 
         db
@@ -77,18 +78,22 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
                         //CREAZIONE NUOVO DOCUMENTO PER UN NUOVO UTENTE
                         db.collection("profiles").document(auth.uid.toString()).set(docData)
                             .addOnSuccessListener {
+                                tv1.text = docData.get("fullname").toString()
+                                tv2.text = docData.get("nickname").toString()
+                                tv3.text = docData.get("email").toString()
+                                tv4.text = docData.get("location").toString()
                                 //SE IL DOCUMENTO VIENE CREATO CORRETTAMENTE SI CREANO LE DUE SKILL VUOTE
                                 val skill1 = hashMapOf(
                                     "idUser" to auth.uid.toString(),
-                                    "name" to "",
-                                    "description" to ""
+                                    "name" to "skill1",
+                                    "description" to "description skill1"
                                 )
                                 db.collection("skills").document().set(skill1)
                                     .addOnSuccessListener {
                                         val skill2 = hashMapOf(
                                             "idUser" to auth.uid.toString(),
-                                            "name" to "",
-                                            "description" to ""
+                                            "name" to "skill2",
+                                            "description" to "description skill2"
                                         )
                                         db.collection("skills").document().set(skill2)
                                             .addOnSuccessListener {
@@ -108,19 +113,21 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
         // caricamento skill
         // qui dentro carico dal db le skill di uno user
         // mi memorizzo dentro due varibili l'id delle skill che coincidono con l'id del documento,
-        // cosi all'id del documento nella posizione zero corrisponde il primo campo di text e cosi per il secondo.
-        // QUando vado a salvarli utilizzo questi idskill per recuperare il documento da aggiornare
-        viewModel.skills.observe(viewLifecycleOwner){
-            val userSkill: MutableList<Skill> = mutableListOf()
-            it.forEach { skill ->
-                if(skill.idUser == auth.uid){
-                    userSkill.add(skill)
+        // così all'id del documento nella posizione zero corrisponde il primo campo di text e così per il secondo.
+        // Quando vado a salvarli utilizzo questi idskill per recuperare il documento da aggiornare
+
+        viewModel.skills.observe(viewLifecycleOwner){ it ->
+            val uSkills = it.filter { it.idUser == auth.uid }
+
+            if (uSkills.isNotEmpty()) {
+                uSkills.let {
+                    tv5.text = it[0].name
+                    tv6.text = it[1].name
+                    tv7.text = it[0].description
+                    tv8.text = it[1].description
                 }
             }
-            tv5.text = userSkill[0].name
-            tv6.text = userSkill[1].name
-            tv7.text = userSkill[0].description
-            tv8.text = userSkill[1].description
+
         }
 
 

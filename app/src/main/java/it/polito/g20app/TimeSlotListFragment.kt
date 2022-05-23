@@ -52,7 +52,7 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
             }
 
             mySlots.let {
-                val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>)
+                val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>, false)
                 rv.adapter = adapter
             }
         }

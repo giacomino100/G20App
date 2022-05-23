@@ -1,5 +1,6 @@
 package it.polito.g20app
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -22,8 +23,6 @@ class SkillVM: ViewModel(){
     private val _skills = MutableLiveData<List<Skill>>()
     val skills : LiveData<List<Skill>> = _skills
 
-    private var auth: FirebaseAuth = Firebase.auth
-
     private var l1: ListenerRegistration
 
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
@@ -33,6 +32,7 @@ class SkillVM: ViewModel(){
             .addSnapshotListener { v, e ->
                 if (e==null) {
                     _skills.value = v!!.mapNotNull { d -> d.toSkill() }
+                    Log.d("initSkills", _skills.value.toString())
                 } else _skills.value = emptyList()
             }
     }

@@ -10,23 +10,21 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import kotlin.properties.Delegates
 
-class TimeSlotAdapter(val data: MutableList<TimeSlot>): RecyclerView.Adapter<TimeSlotAdapter.TimeSlotViewHolder>() {
+
+class TimeSlotAdapter(val data: MutableList<TimeSlot>, val isSkillDetails: Boolean): RecyclerView.Adapter<TimeSlotAdapter.TimeSlotViewHolder>() {
     var displayData = data.toMutableList()
-
+    var flag = isSkillDetails
     class TimeSlotViewHolder(v: View): RecyclerView.ViewHolder(v) {
         private val title: TextView = v.findViewById(R.id.slot_title)
-        private val edit: ImageView = v.findViewById(R.id.edit)
+        private val edit: ImageView = v.findViewById(R.id.editTimeSlot)
         private val card: CardView = v.findViewById(R.id.card)
 
-
-        fun bind(timeslot: TimeSlot, action: (v: View)->Unit) {
+        fun bind(timeslot: TimeSlot, flag: Boolean, action: (v: View)->Unit) {
             title.text = timeslot.title
             card.setOnClickListener(action)
-
+            if (flag) edit.visibility = View.GONE
             edit.setOnClickListener {
                 //Cliccando il tasto edit nella Lista
                 val bundle = Bundle()
@@ -56,8 +54,9 @@ class TimeSlotAdapter(val data: MutableList<TimeSlot>): RecyclerView.Adapter<Tim
 
     override fun onBindViewHolder(holder: TimeSlotViewHolder, position: Int) {
         val item = displayData[position]
+        val flag2 = flag
 
-        holder.bind(item) {
+        holder.bind(timeslot =  item, flag = flag2) {
             //cliccando sull'edit si apre il TimeSlotDetailsFragment
             //passaggio di informazioni tra fragment with a Bundle
             val bundle = Bundle()
@@ -72,7 +71,7 @@ class TimeSlotAdapter(val data: MutableList<TimeSlot>): RecyclerView.Adapter<Tim
 
     fun submitList(it: List<TimeSlot>?) {
         if (it != null) {
-            for (i in 0..it.size-1){ Log.d("submitList", it[i].toString()) }
+            for (element in it){ Log.d("submitList", element.toString()) }
         }
     }
 

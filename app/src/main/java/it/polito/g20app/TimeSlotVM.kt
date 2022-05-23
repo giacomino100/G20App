@@ -83,7 +83,7 @@ class TimeSlotVM: ViewModel(){
             val date = get("date") as String
             val location = get("location") as String
             val duration = get("duration") as String
-            TimeSlot(id, idUser, idSkill, title, description, location, date, duration)
+            TimeSlot(id, idUser, idSkill, title, description, location, duration, date)
         } catch (e: Exception) {
             e.printStackTrace()
             null

@@ -32,7 +32,7 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
         <ImageButton
-            android:id="@+id/edit"
+            android:id="@+id/editTimeSlot"
             style="@style/Widget.AppCompat.ImageButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -43,7 +43,9 @@
             android:icon="@drawable/ic_baseline_edit_24"
             android:minHeight="48dp"
             android:src="@drawable/ic_baseline_edit_24"
-            app:tint="@android:color/white" />
+            android:visibility="visible"
+            app:tint="@android:color/white"
+            tools:visibility="visible" />
     </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

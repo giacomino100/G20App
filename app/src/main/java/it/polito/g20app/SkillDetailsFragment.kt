@@ -6,12 +6,16 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.Switch
 import android.widget.TextView
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import java.sql.Time
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.util.*
 
 
 class SkillDetailsFragment : Fragment() {
@@ -31,26 +35,66 @@ class SkillDetailsFragment : Fragment() {
         val rv = root.findViewById<RecyclerView>(R.id.rv_skill_details)
         rv.layoutManager = LinearLayoutManager(root.context)
 
-        //defining ViewModel
-        //TODO caricare dal db tutti i time slot di un idUser con un idSkill (Recuperabili dal bundle), guardare cosa arriva da SkillVM
+        val switchSort = root.findViewById<Switch>(R.id.switchSort)
+        val switchFilter = root.findViewById<Switch>(R.id.switchFilter)
+
         var idSkill = " "
         arguments.let {
             idSkill = it?.getString("id").toString()
         }
 
-        vm.timeSlots.observe(viewLifecycleOwner){
-            val mySlots = mutableListOf<TimeSlot>()
-            it.map {
-                if(it.idSkill == idSkill){
-                    mySlots.add(it)
+        vm.timeSlots.observe(viewLifecycleOwner){ it ->
+            var flag: Boolean = false
+            if (it.isNullOrEmpty()){
+                //se la lista di timeslots è vuota, non visualizzo gli switch
+                switchSort.visibility = View.GONE
+                switchFilter.visibility = View.GONE
+            }
+            else {
+                switchSort.visibility = View.VISIBLE
+                switchFilter.visibility = View.VISIBLE
+                flag = true
+
+                it.filter { it.idSkill == idSkill }.let {
+                    val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>, flag)
+                    rv.adapter = adapter
                 }
             }
 
-            mySlots.let {
-                val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>)
-                rv.adapter = adapter
+        }
+
+
+        switchSort?.setOnCheckedChangeListener { _, isChecked ->
+            vm.timeSlots.observe(viewLifecycleOwner) { it ->
+                val sortedSlots = if (isChecked) it.filter { it.idSkill == idSkill }.sortedBy { it.title }
+                               else it.filter { it.idSkill == idSkill }
+
+                sortedSlots.let {
+                    val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>, true)
+                    rv.adapter = adapter
+                }
             }
         }
+
+        switchFilter?.setOnCheckedChangeListener { _, isChecked ->
+            vm.timeSlots.observe(viewLifecycleOwner) { it ->
+                val filteredSlots = if (isChecked) it.filter { it.idSkill == idSkill }.filter { it ->
+                    var time = it.date.split(" ")
+                    var params = time[3].split(":")
+                    if (params[0].toInt() == 12) {
+                        if (params[1].toInt() == 0) {
+                            params[2].toInt() == 0
+                        } else params[1].toInt() < 60
+                    } else params[0].toInt() < 12
+                } else it.filter { it.idSkill == idSkill }
+
+                filteredSlots.let {
+                    val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>, true)
+                    rv.adapter = adapter
+                }
+            }
+        }
+
         return root
     }
 
