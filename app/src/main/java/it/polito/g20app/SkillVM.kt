@@ -4,13 +4,9 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
-import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.ktx.Firebase
 
 data class Skill(
     var id: String = " ",
@@ -19,7 +15,6 @@ data class Skill(
     var description: String = " "
 )
 
-//MVVP
 class SkillVM: ViewModel(){
     private val _skills = MutableLiveData<List<Skill>>()
     val skills : LiveData<List<Skill>> = _skills

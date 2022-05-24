@@ -27,6 +27,7 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
     private val db = Firebase.firestore
     private lateinit var auth: FirebaseAuth
     val viewModel by viewModels<SkillVM>()
+    val viewModel2 by viewModels<ProfileVM>()
     private var storageReference: StorageReference = FirebaseStorage.getInstance().getReference("images/")
 
     override fun onCreateView(
@@ -54,14 +55,14 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
 
 
         val img: ImageView = root.findViewById(R.id.imageView_show)
-        val progressDialog = ProgressDialog(this.requireContext())
-        progressDialog.setMessage("Loading image...")
-        progressDialog.setCancelable(false)
-        progressDialog.show()
+        //val progressDialog = ProgressDialog(this.requireContext())
+        //progressDialog.setMessage("Loading image...")
+        //progressDialog.setCancelable(false)
+        //progressDialog.show()
         var ref = storageReference.child("images/${auth.uid}").downloadUrl.addOnSuccessListener {
             val localFile = File.createTempFile("tempImage", "jpg")
             storageReference.child("images/${auth.uid}").getFile(localFile).addOnSuccessListener {
-                if(progressDialog.isShowing) progressDialog.dismiss()
+                //if(progressDialog.isShowing) progressDialog.dismiss()
                 var bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
                 bitmap = Bitmap.createScaledBitmap(bitmap, (bitmap.width*2.5).toInt(), (bitmap.height*2.5).toInt(), false)
                 img.setImageBitmap(bitmap)
@@ -78,7 +79,6 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
                 if(document != null) {
                     if (document.exists()) {
                         Log.d("backbutton", "Document already exists.")
-                        //TODO: quando aggiorno un dato e dopo faccio la get non si prendono i dati aggiornati
                         tv1.text = document.data!!["fullname"].toString()
                         tv2.text = document.data!!["nickname"].toString()
                         tv3.text = document.data!!["email"].toString()
@@ -109,6 +109,13 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
                     tv8.text = it[1].description
                 }
             }
+        }
+        viewModel2.profiles.observe(viewLifecycleOwner){ it ->
+            val currentUser = it.filter { it.id == auth.uid }[0]
+            tv1.text = currentUser.fullname
+            tv2.text = currentUser.nickname
+            tv3.text = currentUser.email
+            tv4.text = currentUser.location
         }
 
         return root

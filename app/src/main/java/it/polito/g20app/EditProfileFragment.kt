@@ -62,16 +62,18 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
         val tv8: TextView = root.findViewById(R.id.edit_description2)
 
         val img: ImageView = root.findViewById(R.id.imageView_edit)
-        val progressDialog = ProgressDialog(this.requireContext())
-        progressDialog.setMessage("Loading image...")
-        progressDialog.setCancelable(false)
-        progressDialog.show()
+        //val progressDialog = ProgressDialog(this.requireContext())
+        //progressDialog.setMessage("Loading image...")
+        //progressDialog.setCancelable(false)
+        //progressDialog.show()
         var ref = storageReference.child("images/${auth.uid}").downloadUrl.addOnSuccessListener {
             val localFile = File.createTempFile("tempImage", "jpg")
             storageReference.child("images/${auth.uid}").getFile(localFile).addOnSuccessListener {
-                if(progressDialog.isShowing) progressDialog.dismiss()
+                //if(progressDialog.isShowing) progressDialog.dismiss()
                 val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
                 img.setImageBitmap(bitmap)
+            }.addOnFailureListener() {
+                Log.d("dialogDismiss", "failure")
             }
         }
 
@@ -194,6 +196,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
                         .addOnSuccessListener {
 
                         }
+
                     //Management snackbar
                     val root = view!!.rootView
                     Snackbar.make(root, "Profile updated", Snackbar.LENGTH_LONG).show()
@@ -202,6 +205,8 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
                         isEnabled = false
                         requireActivity().onBackPressed()
                     }
+
+
 
 
                 }
