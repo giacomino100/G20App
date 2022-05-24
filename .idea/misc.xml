@@ -3,6 +3,20 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/activity_firebase.xml" value="0.1" />
+        <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/app_bar_main.xml" value="0.1" />
+        <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/fragment_check.xml" value="0.1" />
+        <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/fragment_edit.xml" value="0.1956521739130435" />
+        <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/fragment_home.xml" value="0.1956521739130435" />
+        <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/fragment_skill_details.xml" value="0.1956521739130435" />
+        <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/fragment_skill_profile.xml" value="0.1956521739130435" />
+        <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/fragment_skills.xml" value="0.1956521739130435" />
+        <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/fragment_time_slot_details.xml" value="0.1956521739130435" />
+        <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/fragment_time_slot_edit.xml" value="0.1" />
+        <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/fragment_time_slot_list.xml" value="0.1" />
+        <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/skill.xml" value="0.1956521739130435" />
+        <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/skill_profile.xml" value="0.22" />
+        <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/time_slot.xml" value="0.1" />
         <entry key="..\:/Users/PC/AppData/Local/Android/Sdk/platforms/android-32/data/res/layout/simple_spinner_item.xml" value="0.10778985507246377" />
         <entry key="..\:/Users/PC/G20App/app/src/main/res/layout/activity_firebase.xml" value="0.1" />
         <entry key="..\:/Users/PC/G20App/app/src/main/res/layout/activity_main.xml" value="0.1" />
