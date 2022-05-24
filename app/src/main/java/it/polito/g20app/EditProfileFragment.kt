@@ -217,7 +217,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
 
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        val image = view?.findViewById<ImageView>(R.id.imageView)
+        val image = view?.findViewById<ImageView>(R.id.imageView_edit)
 
         //Se l'Intent era quello della foto camera dentro questo if
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == AppCompatActivity.RESULT_OK) {
