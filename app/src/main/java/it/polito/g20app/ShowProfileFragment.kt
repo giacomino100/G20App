@@ -101,13 +101,21 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
         viewModel.skills.observe(viewLifecycleOwner){ it ->
             val uSkills = it.filter { it.idUser == auth.uid }
 
-            if (uSkills.isNotEmpty()) {
+            Log.d("skill",uSkills.toString())
+            if (uSkills.isNotEmpty() && uSkills.size == 1) {
                 uSkills.let {
                     tv5.text = it[0].name
-                    tv6.text = it[1].name
                     tv7.text = it[0].description
-                    tv8.text = it[1].description
+
                 }
+            }
+                if (uSkills.isNotEmpty() && uSkills.size > 1) {
+                    uSkills.let {
+                        tv5.text = it[0].name
+                        tv6.text = it[1].name
+                        tv7.text = it[0].description
+                        tv8.text = it[1].description
+                    }
             }
         }
         viewModel2.profiles.observe(viewLifecycleOwner){ it ->
