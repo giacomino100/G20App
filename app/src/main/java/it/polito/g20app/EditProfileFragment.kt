@@ -19,6 +19,8 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.drawToBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -48,6 +50,9 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
     ): View? {
         val root = inflater.inflate(R.layout.fragment_edit, container, false)
 
+        val rv = root.findViewById<RecyclerView>(R.id.rv_skill_profile)
+        rv.layoutManager = LinearLayoutManager(root.context)
+
         //Questa riga per disattivare il tasto back nella toolbar
         (activity as FirebaseActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
@@ -56,25 +61,26 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
         val tv2: TextView = root.findViewById(R.id.edit_nickname)
         val tv3: TextView = root.findViewById(R.id.edit_email)
         val tv4: TextView = root.findViewById(R.id.edit_location)
-        val tv5: TextView = root.findViewById(R.id.edit_skill1)
-        val tv6: TextView = root.findViewById(R.id.edit_skill2)
-        val tv7: TextView = root.findViewById(R.id.edit_description1)
-        val tv8: TextView = root.findViewById(R.id.edit_description2)
+        //val tv5: TextView = root.findViewById(R.id.edit_skill1)
+        //val tv6: TextView = root.findViewById(R.id.edit_skill2)
+        //val tv7: TextView = root.findViewById(R.id.edit_description1)
+        //val tv8: TextView = root.findViewById(R.id.edit_description2)
 
         val img: ImageView = root.findViewById(R.id.imageView_edit)
-        //val progressDialog = ProgressDialog(this.requireContext())
-        //progressDialog.setMessage("Loading image...")
-        //progressDialog.setCancelable(false)
-        //progressDialog.show()
-        var ref = storageReference.child("images/${auth.uid}").downloadUrl.addOnSuccessListener {
+        val progressDialog = ProgressDialog(this.requireContext())
+        progressDialog.setMessage("Loading image...")
+        progressDialog.setCancelable(false)
+        progressDialog.show()
+        storageReference.child("images/${auth.uid}").downloadUrl.addOnSuccessListener {
             val localFile = File.createTempFile("tempImage", "jpg")
             storageReference.child("images/${auth.uid}").getFile(localFile).addOnSuccessListener {
-                //if(progressDialog.isShowing) progressDialog.dismiss()
+                if(progressDialog.isShowing) progressDialog.dismiss()
                 val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
                 img.setImageBitmap(bitmap)
-            }.addOnFailureListener() {
-                Log.d("dialogDismiss", "failure")
             }
+        }.addOnFailureListener() {
+            if(progressDialog.isShowing) progressDialog.dismiss()
+            Log.d("dialogDismiss", "failure")
         }
 
         var idSkill1 = " "
@@ -104,16 +110,10 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
         // QUando vado a salvarli utilizzo questi idskill per recuperare il documento da aggiornare
         viewModel.skills.observe(viewLifecycleOwner){ it ->
             val uSkills = it.filter { it.idUser == auth.uid }
-
-            if (uSkills.isNotEmpty()) {
-                uSkills.let {
-                    idSkill1 = it[0].id
-                    idSkill2 = it[1].id
-                    tv5.text = it[0].name
-                    tv6.text = it[1].name
-                    tv7.text = it[0].description
-                    tv8.text = it[1].description
-                }
+            uSkills.let {
+                Log.d("lista di skill",it.toString())
+                val adapter = SkillProfileAdapter(it as MutableList<Skill>)
+                rv.adapter = adapter
             }
         }
 
@@ -217,7 +217,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
 
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        val image = view?.findViewById<ImageView>(R.id.imageView)
+        val image = view?.findViewById<ImageView>(R.id.imageView_edit)
 
         //Se l'Intent era quello della foto camera dentro questo if
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == AppCompatActivity.RESULT_OK) {

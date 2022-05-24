@@ -52,25 +52,24 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
         val tv2: TextView = root.findViewById(R.id.nickname)
         val tv3: TextView = root.findViewById(R.id.email)
         val tv4: TextView = root.findViewById(R.id.location)
-        //val tv5: TextView = root.findViewById(R.id.skill1)
-        //val tv6: TextView = root.findViewById(R.id.skill2)
-        //val tv7: TextView = root.findViewById(R.id.description1)
-        //val tv8: TextView = root.findViewById(R.id.description2)
 
 
         val img: ImageView = root.findViewById(R.id.imageView_show)
-        //val progressDialog = ProgressDialog(this.requireContext())
-        //progressDialog.setMessage("Loading image...")
-        //progressDialog.setCancelable(false)
-        //progressDialog.show()
-        var ref = storageReference.child("images/${auth.uid}").downloadUrl.addOnSuccessListener {
+        val progressDialog = ProgressDialog(this.requireContext())
+        progressDialog.setMessage("Loading image...")
+        progressDialog.setCancelable(false)
+        progressDialog.show()
+        storageReference.child("images/${auth.uid}").downloadUrl.addOnSuccessListener {
             val localFile = File.createTempFile("tempImage", "jpg")
             storageReference.child("images/${auth.uid}").getFile(localFile).addOnSuccessListener {
-                //if(progressDialog.isShowing) progressDialog.dismiss()
+                if(progressDialog.isShowing) progressDialog.dismiss()
                 var bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
                 bitmap = Bitmap.createScaledBitmap(bitmap, (bitmap.width*2.5).toInt(), (bitmap.height*2.5).toInt(), false)
                 img.setImageBitmap(bitmap)
             }
+        }.addOnFailureListener {
+            if(progressDialog.isShowing) progressDialog.dismiss()
+            Log.d("imageNotFound", "imageNotFound")
         }
 
         db
@@ -109,24 +108,6 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
                 val adapter = SkillProfileAdapter(it as MutableList<Skill>)
                 rv.adapter = adapter
             }
-
-
-           /* Log.d("skill",uSkills.toString())
-            if (uSkills.isNotEmpty() && uSkills.size == 1) {
-                uSkills.let {
-                    tv5.text = it[0].name
-                    tv7.text = it[0].description
-
-                }
-            }
-                if (uSkills.isNotEmpty() && uSkills.size > 1) {
-                    uSkills.let {
-                        tv5.text = it[0].name
-                        tv6.text = it[1].name
-                        tv7.text = it[0].description
-                        tv8.text = it[1].description
-                    }
-            }*/
         }
         viewModel2.profiles.observe(viewLifecycleOwner){ it ->
             val currentUser = it.filter { it.id == auth.uid }[0]

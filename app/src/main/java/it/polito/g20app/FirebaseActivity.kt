@@ -54,7 +54,7 @@ class FirebaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         //SETTING IMAGE PROFILE
         val headerView: View = binding.navView.getHeaderView(0)
         val img: ImageView = headerView.findViewById(R.id.nav_head_avatar)
-        var ref = storageReference.child("images/${auth.uid}").downloadUrl.addOnSuccessListener {
+        storageReference.child("images/${auth.uid}").downloadUrl.addOnSuccessListener {
             val localFile = File.createTempFile("tempImage", "jpg")
             storageReference.child("images/${auth.uid}").getFile(localFile).addOnSuccessListener {
                 var bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
@@ -173,6 +173,26 @@ class FirebaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
     }
 
+    override fun onResume() {
+        // [START initialize_auth]
+        // Initialize Firebase Auth
+        auth = Firebase.auth
+        // [END initialize_auth]
+
+        //FASE DI INIZIALIZZAZIONE DELL'HEADER DEL MENU
+        //SETTING IMAGE PROFILE
+        val headerView: View = binding.navView.getHeaderView(0)
+        val img: ImageView = headerView.findViewById(R.id.nav_head_avatar)
+        storageReference.child("images/${auth.uid}").downloadUrl.addOnSuccessListener {
+            val localFile = File.createTempFile("tempImage", "jpg")
+            storageReference.child("images/${auth.uid}").getFile(localFile).addOnSuccessListener {
+                var bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+                bitmap = Bitmap.createScaledBitmap(bitmap, binding.root.findViewById<ImageView>(R.id.nav_head_avatar)!!.width/2, binding.root.findViewById<ImageView>(R.id.nav_head_avatar)!!.height, false)
+                img.setImageBitmap(bitmap)
+            }
+        }
+        super.onResume()
+    }
 
     //Questa servirà?
 
