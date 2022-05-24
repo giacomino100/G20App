@@ -3,6 +3,7 @@ package it.polito.g20app
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -22,21 +23,22 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import org.json.JSONException
+import java.io.ByteArrayOutputStream
+import java.io.File
 
 
 private const val REQUEST_IMAGE_CAPTURE = 1
 private const val REQUEST_ACTION_PICK = 2
 
-private const val name = "icon"
-private var currentPhotoPath: String? = null
-private val db = Firebase.firestore
-
 class EditProfileFragment : Fragment(R.layout.fragment_edit) {
 
-    private var photo: Photo = Photo()
+    private val db = Firebase.firestore
     private var auth: FirebaseAuth = Firebase.auth
     val viewModel by viewModels<SkillVM>()
+    private var storageReference: StorageReference = FirebaseStorage.getInstance().getReference("images/")
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,28 +59,24 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
         val tv6: TextView = root.findViewById(R.id.edit_skill2)
         val tv7: TextView = root.findViewById(R.id.edit_description1)
         val tv8: TextView = root.findViewById(R.id.edit_description2)
-        val img: ImageView = root.findViewById(R.id.imageView)
 
-        var idSkill1: String = " "
-        var idSkill2: String = " "
+        val img: ImageView = root.findViewById(R.id.imageView_edit)
+        var ref = storageReference.child("images/${auth.uid}").downloadUrl.addOnSuccessListener {
+            val localFile = File.createTempFile("tempImage", "jpg")
+            storageReference.child("images/${auth.uid}").getFile(localFile).addOnSuccessListener {
+                val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+                img.setImageBitmap(bitmap)
+            }
+        }
+
+
+        var idSkill1 = " "
+        var idSkill2 = " "
 
         var idUser = " "
         arguments.let{
             if (it != null) {
                 idUser = it.get("idUser").toString()
-                try {
-                    if (it.get("path").toString() == "null")
-                        currentPhotoPath = null
-                    else
-                        currentPhotoPath = it.get("path").toString()
-                } catch (e: JSONException) {
-                    println(e)
-                }
-
-                if(currentPhotoPath != null){
-                    val bitmap: Bitmap? = photo.loadImageFromStorage(currentPhotoPath, "icon")
-                    img.setImageBitmap(bitmap)
-                }
             }
         }
 
@@ -97,20 +95,19 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
         // mi memorizzo dentro due varibili l'id delle skill che coincidono con l'id del documento,
         // cosi all'id del documento nella posizione zero corrisponde il primo campo di text e cosi per il secondo.
         // QUando vado a salvarli utilizzo questi idskill per recuperare il documento da aggiornare
-        viewModel.skills.observe(viewLifecycleOwner){
-            lateinit var userSkill: MutableList<Skill>
-            it.map { skill ->
-                if(skill.idUser == idUser){
-                    userSkill.add(skill)
+        viewModel.skills.observe(viewLifecycleOwner){ it ->
+            val uSkills = it.filter { it.idUser == auth.uid }
+
+            if (uSkills.isNotEmpty()) {
+                uSkills.let {
+                    idSkill1 = it[0].id
+                    idSkill2 = it[1].id
+                    tv5.text = it[0].name
+                    tv6.text = it[1].name
+                    tv7.text = it[0].description
+                    tv8.text = it[1].description
                 }
             }
-            idSkill1 = userSkill[0].id
-            idSkill2 = userSkill[1].id
-
-            tv5.text = userSkill[0].name
-            tv6.text = userSkill[1].name
-            tv7.text = userSkill[0].description
-            tv8.text = userSkill[1].description
         }
 
         //IMPLEMENTAZIONE TASTO PER MODIFICARE LA FOTO DEL PROFILO
@@ -140,6 +137,8 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
                 popupMenu.show()
             }
 
+
+        //gestione back pressed
         requireActivity()
             .onBackPressedDispatcher
             .addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
@@ -159,6 +158,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
                             db.collection("profiles").document(idUser).set(docData)
                                 .addOnSuccessListener {
                                 }.addOnFailureListener {
+
                                 }
                         } else {
                             Log.d("TAG", "Error: ", task.exception)
@@ -217,18 +217,32 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
                 // set bitmap of edit view
                 image?.setImageBitmap(imageBitmap)
 
-                // save image to Internal Storage
-                currentPhotoPath = photo.saveToInternalStorage(imageBitmap, this.requireActivity(), "imageDir", name)
+                //save to firestore
+                val ref = storageReference.child("/images/" + auth.uid)
+                val baos = ByteArrayOutputStream()
+                imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+                val img = baos.toByteArray()
+                ref.putBytes(img).addOnCompleteListener{
+                    if(it.isSuccessful){
+                        //Management snackbar
+                        val root = requireView().rootView
+                        Snackbar.make(root, "Woow, image has been uploaded", Snackbar.LENGTH_SHORT).show()
+                    }
+                }
             }
         }
+
 
         //Se l'intent è quello di caricare la foto dalla galleria dentro questo if
         if(requestCode == REQUEST_ACTION_PICK && resultCode == AppCompatActivity.RESULT_OK){
             val imageUri: Uri? = data?.data
             image?.setImageURI(imageUri)
-            val imageBitmap = image?.drawToBitmap()
-            currentPhotoPath =
-                imageBitmap?.let { photo.saveToInternalStorage(it, this.requireActivity(), "imageDir", name) }
+
+            //save to firestore
+            val ref = storageReference.child("/images/" + auth.uid)
+            if (data != null) {
+                ref.putFile(data.data!!)
+            }
         }
     }
 

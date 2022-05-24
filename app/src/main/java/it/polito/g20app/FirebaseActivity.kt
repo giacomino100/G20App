@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -20,6 +21,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import it.polito.g20app.databinding.ActivityFirebaseBinding
 import org.json.JSONException
@@ -33,6 +35,7 @@ class FirebaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
     private var photo: Photo = Photo()
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var auth: FirebaseAuth
+    private val db = Firebase.firestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,6 +110,63 @@ class FirebaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             startActivity(intent)
         }
 
+
+
+        //SETTING USER PROFILE
+        createProfile()
+    }
+
+    fun createProfile() {
+        //CREAZIONE NUOVO DOCUMENTO PER UN NUOVO UTENTE
+        //documento creato al primo login
+        val docData = hashMapOf(
+            "fullname" to auth.currentUser!!.displayName,
+            "nickname" to "Your nickname",
+            "email" to auth.currentUser!!.email,
+            "location" to "Your location",
+        )
+
+        db
+            .collection("profiles")
+            .document(auth.uid.toString())
+            .get()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val document = task.result
+                    if (document != null) {
+                        if (!document.exists()) {
+                            db.collection("profiles").document(auth.uid.toString()).set(docData)
+                                .addOnSuccessListener {
+
+                                    //SE IL DOCUMENTO VIENE CREATO CORRETTAMENTE SI CREANO LE DUE SKILL VUOTE
+                                    val skill1 = hashMapOf(
+                                        "idUser" to auth.uid.toString(),
+                                        "name" to "skill1",
+                                        "description" to "description skill1"
+                                    )
+                                    db.collection("skills").document().set(skill1)
+                                        .addOnSuccessListener {
+                                            val skill2 = hashMapOf(
+                                                "idUser" to auth.uid.toString(),
+                                                "name" to "skill2",
+                                                "description" to "description skill2"
+                                            )
+                                            db.collection("skills").document().set(skill2)
+                                                .addOnSuccessListener {
+                                                    Toast.makeText(
+                                                        this,
+                                                        "Data Saved",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                }
+                                        }
+                                }.addOnFailureListener {
+                                    Toast.makeText(this, "Error", Toast.LENGTH_LONG).show()
+                                }
+                        }
+                    }
+                }
+            }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {

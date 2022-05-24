@@ -19,6 +19,7 @@ data class Skill(
     var description: String = " "
 )
 
+//MVVP
 class SkillVM: ViewModel(){
     private val _skills = MutableLiveData<List<Skill>>()
     val skills : LiveData<List<Skill>> = _skills
