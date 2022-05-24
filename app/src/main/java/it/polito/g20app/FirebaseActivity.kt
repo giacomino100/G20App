@@ -3,6 +3,7 @@ package it.polito.g20app
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -23,9 +24,12 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import it.polito.g20app.databinding.ActivityFirebaseBinding
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.File
 
 private var currentPhotoPath: String? = null
 
@@ -36,6 +40,7 @@ class FirebaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var auth: FirebaseAuth
     private val db = Firebase.firestore
+    private var storageReference: StorageReference = FirebaseStorage.getInstance().getReference("images/")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,44 +53,30 @@ class FirebaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         val navView: NavigationView = binding.navView
 
 
-        //FASE DI INIZIALIZZAZIONE DEL HEADER DEL MENU
-
-        //Caricamento shared preferences
-        val sharedPrefR = this.getPreferences(Context.MODE_PRIVATE)
-        val profileInfo = "{'full name' : '${getString(R.string.full_name)}', nickname : '${getString(R.string.nickname)}', " +
-                "email : '${getString(R.string.email)}', location : '${getString(R.string.location)}', skill1 : '${getString(R.string.skill1)}'," +
-                " skill2 : '${getString(R.string.skill2)}', description1 : '${getString(R.string.description1)}', " +
-                "description2 : '${getString(R.string.description2)}', " + "path: '${currentPhotoPath.toString()}'}"
-        val json = sharedPrefR?.getString("profile", profileInfo)?.let { JSONObject(it) }
-
-        //SETTING IMAGE PROFILE
-        val headerView: View = binding.navView.getHeaderView(0)
-        val img: ImageView = headerView.findViewById(R.id.nav_head_avatar)
-        try {
-            if (json != null) {
-                if(json.get("path").toString() == "null")
-                    currentPhotoPath = null
-                else
-                    currentPhotoPath = json.get("path").toString()
-            }
-        } catch (e : JSONException) {
-            println(e)
-        }
-        if(currentPhotoPath != null){
-            val bitmap: Bitmap? = photo.loadImageFromStorage(currentPhotoPath, "icon")
-            img.setImageBitmap(bitmap)
-        }
-
         // [START initialize_auth]
         // Initialize Firebase Auth
         auth = Firebase.auth
         // [END initialize_auth]
 
+
+        //FASE DI INIZIALIZZAZIONE DEL HEADER DEL MENU
+        //SETTING IMAGE PROFILE
+        val headerView: View = binding.navView.getHeaderView(0)
+        val img: ImageView = headerView.findViewById(R.id.nav_head_avatar)
+        var ref = storageReference.child("images/${auth.uid}").downloadUrl.addOnSuccessListener {
+            val localFile = File.createTempFile("tempImage", "jpg")
+            storageReference.child("images/${auth.uid}").getFile(localFile).addOnSuccessListener {
+                var bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+                bitmap = Bitmap.createScaledBitmap(bitmap, binding.root.findViewById<ImageView>(R.id.nav_head_avatar)!!.width/2, binding.root.findViewById<ImageView>(R.id.nav_head_avatar)!!.height, false)
+                //bitmap.height = view?.findViewById<ImageView>(R.id.imageView_show)!!.height
+                img.setImageBitmap(bitmap)
+            }
+        }
+
+
         //SETTING NAMES
         val tv1: TextView = headerView.findViewById(R.id.nav_head_username)
-        if (json != null) {
-            tv1.text = auth.currentUser?.displayName.toString()
-        }
+        tv1.text = auth.currentUser?.displayName.toString()
 
         val navController = findNavController(R.id.nav_host_fragment_content_main)
 

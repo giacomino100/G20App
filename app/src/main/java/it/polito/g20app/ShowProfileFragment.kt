@@ -1,5 +1,6 @@
 package it.polito.g20app
 
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
@@ -55,7 +56,9 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
         var ref = storageReference.child("images/${auth.uid}").downloadUrl.addOnSuccessListener {
             val localFile = File.createTempFile("tempImage", "jpg")
             storageReference.child("images/${auth.uid}").getFile(localFile).addOnSuccessListener {
-                val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+                var bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+                bitmap = Bitmap.createScaledBitmap(bitmap, view?.findViewById<ImageView>(R.id.imageView_show)!!.width/2, view?.findViewById<ImageView>(R.id.imageView_show)!!.height, false)
+                //bitmap.height = view?.findViewById<ImageView>(R.id.imageView_show)!!.height
                 img.setImageBitmap(bitmap)
             }
         }
