@@ -1,5 +1,6 @@
 package it.polito.g20app
 
+import android.app.ProgressDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Bitmap
@@ -61,14 +62,18 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
         val tv8: TextView = root.findViewById(R.id.edit_description2)
 
         val img: ImageView = root.findViewById(R.id.imageView_edit)
+        val progressDialog = ProgressDialog(this.requireContext())
+        progressDialog.setMessage("Loading image...")
+        progressDialog.setCancelable(false)
+        progressDialog.show()
         var ref = storageReference.child("images/${auth.uid}").downloadUrl.addOnSuccessListener {
             val localFile = File.createTempFile("tempImage", "jpg")
             storageReference.child("images/${auth.uid}").getFile(localFile).addOnSuccessListener {
+                if(progressDialog.isShowing) progressDialog.dismiss()
                 val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
                 img.setImageBitmap(bitmap)
             }
         }
-
 
         var idSkill1 = " "
         var idSkill2 = " "

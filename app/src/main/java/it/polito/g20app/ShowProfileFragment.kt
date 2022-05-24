@@ -1,5 +1,6 @@
 package it.polito.g20app
 
+import android.app.ProgressDialog
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -53,11 +54,16 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
 
 
         val img: ImageView = root.findViewById(R.id.imageView_show)
+        val progressDialog = ProgressDialog(this.requireContext())
+        progressDialog.setMessage("Loading image...")
+        progressDialog.setCancelable(false)
+        progressDialog.show()
         var ref = storageReference.child("images/${auth.uid}").downloadUrl.addOnSuccessListener {
             val localFile = File.createTempFile("tempImage", "jpg")
             storageReference.child("images/${auth.uid}").getFile(localFile).addOnSuccessListener {
+                if(progressDialog.isShowing) progressDialog.dismiss()
                 var bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
-                bitmap = Bitmap.createScaledBitmap(bitmap, view?.findViewById<ImageView>(R.id.imageView_show)!!.width/2, view?.findViewById<ImageView>(R.id.imageView_show)!!.height, false)
+                bitmap = Bitmap.createScaledBitmap(bitmap, (bitmap.width*2.5).toInt(), (bitmap.height*2.5).toInt(), false)
                 img.setImageBitmap(bitmap)
             }
         }
