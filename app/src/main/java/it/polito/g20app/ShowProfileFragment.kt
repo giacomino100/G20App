@@ -58,14 +58,9 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
             storageReference.child("images/${auth.uid}").getFile(localFile).addOnSuccessListener {
                 var bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
                 bitmap = Bitmap.createScaledBitmap(bitmap, view?.findViewById<ImageView>(R.id.imageView_show)!!.width/2, view?.findViewById<ImageView>(R.id.imageView_show)!!.height, false)
-                //bitmap.height = view?.findViewById<ImageView>(R.id.imageView_show)!!.height
                 img.setImageBitmap(bitmap)
             }
         }
-
-
-        Log.d("savedInstanceState", savedInstanceState.toString())
-
 
         db
             .collection("profiles")

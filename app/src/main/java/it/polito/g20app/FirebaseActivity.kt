@@ -1,11 +1,9 @@
 package it.polito.g20app
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
@@ -27,16 +25,11 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import it.polito.g20app.databinding.ActivityFirebaseBinding
-import org.json.JSONException
-import org.json.JSONObject
 import java.io.File
-
-private var currentPhotoPath: String? = null
 
 class FirebaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var binding: ActivityFirebaseBinding
-    private var photo: Photo = Photo()
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var auth: FirebaseAuth
     private val db = Firebase.firestore
@@ -52,14 +45,12 @@ class FirebaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
 
-
         // [START initialize_auth]
         // Initialize Firebase Auth
         auth = Firebase.auth
         // [END initialize_auth]
 
-
-        //FASE DI INIZIALIZZAZIONE DEL HEADER DEL MENU
+        //FASE DI INIZIALIZZAZIONE DELL'HEADER DEL MENU
         //SETTING IMAGE PROFILE
         val headerView: View = binding.navView.getHeaderView(0)
         val img: ImageView = headerView.findViewById(R.id.nav_head_avatar)
@@ -68,7 +59,6 @@ class FirebaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             storageReference.child("images/${auth.uid}").getFile(localFile).addOnSuccessListener {
                 var bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
                 bitmap = Bitmap.createScaledBitmap(bitmap, binding.root.findViewById<ImageView>(R.id.nav_head_avatar)!!.width/2, binding.root.findViewById<ImageView>(R.id.nav_head_avatar)!!.height, false)
-                //bitmap.height = view?.findViewById<ImageView>(R.id.imageView_show)!!.height
                 img.setImageBitmap(bitmap)
             }
         }
