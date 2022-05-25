@@ -19,6 +19,8 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.drawToBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -48,17 +50,21 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
     ): View? {
         val root = inflater.inflate(R.layout.fragment_edit, container, false)
 
-        //Disabling the toolbar back button
+        val rv = root.findViewById<RecyclerView>(R.id.rv_skill_profile)
+        rv.layoutManager = LinearLayoutManager(root.context)
+
+        //Questa riga per disattivare il tasto back nella toolbar
         (activity as FirebaseActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
+        //set data from bundle
         val tv1: TextView = root.findViewById(R.id.edit_fullname)
         val tv2: TextView = root.findViewById(R.id.edit_nickname)
         val tv3: TextView = root.findViewById(R.id.edit_email)
         val tv4: TextView = root.findViewById(R.id.edit_location)
-        val tv5: TextView = root.findViewById(R.id.edit_skill1)
-        val tv6: TextView = root.findViewById(R.id.edit_skill2)
-        val tv7: TextView = root.findViewById(R.id.edit_description1)
-        val tv8: TextView = root.findViewById(R.id.edit_description2)
+        //val tv5: TextView = root.findViewById(R.id.edit_skill1)
+        //val tv6: TextView = root.findViewById(R.id.edit_skill2)
+        //val tv7: TextView = root.findViewById(R.id.edit_description1)
+        //val tv8: TextView = root.findViewById(R.id.edit_description2)
 
         val img: ImageView = root.findViewById(R.id.imageView_edit)
         val progressDialog = ProgressDialog(this.requireContext())
@@ -71,11 +77,10 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
                 if(progressDialog.isShowing) progressDialog.dismiss()
                 val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
                 img.setImageBitmap(bitmap)
-            }.addOnFailureListener() {
-                Log.d("dialogDismiss", "failure")
             }
-        }.addOnFailureListener {
+        }.addOnFailureListener() {
             if(progressDialog.isShowing) progressDialog.dismiss()
+            Log.d("dialogDismiss", "failure")
         }
 
         var idSkill1 = " "
@@ -105,16 +110,10 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
         // QUando vado a salvarli utilizzo questi idskill per recuperare il documento da aggiornare
         viewModel.skills.observe(viewLifecycleOwner){ it ->
             val uSkills = it.filter { it.idUser == auth.uid }
-
-            if (uSkills.isNotEmpty()) {
-                uSkills.let {
-                    idSkill1 = it[0].id
-                    idSkill2 = it[1].id
-                    tv5.text = it[0].name
-                    tv6.text = it[1].name
-                    tv7.text = it[0].description
-                    tv8.text = it[1].description
-                }
+            uSkills.let {
+                Log.d("lista di skill",it.toString())
+                val adapter = SkillProfileAdapter(it as MutableList<Skill>)
+                rv.adapter = adapter
             }
         }
 
