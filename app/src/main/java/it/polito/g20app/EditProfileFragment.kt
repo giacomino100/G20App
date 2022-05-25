@@ -48,10 +48,9 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
     ): View? {
         val root = inflater.inflate(R.layout.fragment_edit, container, false)
 
-        //Questa riga per disattivare il tasto back nella toolbar
+        //Disabling the toolbar back button
         (activity as FirebaseActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
-        //set data from bundle
         val tv1: TextView = root.findViewById(R.id.edit_fullname)
         val tv2: TextView = root.findViewById(R.id.edit_nickname)
         val tv3: TextView = root.findViewById(R.id.edit_email)
@@ -62,19 +61,21 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
         val tv8: TextView = root.findViewById(R.id.edit_description2)
 
         val img: ImageView = root.findViewById(R.id.imageView_edit)
-        //val progressDialog = ProgressDialog(this.requireContext())
-        //progressDialog.setMessage("Loading image...")
-        //progressDialog.setCancelable(false)
-        //progressDialog.show()
-        var ref = storageReference.child("images/${auth.uid}").downloadUrl.addOnSuccessListener {
+        val progressDialog = ProgressDialog(this.requireContext())
+        progressDialog.setMessage("Loading image...")
+        progressDialog.setCancelable(false)
+        progressDialog.show()
+        storageReference.child("images/${auth.uid}").downloadUrl.addOnSuccessListener {
             val localFile = File.createTempFile("tempImage", "jpg")
             storageReference.child("images/${auth.uid}").getFile(localFile).addOnSuccessListener {
-                //if(progressDialog.isShowing) progressDialog.dismiss()
+                if(progressDialog.isShowing) progressDialog.dismiss()
                 val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
                 img.setImageBitmap(bitmap)
             }.addOnFailureListener() {
                 Log.d("dialogDismiss", "failure")
             }
+        }.addOnFailureListener {
+            if(progressDialog.isShowing) progressDialog.dismiss()
         }
 
         var idSkill1 = " "

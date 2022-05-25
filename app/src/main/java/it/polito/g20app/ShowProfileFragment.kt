@@ -118,12 +118,11 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
                     }
             }
         }
-        viewModel2.profiles.observe(viewLifecycleOwner){ it ->
-            val currentUser = it.filter { it.id == auth.uid }[0]
-            tv1.text = currentUser.fullname
-            tv2.text = currentUser.nickname
-            tv3.text = currentUser.email
-            tv4.text = currentUser.location
+        viewModel2.profile.observe(viewLifecycleOwner){ it ->
+            tv1.text = it.fullname
+            tv2.text = it.nickname
+            tv3.text = it.email
+            tv4.text = it.location
         }
 
         return root

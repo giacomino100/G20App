@@ -4,9 +4,12 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.ktx.Firebase
 
 data class Profile(
     var id: String = " ",
@@ -18,8 +21,10 @@ data class Profile(
 
 
 class ProfileVM: ViewModel() {
-    private val _profiles = MutableLiveData<List<Profile>>()
-    val profiles : LiveData<List<Profile>> = _profiles
+    private val _profile = MutableLiveData<Profile>()
+    val profile : LiveData<Profile> = _profile
+
+    private var auth: FirebaseAuth = Firebase.auth
 
     private var l1: ListenerRegistration
 
@@ -29,9 +34,8 @@ class ProfileVM: ViewModel() {
         l1 = db.collection("profiles")
             .addSnapshotListener { v, e ->
                 if (e==null) {
-                    _profiles.value = v!!.mapNotNull { d -> d.toProfile() }
-                    Log.d("initProfiles", _profiles.value.toString())
-                } else _profiles.value = emptyList()
+                    _profile.value = v!!.filter { p -> p.id == auth.uid }[0].toProfile()
+                } else _profile.value = emptyList<Profile>()[0]
             }
     }
 
