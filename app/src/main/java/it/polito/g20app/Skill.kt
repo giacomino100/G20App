@@ -24,10 +24,6 @@ class SkillAdapter(val data: MutableList<Skill>): RecyclerView.Adapter<SkillAdap
             title.text = skill.name
             card.setOnClickListener(action)
         }
-
-        fun unbind() {
-            card.setOnClickListener(null)
-        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SkillViewHolder {
@@ -55,12 +51,4 @@ class SkillAdapter(val data: MutableList<Skill>): RecyclerView.Adapter<SkillAdap
     override fun getItemCount(): Int {
         return data.size
     }
-
-    fun submitList(it: List<TimeSlot>?) {
-        if (it != null) {
-            for (i in 0..it.size-1){ Log.d("submitList", it[i].toString()) }
-        }
-    }
-
-
 }

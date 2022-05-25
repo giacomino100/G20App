@@ -8,7 +8,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/card1"
         android:layout_width="100dp"
-        android:layout_height="48dp"
+        android:layout_height="36dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/card2"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,13 +21,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:text="@string/skill1" />
+            android:text="@string/skill1"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/card2"
         android:layout_width="0dp"
-        android:layout_height="48dp"
+        android:layout_height="36dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/card1"
@@ -39,7 +40,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:text="@string/description1" />
+            android:layout_marginLeft="5dp"
+            android:text="@string/description1"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
     </androidx.cardview.widget.CardView>
 
 

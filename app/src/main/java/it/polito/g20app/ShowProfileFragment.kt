@@ -102,12 +102,16 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
         // Quando vado a salvarli utilizzo questi idskill per recuperare il documento da aggiornare
 
         viewModel.skills.observe(viewLifecycleOwner){ it ->
-            val uSkills = it.filter { it.idUser == auth.uid }
-            uSkills.let {
-                Log.d("lista di skill",it.toString())
-                val adapter = SkillProfileAdapter(it as MutableList<Skill>)
-                rv.adapter = adapter
-            }
+            db.collection("skillsProfile").get()
+                .addOnCompleteListener { task ->
+                    val skillsP = task.result.documents.filter { it.data?.get("idUser") == auth.uid }.map{ it.get("idSkill") }
+                    val adapter = SkillProfileAdapter(it.filter { skill -> skillsP.contains(skill.id)} as MutableList<Skill>)
+                    rv.adapter = adapter
+                }
+                .addOnFailureListener {
+                    Log.d("readingSkillsProfile", "cannot read the skillsProfile")
+                }
+
         }
         viewModel2.profile.observe(viewLifecycleOwner){ it ->
             tv1.text = it.fullname

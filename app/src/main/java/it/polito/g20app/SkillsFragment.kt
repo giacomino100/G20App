@@ -42,28 +42,10 @@ class SkillsFragment : Fragment() {
 
         viewModel.skills.observe(viewLifecycleOwner) {
             root.findViewById<TextView>(R.id.alert_skill).isVisible = it.isEmpty()
-            var otherSkills: MutableList<Skill> = mutableListOf()
-            it.map { skill ->
-                if(skill.idUser != auth.uid){
-                    otherSkills.add(skill)
-                }
-            }
-            otherSkills.let {
-                val adapter = SkillAdapter(it as MutableList<Skill>)
-                rv.adapter = adapter
-            }
+            val adapter = SkillAdapter(it as MutableList<Skill>)
+            rv.adapter = adapter
         }
 
         return root
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            SkillsFragment().apply {
-                arguments = Bundle().apply {
-
-                }
-            }
     }
 }

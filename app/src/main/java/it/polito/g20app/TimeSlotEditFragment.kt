@@ -20,6 +20,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.ktx.Firebase
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -29,9 +30,6 @@ class TimeSlotEditFragment : Fragment() {
     val vm_skill by viewModels<SkillVM>()
 
     var cal = Calendar.getInstance()
-
-    lateinit var idSkill1: String
-    lateinit var idSkill2: String
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,13 +44,9 @@ class TimeSlotEditFragment : Fragment() {
         (activity as FirebaseActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         (activity as FirebaseActivity).supportActionBar?.setHomeButtonEnabled(false)
 
-
-
         return root
 
     }
-
-
 
     // create an OnDateSetListener
     private val dateSetListener = object : DatePickerDialog.OnDateSetListener {
@@ -80,16 +74,6 @@ class TimeSlotEditFragment : Fragment() {
         }
     }
 
-    private fun updateDateInView() {
-        val dateView = view?.findViewById<TextView>(R.id.slot_date_and_time_edit)
-        val myFormat = "dd/MM/yyyy" // mention the format you need
-        val sdf = SimpleDateFormat(myFormat, Locale.ITALIAN)
-        if (dateView != null) {
-            dateView.text = sdf.format(cal.getTime())
-            Log.d("data", dateView.text.toString())
-        }
-    }
-
     private fun updateTimeInView() {
         view?.findViewById<TextView>(R.id.slot_date_and_time_edit)?.text = cal.time.toString()
         Log.d("data", cal.time.toString())
@@ -112,16 +96,6 @@ class TimeSlotEditFragment : Fragment() {
 
         }
 
-        //load skills
-        var name_skills = listOf<String>()
-        var skillsWithId = listOf<Skill>()
-        vm_skill.skills.observe(viewLifecycleOwner){
-            skillsWithId = it.filter { it.idUser == auth.uid  }
-            name_skills = it.filter { it.idUser == auth.uid  }.map { it.name }
-            view.findViewById<Spinner>(R.id.spinner).adapter = ArrayAdapter(this.requireContext(), android.R.layout.simple_spinner_item, name_skills)
-        }
-
-
 
         var idTimeSlot = " "
         var isAddCase: Boolean = true
@@ -134,7 +108,6 @@ class TimeSlotEditFragment : Fragment() {
         if(isAddCase){
             //title of action bar changed
             (activity as FirebaseActivity).supportActionBar?.setTitle(R.string.create_new_time_slot)
-            //gestione home back pressed
             requireActivity()
                 .onBackPressedDispatcher
                 .addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
@@ -160,9 +133,9 @@ class TimeSlotEditFragment : Fragment() {
                         //recuperiamo l'id della nuova skill
                         var idSkillSelected = " "
                         Log.d("selectedItem", view.findViewById<Spinner>(R.id.spinner).selectedItem.toString())
-                        vm_skill.skills.value?.filter { it.idUser == auth.uid && it.name == view.findViewById<Spinner>(R.id.spinner).selectedItem.toString()}?.forEach {
+                        /*vm_skill.skills.value?.filter { it.idUser == auth.uid && it.name == view.findViewById<Spinner>(R.id.spinner).selectedItem.toString()}?.forEach {
                             idSkillSelected = it.id
-                        }
+                        }*/
                         adv.idSkill = idSkillSelected
 
                         //ADD NEW ADV
@@ -182,29 +155,28 @@ class TimeSlotEditFragment : Fragment() {
                 })
             } else {
                 //CASO EDIT: modifica di un fragment esistente
-                Log.d("back","bundle is not empty")
 
                 //title of action bar changed
                 (activity as FirebaseActivity).supportActionBar?.setTitle(R.string.edit_time_slot)
 
-                //settaggio campi nella edit
-                //Loading time slot dal db
-                var idSkill = " "
                 vm.timeSlots.observe(viewLifecycleOwner){ list ->
-                    list.map {
-                        if(it.id == idTimeSlot){
-                            view.findViewById<TextView>(R.id.slot_title_edit).text = it.title
-                            view.findViewById<TextView>(R.id.slot_description_edit).text = it.description
-                            view.findViewById<TextView>(R.id.slot_date_and_time_edit).text = it.date
-                            view.findViewById<TextView>(R.id.slot_duration_edit).text = it.duration
-                            view.findViewById<TextView>(R.id.slot_location_edit).text = it.location
-                            idSkill = it.idSkill
-                            val otherSkills: MutableList<String> = skillsWithId.filter { it.id != idSkill }.map { it.name } as MutableList
-                            var mySkill = skillsWithId.filter { it.id == idSkill }.map { it.name }
-                            otherSkills.add(mySkill[0])
-                            view.findViewById<Spinner>(R.id.spinner).adapter = ArrayAdapter(this.requireContext(), android.R.layout.simple_spinner_item, otherSkills.sortedByDescending { it.last() })
-                        }
-                    }
+                    val ts = list.filter { it.id == idTimeSlot }[0]
+                    view.findViewById<TextView>(R.id.slot_title_edit).text = ts.title
+                    view.findViewById<TextView>(R.id.slot_description_edit).text = ts.description
+                    view.findViewById<TextView>(R.id.slot_date_and_time_edit).text = ts.date
+                    view.findViewById<TextView>(R.id.slot_duration_edit).text = ts.duration
+                    view.findViewById<TextView>(R.id.slot_location_edit).text = ts.location
+
+                    Log.d("Spinnerchoices", vm_skill.skills.value.toString())
+                    Log.d("Spinnerchoices", ts.idSkill)
+
+
+
+                    val spinnerChoices = mutableListOf<String>()
+                    //spinnerChoices.add(vm_skill.skills.value!!.filter { s -> s.id == ts.idSkill }[0].name)
+                    //spinnerChoices.addAll(vm_skill.skills.value!!.filter { s -> s.id != ts.idSkill }.map { s -> s.name })
+                    //view.findViewById<Spinner>(R.id.spinner).adapter = ArrayAdapter(this.requireContext(),
+                        //android.R.layout.simple_spinner_item, spinnerChoices)
                 }
 
             requireActivity()
@@ -223,9 +195,9 @@ class TimeSlotEditFragment : Fragment() {
                                 //setting idSkill per il timeslot da aggiornare
                                 //recuperiamo l'id dell'eventuale skill modificata
                                 var idSkillSelected = " "
-                                vm_skill.skills.value?.filter { it.idUser == auth.uid && it.name == view.findViewById<Spinner>(R.id.spinner).selectedItem.toString()}?.forEach {
+                                /*vm_skill.skills.value?.filter { it.idUser == auth.uid && it.name == view.findViewById<Spinner>(R.id.spinner).selectedItem.toString()}?.forEach {
                                     idSkillSelected = it.id
-                                }
+                                }*/
                             updatedTimeSlot.idSkill = idSkillSelected
                               // if you want onBackPressed() to be called as normal afterwards
 
@@ -253,5 +225,4 @@ class TimeSlotEditFragment : Fragment() {
 
             }
         }
-
 }

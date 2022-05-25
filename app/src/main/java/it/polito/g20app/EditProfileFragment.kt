@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package it.polito.g20app
 
 import android.app.ProgressDialog
@@ -16,7 +18,6 @@ import android.widget.*
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.view.drawToBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,7 +29,6 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import org.json.JSONException
 import java.io.ByteArrayOutputStream
 import java.io.File
 
@@ -36,11 +36,13 @@ import java.io.File
 private const val REQUEST_IMAGE_CAPTURE = 1
 private const val REQUEST_ACTION_PICK = 2
 
+@Suppress("DEPRECATION", "DEPRECATION")
 class EditProfileFragment : Fragment(R.layout.fragment_edit) {
 
     private val db = Firebase.firestore
     private var auth: FirebaseAuth = Firebase.auth
     val viewModel by viewModels<SkillVM>()
+    val viewModel2 by viewModels<ProfileVM>()
     private var storageReference: StorageReference = FirebaseStorage.getInstance().getReference("images/")
 
     override fun onCreateView(
@@ -50,27 +52,25 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
     ): View? {
         val root = inflater.inflate(R.layout.fragment_edit, container, false)
 
-        val rv = root.findViewById<RecyclerView>(R.id.rv_skill_profile)
+        val rv = root.findViewById<RecyclerView>(R.id.rv_skill_edit_profile)
         rv.layoutManager = LinearLayoutManager(root.context)
 
         //Questa riga per disattivare il tasto back nella toolbar
         (activity as FirebaseActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
-        //set data from bundle
         val tv1: TextView = root.findViewById(R.id.edit_fullname)
         val tv2: TextView = root.findViewById(R.id.edit_nickname)
         val tv3: TextView = root.findViewById(R.id.edit_email)
         val tv4: TextView = root.findViewById(R.id.edit_location)
-        //val tv5: TextView = root.findViewById(R.id.edit_skill1)
-        //val tv6: TextView = root.findViewById(R.id.edit_skill2)
-        //val tv7: TextView = root.findViewById(R.id.edit_description1)
-        //val tv8: TextView = root.findViewById(R.id.edit_description2)
+        val spinner: Spinner = root.findViewById(R.id.spinnerEditProfile)
 
         val img: ImageView = root.findViewById(R.id.imageView_edit)
+
         val progressDialog = ProgressDialog(this.requireContext())
         progressDialog.setMessage("Loading image...")
         progressDialog.setCancelable(false)
         progressDialog.show()
+
         storageReference.child("images/${auth.uid}").downloadUrl.addOnSuccessListener {
             val localFile = File.createTempFile("tempImage", "jpg")
             storageReference.child("images/${auth.uid}").getFile(localFile).addOnSuccessListener {
@@ -83,45 +83,111 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
             Log.d("dialogDismiss", "failure")
         }
 
-        var idSkill1 = " "
-        var idSkill2 = " "
+        viewModel2.profile.observe(viewLifecycleOwner){
+            tv1.text = it.fullname
+            tv2.text = it.nickname
+            tv3.text = it.email
+            tv4.text = it.location
+        }
 
-        var idUser = " "
-        arguments.let{
-            if (it != null) {
-                idUser = it.get("idUser").toString()
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                //se nello spinner non ho selezionato alcuna skill
+                if (p0?.getItemAtPosition(p2) != "Select the skill") {
+                    val newSkill = viewModel.skills.value?.filter { it.name == p0?.getItemAtPosition(p2)}!![0].id
+                    val newSkillProfile = hashMapOf(
+                        "idUser" to auth.uid.toString(),
+                        "idSkill" to newSkill
+                    )
+                    db.collection("skillsProfile").get().addOnSuccessListener {
+                        //verifico se la skill selezionata è già presente tra le skill associate al mio profilo
+                        if (it.documents.none { d ->
+                                d.data?.get("idUser") == newSkillProfile["idUser"] &&
+                                        d.data?.get("idSkill") == newSkillProfile["idSkill"]
+                            }) {
+                                //se non è presente, la aggiungo tra le skill associate ad un utente, altrimenti non faccio nulla
+                            db.collection("skillsProfile").add(newSkillProfile).addOnSuccessListener {
+                                Log.d("AddingSkill", "Skill saved for ${auth.currentUser!!.displayName} user")
+                            }.addOnFailureListener {
+                                Log.d("AddingSkill", "Error saving a new skill for ${auth.currentUser!!.displayName} user")
+                            }
+                            db.collection("skillsProfile").get()
+                                .addOnCompleteListener { task ->
+                                    Log.d("readingSkillsProfile", "Reading the skillsProfile")
+                                    val skillsP = task.result.documents.filter { d -> d.data?.get("idUser") == auth.uid }.map{ d -> d.get("idSkill") }
+
+                                    Log.d("readingSkillsProfile", viewModel.skills.value?.filter{ skill -> skillsP.contains(skill.id)}.toString())
+                                    val adapter = SkillProfileAdapter(viewModel.skills.value?.filter{ skill -> skillsP.contains(skill.id)} as MutableList<Skill>)
+                                    rv.adapter = adapter
+                                }
+                                .addOnFailureListener {
+                                    Log.d("readingSkillsProfile", "cannot read the skillsProfile")
+                                }
+                        }
+                    }
+                }
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+                TODO("Not yet implemented")
             }
         }
 
-        db
-            .collection("profiles")
-            .document(idUser)
-            .get()
-            .addOnSuccessListener {
-                tv1.text = (it.get("fullname").toString())
-                tv2.text = (it.get("nickname").toString())
-                tv3.text = (it.get("email").toString())
-                tv4.text = (it.get("location").toString())
-            }
-
-        // qui dentro carico dal db le skill di uno user
-        // mi memorizzo dentro due varibili l'id delle skill che coincidono con l'id del documento,
-        // cosi all'id del documento nella posizione zero corrisponde il primo campo di text e cosi per il secondo.
-        // QUando vado a salvarli utilizzo questi idskill per recuperare il documento da aggiornare
         viewModel.skills.observe(viewLifecycleOwner){ it ->
-            val uSkills = it.filter { it.idUser == auth.uid }
-            uSkills.let {
-                Log.d("lista di skill",it.toString())
-                val adapter = SkillProfileAdapter(it as MutableList<Skill>)
-                rv.adapter = adapter
-            }
+            db.collection("skillsProfile").get()
+                .addOnCompleteListener { task ->
+                    val skillsP = task.result.documents.filter { it.data?.get("idUser") == auth.uid }.map{ it.get("idSkill") }
+                    val adapter = SkillProfileAdapter(it.filter { skill -> skillsP.contains(skill.id)} as MutableList<Skill>)
+                    rv.adapter = adapter
+                }
+                .addOnFailureListener {
+                    Log.d("readingSkillsProfile", "cannot read the skillsProfile")
+                }
+            val spinnerChoices = mutableListOf("Select the skill")
+            spinnerChoices.addAll(it.map { skill -> skill.name })
+            spinner.adapter = ArrayAdapter(this.requireContext(), android.R.layout.simple_spinner_item, spinnerChoices)
         }
+
+        //Salvo informazioni profilo aggiornate tramite BackPress
+        requireActivity()
+            .onBackPressedDispatcher
+            .addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+                    override fun handleOnBackPressed() {
+                        val root = view!!.rootView
+                        val docData = hashMapOf(
+                            "fullname" to view?.findViewById<EditText>(R.id.edit_fullname)!!.text.toString(),
+                            "nickname" to view?.findViewById<EditText>(R.id.edit_nickname)!!.text.toString(),
+                            "email" to view?.findViewById<EditText>(R.id.edit_email)!!.text.toString(),
+                            "location" to view?.findViewById<EditText>(R.id.edit_location)!!.text.toString()
+                        )
+
+                        val docref = db.collection("profiles").document(auth.uid!!)
+                        docref.get().addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                db.collection("profiles").document(auth.uid!!).set(docData)
+                                    .addOnSuccessListener {
+                                        //Management snackbar
+                                        Snackbar.make(root, "Profile updated", Snackbar.LENGTH_LONG).show()
+                                    }.addOnFailureListener {
+                                        Snackbar.make(root, "Profile update failed", Snackbar.LENGTH_LONG).show()
+                                    }
+                            } else {
+                                Log.d("TAG", "Error: ", task.exception)
+                            }
+                            if (isEnabled) {
+                                isEnabled = false
+                                requireActivity().onBackPressed()
+                            }
+                        }
+                    }
+                }
+            )
 
         //IMPLEMENTAZIONE TASTO PER MODIFICARE LA FOTO DEL PROFILO
         root.findViewById<ImageButton>(R.id.imageButton2)?.setOnClickListener {
                 val popupMenu = PopupMenu(this.requireContext(), it)
-                popupMenu.setOnMenuItemClickListener {
-                    when (it.itemId) {
+                popupMenu.setOnMenuItemClickListener { m ->
+                    when (m.itemId) {
                         R.id.menu_open_camera -> {
                             val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                             try {
@@ -144,74 +210,6 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
                 popupMenu.show()
             }
 
-
-        //gestione back pressed
-        requireActivity()
-            .onBackPressedDispatcher
-            .addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    //Updating data on db
-                    val docData = hashMapOf(
-                        "fullname" to view?.findViewById<EditText>(R.id.edit_fullname)!!.text.toString(),
-                        "nickname" to view?.findViewById<EditText>(R.id.edit_nickname)!!.text.toString(),
-                        "email" to view?.findViewById<EditText>(R.id.edit_email)!!.text.toString(),
-                        "location" to view?.findViewById<EditText>(R.id.edit_location)!!.text.toString()
-                    )
-
-                    //Updating db of profile
-                    val docref = db.collection("profiles").document(idUser)
-                    docref.get().addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            db.collection("profiles").document(idUser).set(docData)
-                                .addOnSuccessListener {
-                                }.addOnFailureListener {
-
-                                }
-                        } else {
-                            Log.d("TAG", "Error: ", task.exception)
-                        }
-                    }
-
-                    val skill1Updated = hashMapOf(
-                        "idUser" to idUser,
-                        "name" to view?.findViewById<EditText>(R.id.edit_skill1)!!.text.toString(),
-                        "description" to view?.findViewById<EditText>(R.id.edit_description1)!!.text.toString()
-                    )
-                    db
-                        .collection("skills")
-                        .document(idSkill1)
-                        .set(skill1Updated)
-                        .addOnSuccessListener {
-
-                        }
-                    val skill2Updated = hashMapOf(
-                        "idUser" to idUser,
-                        "name" to view?.findViewById<EditText>(R.id.edit_skill2)!!.text.toString(),
-                        "description" to view?.findViewById<EditText>(R.id.edit_description2)!!.text.toString()
-                    )
-                    db
-                        .collection("skills")
-                        .document(idSkill2)
-                        .set(skill2Updated)
-                        .addOnSuccessListener {
-
-                        }
-
-                    //Management snackbar
-                    val root = view!!.rootView
-                    Snackbar.make(root, "Profile updated", Snackbar.LENGTH_LONG).show()
-
-                    if (isEnabled) {
-                        isEnabled = false
-                        requireActivity().onBackPressed()
-                    }
-
-
-
-
-                }
-            }
-            )
         return root
         }
 

@@ -12,6 +12,7 @@ import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import java.sql.Time
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -43,24 +44,22 @@ class SkillDetailsFragment : Fragment() {
             idSkill = it?.getString("id").toString()
         }
 
-        vm.timeSlots.observe(viewLifecycleOwner){ it ->
-            var flag: Boolean = false
-            if (it.isNullOrEmpty()){
+        vm.timeSlots.observe(viewLifecycleOwner){
+            var flag: Boolean
+
+            if (it.filter { t -> t.idSkill == idSkill }.isNullOrEmpty()){
                 //se la lista di timeslots è vuota, non visualizzo gli switch
                 switchSort.visibility = View.GONE
                 switchFilter.visibility = View.GONE
+                Snackbar.make(root, "There are no TimeSlots for the selected skill", Snackbar.LENGTH_LONG).show()
             }
             else {
                 switchSort.visibility = View.VISIBLE
                 switchFilter.visibility = View.VISIBLE
                 flag = true
-
-                it.filter { it.idSkill == idSkill }.let {
-                    val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>, flag)
-                    rv.adapter = adapter
-                }
+                val adapter = TimeSlotAdapter(it.filter { t -> t.idSkill == idSkill } as MutableList<TimeSlot>, flag)
+                rv.adapter = adapter
             }
-
         }
 
 

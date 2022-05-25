@@ -10,7 +10,6 @@ import com.google.firebase.firestore.ListenerRegistration
 
 data class Skill(
     var id: String = " ",
-    var idUser: String = " ",
     var name: String = " ",
     var description: String = " "
 )
@@ -36,10 +35,9 @@ class SkillVM: ViewModel(){
     fun DocumentSnapshot.toSkill(): Skill? {
         return try {
             val id = id
-            val idUser = get("idUser") as String
             val name = get("name") as String
             val description = get("description") as String
-            Skill(id, idUser, name, description)
+            Skill(id, name, description)
         } catch (e: Exception) {
             e.printStackTrace()
             null
