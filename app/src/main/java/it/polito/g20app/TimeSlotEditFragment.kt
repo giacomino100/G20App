@@ -49,9 +49,8 @@ class TimeSlotEditFragment : Fragment() {
     }
 
     // create an OnDateSetListener
-    private val dateSetListener = object : DatePickerDialog.OnDateSetListener {
-        override fun onDateSet(view: DatePicker, year: Int, monthOfYear: Int,
-                               dayOfMonth: Int) {
+    private val dateSetListener =
+        DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
             cal.set(Calendar.YEAR, year)
             cal.set(Calendar.MONTH, monthOfYear)
             cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
@@ -60,30 +59,24 @@ class TimeSlotEditFragment : Fragment() {
                 timeSetListener,
                 cal.get(Calendar.HOUR),
                 cal.get(Calendar.MINUTE), true).show()
-
         }
-    }
 
     // create an OnDateSetListener
-    private val timeSetListener = object : TimePickerDialog.OnTimeSetListener {
-        override fun onTimeSet(view: TimePicker, hour: Int, minute: Int) {
+    private val timeSetListener =
+        TimePickerDialog.OnTimeSetListener { view, hour, minute ->
             cal.set(Calendar.HOUR, hour)
             cal.set(Calendar.MINUTE, minute)
             updateTimeInView()
         }
-    }
 
     private fun updateTimeInView() {
         view?.findViewById<TextView>(R.id.slot_date_and_time_edit)?.text = cal.time.toString()
-        Log.d("data", cal.time.toString())
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         var auth: FirebaseAuth = Firebase.auth
-
-        var l: ListenerRegistration
-        val db: FirebaseFirestore = FirebaseFirestore.getInstance()
+        val spinner: Spinner = view.findViewById(R.id.spinner)
 
         view.findViewById<Button>(R.id.chooseDateAndTime).setOnClickListener{
             DatePickerDialog(this.requireContext(),
@@ -95,18 +88,16 @@ class TimeSlotEditFragment : Fragment() {
 
         }
 
-        val spinner: Spinner = view.findViewById(R.id.spinner)
-
-        viewModelS.skills.observe(viewLifecycleOwner){
-            if (it.isEmpty()) Log.d("listavuota", "listavuota")
-            val spinnerChoices = mutableListOf("Select the skill")
-            spinnerChoices.addAll(it.map { skill -> skill.name })
-            spinner.adapter = ArrayAdapter(this.requireContext(), android.R.layout.simple_spinner_item, spinnerChoices)
-        }
-
         if(arguments.let { it!!.isEmpty }){
-            //title of action bar changed
+            //Create a new TimeSlot
             (activity as FirebaseActivity).supportActionBar?.setTitle(R.string.create_new_time_slot)
+
+            viewModelS.skills.observe(viewLifecycleOwner){
+                val spinnerChoices = mutableListOf("Select the skill")
+                spinnerChoices.addAll(it.map { skill -> skill.name })
+                spinner.adapter = ArrayAdapter(this.requireContext(), android.R.layout.simple_spinner_item, spinnerChoices)
+            }
+
             requireActivity()
                 .onBackPressedDispatcher
                 .addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
@@ -128,86 +119,70 @@ class TimeSlotEditFragment : Fragment() {
 
                         //Management snackbar
                         val root = view.rootView
-                        Snackbar.make(root, "Time slot added", Snackbar.LENGTH_LONG)
+                        Snackbar.make(root, "TimeSlot created", Snackbar.LENGTH_LONG)
                             .show()
 
-                        // if you want onBackPressed() to be called as normal afterwards
                         if (isEnabled) {
                             isEnabled = false
                             requireActivity().onBackPressed()
                         }
                     }
-                })
-            } else {
-                //CASO EDIT: modifica di un fragment esistente
-
-                //title of action bar changed
-                (activity as FirebaseActivity).supportActionBar?.setTitle(R.string.edit_time_slot)
-
-                viewModelT.timeSlots.observe(viewLifecycleOwner){ list ->
-                    val ts = list.filter { it.id == arguments.let { b -> b?.get("id") } }[0]
-                    view.findViewById<TextView>(R.id.slot_title_edit).text = ts.title
-                    view.findViewById<TextView>(R.id.slot_description_edit).text = ts.description
-                    view.findViewById<TextView>(R.id.slot_date_and_time_edit).text = ts.date
-                    view.findViewById<TextView>(R.id.slot_duration_edit).text = ts.duration
-                    view.findViewById<TextView>(R.id.slot_location_edit).text = ts.location
-
-                    Log.d("Spinnerchoices", viewModelS.skills.value.toString())
-                    Log.d("Spinnerchoices", ts.idSkill)
-
-
-
-                    val spinnerChoices = mutableListOf<String>()
-                    //spinnerChoices.add(vm_skill.skills.value!!.filter { s -> s.id == ts.idSkill }[0].name)
-                    //spinnerChoices.addAll(vm_skill.skills.value!!.filter { s -> s.id != ts.idSkill }.map { s -> s.name })
-                    //view.findViewById<Spinner>(R.id.spinner).adapter = ArrayAdapter(this.requireContext(),
-                        //android.R.layout.simple_spinner_item, spinnerChoices)
                 }
+            )
+        } else {
+            //Update an existing TimeSlot
+            (activity as FirebaseActivity).supportActionBar?.setTitle(R.string.edit_time_slot)
 
-            requireActivity()
-                    .onBackPressedDispatcher
-                    .addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            var initSkill = "empty"
+
+            viewModelT.timeSlots.observe(viewLifecycleOwner) {
+                initSkill = it.filter { t -> t.id == arguments.let { b -> b?.get("id").toString() } }!![0].idSkill
+            }
+
+            viewModelS.skills.observe(viewLifecycleOwner) {
+                val spinnerChoices = mutableListOf(it.filter { skill -> skill.id == initSkill }[0].name)
+                spinnerChoices.addAll(it.filter { skill -> skill.id != initSkill }.map { skill -> skill.name })
+                spinner.adapter = ArrayAdapter(this.requireContext(), android.R.layout.simple_spinner_item, spinnerChoices)
+            }
+
+            viewModelT.timeSlots.observe(viewLifecycleOwner){ list ->
+                val ts = list.filter { it.id == arguments.let { b -> b?.get("id") } }[0]
+                view.findViewById<TextView>(R.id.slot_title_edit).text = ts.title
+                view.findViewById<TextView>(R.id.slot_description_edit).text = ts.description
+                view.findViewById<TextView>(R.id.slot_date_and_time_edit).text = ts.date
+                view.findViewById<TextView>(R.id.slot_duration_edit).text = ts.duration
+                view.findViewById<TextView>(R.id.slot_location_edit).text = ts.location
+            }
+
+        requireActivity()
+                .onBackPressedDispatcher
+                .addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
                         override fun handleOnBackPressed() {
-                            Log.d("back", "Fragment back pressed invoked from edit")
                             // Do custom work here
-                              val updatedTimeSlot = TimeSlot()
+                            val updatedTimeSlot = TimeSlot()
+                            updatedTimeSlot.id = arguments.let { b -> b?.get("id") }.toString()
+                            updatedTimeSlot.title = view.findViewById<EditText>(R.id.slot_title_edit).text.toString()
+                            updatedTimeSlot.description = view.findViewById<EditText>(R.id.slot_description_edit).text.toString()
+                            updatedTimeSlot.date = view.findViewById<TextView>(R.id.slot_date_and_time_edit).text.toString()
+                            updatedTimeSlot.duration = view.findViewById<EditText>(R.id.slot_duration_edit).text.toString()
+                            updatedTimeSlot.location = view.findViewById<EditText>(R.id.slot_location_edit).text.toString()
+                            updatedTimeSlot.idSkill = viewModelS.skills.value?.filter { s -> s.name == spinner.selectedItem }?.map { s -> s.id }!![0]
+                            updatedTimeSlot.idUser = auth.uid.toString()
 
-                              updatedTimeSlot.title = view.findViewById<EditText>(R.id.slot_title_edit).text.toString()
-                              updatedTimeSlot.description = view.findViewById<EditText>(R.id.slot_description_edit).text.toString()
-                              updatedTimeSlot.date = view.findViewById<TextView>(R.id.slot_date_and_time_edit).text.toString()
-                              updatedTimeSlot.duration = view.findViewById<EditText>(R.id.slot_duration_edit).text.toString()
-                              updatedTimeSlot.location = view.findViewById<EditText>(R.id.slot_location_edit).text.toString()
-                                //setting idSkill per il timeslot da aggiornare
-                                //recuperiamo l'id dell'eventuale skill modificata
-                                var idSkillSelected = " "
-                                /*vm_skill.skills.value?.filter { it.idUser == auth.uid && it.name == view.findViewById<Spinner>(R.id.spinner).selectedItem.toString()}?.forEach {
-                                    idSkillSelected = it.id
-                                }*/
-                            updatedTimeSlot.idSkill = idSkillSelected
-                              // if you want onBackPressed() to be called as normal afterwards
+                            viewModelT.updateTimeSlot(updatedTimeSlot)
 
-                              //UPDATE
-                              updatedTimeSlot.id = arguments.let{ it?.get("id") }.toString()
-                              updatedTimeSlot.idUser = auth.uid.toString()
+                            //Management snackbar
+                            val root = view.rootView
+                            Snackbar.make(root, "Time slot updated", Snackbar.LENGTH_LONG).show()
 
-                              viewModelT.updateTimeSlot(updatedTimeSlot)
-
-                              //Management snackbar
-                              val root = view.rootView
-                              Snackbar.make(root, "Time slot updated", Snackbar.LENGTH_LONG)
-                                  .setAction("Redo") {
-                                      //TODO: Responds to click on the action for example reopening the editfragment
-                                  }
-                                  .show()
-
-                              if (isEnabled) {
-                                  isEnabled = false
-                                  requireActivity().onBackPressed()
-                              }
+                            if (isEnabled) {
+                                isEnabled = false
+                                requireActivity().onBackPressed()
+                            }
                         }
                     }
-                    )
+                )
 
-            }
+        }
         }
 }

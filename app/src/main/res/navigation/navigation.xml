@@ -9,11 +9,11 @@
         android:name="it.polito.g20app.TimeSlotListFragment"
         android:label="My Time Slots">
         <action
-            android:id="@+id/action_nav_adv_list_to_nav_slot_details"
-            app:destination="@id/nav_slot_details" />
-        <action
             android:id="@+id/action_nav_adv_list_to_timeSlotEditFragment"
             app:destination="@id/timeSlotEditFragment" />
+        <action
+            android:id="@+id/action_nav_adv_list_to_nav_slot_details"
+            app:destination="@id/nav_slot_details" />
     </fragment>
     <fragment
         android:id="@+id/nav_show_profile"
@@ -30,15 +30,7 @@
     <fragment
         android:id="@+id/nav_slot_details"
         android:name="it.polito.g20app.TimeSlotDetailsFragment"
-        android:label="Time Slot Details">
-        <action
-            android:id="@+id/action_nav_slot_details_to_timeSlotEditFragment"
-            app:destination="@id/timeSlotEditFragment"
-            app:enterAnim="@android:anim/slide_in_left"
-            app:exitAnim="@android:anim/slide_out_right"
-            app:popEnterAnim="@android:anim/slide_in_left"
-            app:popExitAnim="@android:anim/slide_out_right" />
-    </fragment>
+        android:label="Time Slot Details"/>
     <fragment
         android:id="@+id/timeSlotEditFragment"
         android:name="it.polito.g20app.TimeSlotEditFragment" />
@@ -60,6 +52,10 @@
     <fragment
         android:id="@+id/nav_skill_details"
         android:name="it.polito.g20app.SkillDetailsFragment"
-        android:label="Skill Details" />
+        android:label="Skill Details" >
+        <action
+            android:id="@+id/action_nav_skill_details_to_nav_slot_details3"
+            app:destination="@id/nav_slot_details" />
+    </fragment>
 
 </navigation>

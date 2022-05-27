@@ -29,7 +29,6 @@ class SkillDetailsFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val root = inflater.inflate(R.layout.fragment_skill_details, container, false)
-
         (activity as FirebaseActivity).supportActionBar?.setHomeButtonEnabled(true)
         (activity as FirebaseActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 

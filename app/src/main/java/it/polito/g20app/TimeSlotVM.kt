@@ -73,7 +73,7 @@ class TimeSlotVM: ViewModel(){
         db.collection("timeslots").document(timeSlot.id).set(updatedTimeSlot)
     }
 
-    fun DocumentSnapshot.toTimeSlot(): TimeSlot? {
+    private fun DocumentSnapshot.toTimeSlot(): TimeSlot? {
         return try {
             val id = id
             val idUser = get("idUser") as String

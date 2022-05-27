@@ -30,7 +30,7 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
     ): View? {
         val root = inflater.inflate(R.layout.fragment_time_slot_list, container, false)
         activity?.findViewById<NavigationView?>(R.id.nav_view)?.setCheckedItem(R.id.nav_adv_list)
-
+        Log.d("timeSlotDetails", "entering in timeslot list ")
         (activity as FirebaseActivity).supportActionBar?.setHomeButtonEnabled(true)
         (activity as FirebaseActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -44,17 +44,8 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
         vm.timeSlots.observe(viewLifecycleOwner) {
             //this row is needed to show the message in case the list is empty
             root.findViewById<TextView>(R.id.alert).isVisible = it.isEmpty()
-            val mySlots = mutableListOf<TimeSlot>()
-            it.map {
-                if(it.idUser == auth.uid){
-                 mySlots.add(it)
-                }
-            }
-            Log.d("tmslt",mySlots.toString())
-            mySlots.let {
-                val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>, false)
-                rv.adapter = adapter
-            }
+            val adapter = TimeSlotAdapter(it.filter { ts -> ts.idUser == auth.uid } as MutableList<TimeSlot>, false)
+            rv.adapter = adapter
         }
 
         fab.setOnClickListener {
