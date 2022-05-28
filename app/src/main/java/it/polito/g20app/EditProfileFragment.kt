@@ -7,6 +7,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.media.Image
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -63,7 +64,6 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
         val tv3: TextView = root.findViewById(R.id.edit_email)
         val tv4: TextView = root.findViewById(R.id.edit_location)
         val spinner: Spinner = root.findViewById(R.id.spinnerEditProfile)
-
         val img: ImageView = root.findViewById(R.id.imageView_edit)
 
         val progressDialog = ProgressDialog(this.requireContext())
@@ -117,7 +117,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
                                     val skillsP = task.result.documents.filter { d -> d.data?.get("idUser") == auth.uid }.map{ d -> d.get("idSkill") }
 
                                     Log.d("readingSkillsProfile", viewModel.skills.value?.filter{ skill -> skillsP.contains(skill.id)}.toString())
-                                    val adapter = SkillProfileAdapter(viewModel.skills.value?.filter{ skill -> skillsP.contains(skill.id)} as MutableList<Skill>)
+                                    val adapter = SkillProfileAdapter(viewModel.skills.value?.filter{ skill -> skillsP.contains(skill.id)} as MutableList<Skill>, true)
                                     rv.adapter = adapter
                                 }
                                 .addOnFailureListener {
@@ -137,7 +137,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
             db.collection("skillsProfile").get()
                 .addOnCompleteListener { task ->
                     val skillsP = task.result.documents.filter { it.data?.get("idUser") == auth.uid }.map{ it.get("idSkill") }
-                    val adapter = SkillProfileAdapter(it.filter { skill -> skillsP.contains(skill.id)} as MutableList<Skill>)
+                    val adapter = SkillProfileAdapter(it.filter { skill -> skillsP.contains(skill.id)} as MutableList<Skill>, true)
                     rv.adapter = adapter
                 }
                 .addOnFailureListener {
@@ -147,6 +147,8 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
             spinnerChoices.addAll(it.map { skill -> skill.name })
             spinner.adapter = ArrayAdapter(this.requireContext(), android.R.layout.simple_spinner_item, spinnerChoices)
         }
+
+
 
         //Salvo informazioni profilo aggiornate tramite BackPress
         requireActivity()

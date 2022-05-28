@@ -105,7 +105,7 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
             db.collection("skillsProfile").get()
                 .addOnCompleteListener { task ->
                     val skillsP = task.result.documents.filter { it.data?.get("idUser") == auth.uid }.map{ it.get("idSkill") }
-                    val adapter = SkillProfileAdapter(it.filter { skill -> skillsP.contains(skill.id)} as MutableList<Skill>)
+                    val adapter = SkillProfileAdapter(it.filter { skill -> skillsP.contains(skill.id)} as MutableList<Skill>, false)
                     rv.adapter = adapter
                 }
                 .addOnFailureListener {

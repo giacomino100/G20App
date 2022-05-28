@@ -30,8 +30,6 @@ class TimeSlotVM: ViewModel(){
     private val _timeSlots = MutableLiveData<List<TimeSlot>>()
     val timeSlots : LiveData<List<TimeSlot>> = _timeSlots
 
-    private var auth: FirebaseAuth = Firebase.auth
-
     private var l1: ListenerRegistration
 
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
