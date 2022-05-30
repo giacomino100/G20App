@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package it.polito.g20app
 
 import android.app.ProgressDialog
@@ -20,7 +22,6 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.io.File
-import java.io.File.*
 
 private var currentPhotoPath: String? = null
 
@@ -28,8 +29,8 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
 
     private val db = Firebase.firestore
     private lateinit var auth: FirebaseAuth
-    val viewModel by viewModels<SkillVM>()
-    val viewModel2 by viewModels<ProfileVM>()
+    private val viewModelS by viewModels<SkillVM>()
+    private val viewModelP by viewModels<ProfileVM>()
     private var storageReference: StorageReference = FirebaseStorage.getInstance().getReference("images/")
 
     override fun onCreateView(
@@ -38,16 +39,15 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
         savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_home, container, false)
+
         // [START initialize_auth]
         // Initialize Firebase Auth
         auth = Firebase.auth
         // [END initialize_auth]
-        Log.d("backbutton", "the user is: ${auth.currentUser?.displayName}")
 
         val rv = root.findViewById<RecyclerView>(R.id.rv_skill_profile)
         rv.layoutManager = LinearLayoutManager(root.context)
 
-        Log.d("backbutton", "carico on create view ")
         val tv1: TextView = root.findViewById(R.id.fullname)
         val tv2: TextView = root.findViewById(R.id.nickname)
         val tv3: TextView = root.findViewById(R.id.email)
@@ -69,7 +69,6 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
             }
         }.addOnFailureListener {
             if(progressDialog.isShowing) progressDialog.dismiss()
-            Log.d("imageNotFound", "imageNotFound")
         }
 
         db
@@ -81,7 +80,6 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
                 val document = task.result
                 if(document != null) {
                     if (document.exists()) {
-                        Log.d("backbutton", "Document already exists.")
                         tv1.text = document.data!!["fullname"].toString()
                         tv2.text = document.data!!["nickname"].toString()
                         tv3.text = document.data!!["email"].toString()
@@ -95,25 +93,11 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
             }
         }
 
-        // caricamento skill
-        // qui dentro carico dal db le skill di uno user
-        // mi memorizzo dentro due varibili l'id delle skill che coincidono con l'id del documento,
-        // così all'id del documento nella posizione zero corrisponde il primo campo di text e così per il secondo.
-        // Quando vado a salvarli utilizzo questi idskill per recuperare il documento da aggiornare
-
-        viewModel.skills.observe(viewLifecycleOwner){ it ->
-            db.collection("skillsProfile").get()
-                .addOnCompleteListener { task ->
-                    val skillsP = task.result.documents.filter { it.data?.get("idUser") == auth.uid }.map{ it.get("idSkill") }
-                    val adapter = SkillProfileAdapter(it.filter { skill -> skillsP.contains(skill.id)} as MutableList<Skill>, false)
-                    rv.adapter = adapter
-                }
-                .addOnFailureListener {
-                    Log.d("readingSkillsProfile", "cannot read the skillsProfile")
-                }
-
+        viewModelS.skillsProfile.observe(viewLifecycleOwner){
+            val adapter = SkillProfileAdapter(viewModelS.skills.value?.filter { s -> it.map { sp -> sp.idSkill }.contains(s.id) } as MutableList<Skill>, false)
+            rv.adapter = adapter
         }
-        viewModel2.profile.observe(viewLifecycleOwner){ it ->
+        viewModelP.profile.observe(viewLifecycleOwner){
             tv1.text = it.fullname
             tv2.text = it.nickname
             tv3.text = it.email
@@ -140,7 +124,7 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
         return when (item.itemId) {
             R.id.edit_profile_icon -> {
                 //Opening edit profile fragment
-                var bundle = Bundle()
+                val bundle = Bundle()
 
                 bundle.putString("idUser", auth.uid.toString())
                 bundle.putString("path", currentPhotoPath)

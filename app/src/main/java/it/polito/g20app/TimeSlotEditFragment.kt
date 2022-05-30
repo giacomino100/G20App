@@ -4,24 +4,17 @@ import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.OnBackPressedCallback
-import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.ktx.Firebase
-import java.lang.Exception
-import java.text.SimpleDateFormat
 import java.util.*
 
 class TimeSlotEditFragment : Fragment() {
@@ -29,7 +22,7 @@ class TimeSlotEditFragment : Fragment() {
     val viewModelT by viewModels<TimeSlotVM>()
     val viewModelS by viewModels<SkillVM>()
 
-    var cal = Calendar.getInstance()
+    private var cal: Calendar = Calendar.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,7 +43,7 @@ class TimeSlotEditFragment : Fragment() {
 
     // create an OnDateSetListener
     private val dateSetListener =
-        DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+        DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
             cal.set(Calendar.YEAR, year)
             cal.set(Calendar.MONTH, monthOfYear)
             cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
@@ -63,7 +56,7 @@ class TimeSlotEditFragment : Fragment() {
 
     // create an OnDateSetListener
     private val timeSetListener =
-        TimePickerDialog.OnTimeSetListener { view, hour, minute ->
+        TimePickerDialog.OnTimeSetListener { _, hour, minute ->
             cal.set(Calendar.HOUR, hour)
             cal.set(Calendar.MINUTE, minute)
             updateTimeInView()
@@ -75,7 +68,7 @@ class TimeSlotEditFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        var auth: FirebaseAuth = Firebase.auth
+        val auth: FirebaseAuth = Firebase.auth
         val spinner: Spinner = view.findViewById(R.id.spinner)
 
         view.findViewById<Button>(R.id.chooseDateAndTime).setOnClickListener{
@@ -136,7 +129,7 @@ class TimeSlotEditFragment : Fragment() {
             var initSkill = "empty"
 
             viewModelT.timeSlots.observe(viewLifecycleOwner) {
-                initSkill = it.filter { t -> t.id == arguments.let { b -> b?.get("id").toString() } }!![0].idSkill
+                initSkill = it.filter { t -> t.id == arguments.let { b -> b?.get("id").toString() } }[0].idSkill
             }
 
             viewModelS.skills.observe(viewLifecycleOwner) {

@@ -1,8 +1,6 @@
 package it.polito.g20app
 
 import android.os.Bundle
-import android.service.autofill.OnClickAction
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,14 +8,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import kotlin.properties.Delegates
 
 
 class TimeSlotAdapter(val data: MutableList<TimeSlot>, isSkillDetails: Boolean): RecyclerView.Adapter<TimeSlotAdapter.TimeSlotViewHolder>() {
-    var displayData = data.toMutableList()
-    var flag = isSkillDetails
+    private var displayData = data.toMutableList()
+    private var flag = isSkillDetails
     class TimeSlotViewHolder(v: View): RecyclerView.ViewHolder(v) {
         private val title: TextView = v.findViewById(R.id.slot_title)
         private val edit: ImageView = v.findViewById(R.id.editTimeSlot)

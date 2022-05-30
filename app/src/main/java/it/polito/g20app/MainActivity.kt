@@ -1,5 +1,5 @@
 
-package it.polito.g20app;
+package it.polito.g20app
 
 import android.content.Intent
 import android.content.IntentSender
@@ -7,8 +7,6 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.Toast
-import androidx.activity.result.IntentSenderRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
@@ -18,15 +16,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.CommonStatusCodes
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import it.polito.g20app.databinding.ActivityMainBinding
 
 
+@Suppress("DEPRECATION")
 class MainActivity: AppCompatActivity() {
 
     // [START declare_auth]
@@ -103,7 +99,7 @@ class MainActivity: AppCompatActivity() {
                 .addOnFailureListener(this) { e ->
                     // No saved credentials found. Launch the One Tap sign-up flow, or
                     // do nothing and continue presenting the signed-out UI.
-                    Log.d(TAG, e.localizedMessage)
+                    e.localizedMessage?.let { Log.d(TAG, it) }
                 }
         }
 
@@ -112,12 +108,13 @@ class MainActivity: AppCompatActivity() {
         }
     }
 
-    fun signIn(){
+    private fun signIn(){
         Log.d("signout", "In signIn the user is: " + auth.currentUser?.displayName.toString())
-        val signInIntent = gsc.getSignInIntent();
-        startActivityForResult(signInIntent,RC_SIGN_IN);
+        val signInIntent = gsc.signInIntent
+        startActivityForResult(signInIntent,RC_SIGN_IN)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -126,8 +123,6 @@ class MainActivity: AppCompatActivity() {
                 try {
                     val credential = oneTapClient.getSignInCredentialFromIntent(data)
                     val idToken = credential.googleIdToken
-                    val username = credential.id
-                    val password = credential.password
                     when {
                         idToken != null -> {
                             // Got an ID token from Google
@@ -159,14 +154,14 @@ class MainActivity: AppCompatActivity() {
                 }
             }
             RC_SIGN_IN -> {
-                var task = GoogleSignIn.getSignedInAccountFromIntent(data);
+                val task = GoogleSignIn.getSignedInAccountFromIntent(data)
                 try {
                     // Google Sign In was successful, authenticate with Firebase
                     val account = task.getResult(ApiException::class.java)!!
                     Log.d(TAG, "firebaseAuthWithGoogle:" + account.id)
                     firebaseAuthWithGoogle(account.idToken!!)
                 } catch (e: ApiException) {
-                    Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(applicationContext, "Something went wrong", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -181,7 +176,7 @@ class MainActivity: AppCompatActivity() {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "signInWithCredential:success")
                     val user = auth.currentUser
-                    updateUI(user)
+                    updateUI()
 
                     val intent = Intent(this, FirebaseActivity::class.java)
                     startActivity(intent)
@@ -189,15 +184,13 @@ class MainActivity: AppCompatActivity() {
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "signInWithCredential:failure", task.exception)
-                    updateUI(null)
+                    updateUI()
                 }
             }
     }
 
 
-    private fun updateUI(user: FirebaseUser?) {
-
-    }
+    private fun updateUI() {}
     // [END auth_with_google]
 
 }

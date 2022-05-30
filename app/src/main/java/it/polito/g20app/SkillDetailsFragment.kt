@@ -1,28 +1,23 @@
 package it.polito.g20app
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.Switch
 import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import java.sql.Time
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.util.*
-
 
 class SkillDetailsFragment : Fragment() {
 
-    val vm by viewModels<TimeSlotVM>()
+    private val vm by viewModels<TimeSlotVM>()
 
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -38,13 +33,13 @@ class SkillDetailsFragment : Fragment() {
         val switchSort = root.findViewById<Switch>(R.id.switchSort)
         val switchFilter = root.findViewById<Switch>(R.id.switchFilter)
 
-        var idSkill = " "
+        var idSkill: String
         arguments.let {
             idSkill = it?.getString("id").toString()
         }
 
         vm.timeSlots.observe(viewLifecycleOwner){
-            var flag: Boolean
+            val flag: Boolean
 
             if (it.filter { t -> t.idSkill == idSkill }.isNullOrEmpty()){
                 //se la lista di timeslots è vuota, non visualizzo gli switch
@@ -76,9 +71,9 @@ class SkillDetailsFragment : Fragment() {
 
         switchFilter?.setOnCheckedChangeListener { _, isChecked ->
             vm.timeSlots.observe(viewLifecycleOwner) { it ->
-                val filteredSlots = if (isChecked) it.filter { it.idSkill == idSkill }.filter { it ->
-                    var time = it.date.split(" ")
-                    var params = time[3].split(":")
+                val filteredSlots = if (isChecked) it.filter { it.idSkill == idSkill }.filter {
+                    val time = it.date.split(" ")
+                    val params = time[3].split(":")
                     if (params[0].toInt() == 12) {
                         if (params[1].toInt() == 0) {
                             params[2].toInt() == 0

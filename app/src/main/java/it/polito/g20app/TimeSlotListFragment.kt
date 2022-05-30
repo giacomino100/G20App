@@ -20,7 +20,7 @@ import com.google.firebase.ktx.Firebase
 
 class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
 
-    val vm by viewModels<TimeSlotVM>()
+    private val viewModelT by viewModels<TimeSlotVM>()
     private var auth: FirebaseAuth = Firebase.auth
 
     override fun onCreateView(
@@ -41,7 +41,7 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
         rv.layoutManager = LinearLayoutManager(root.context)
 
         //defining ViewModel
-        vm.timeSlots.observe(viewLifecycleOwner) {
+        viewModelT.timeSlots.observe(viewLifecycleOwner) {
             //this row is needed to show the message in case the list is empty
             root.findViewById<TextView>(R.id.alert).isVisible = it.isEmpty()
             val adapter = TimeSlotAdapter(it.filter { ts -> ts.idUser == auth.uid } as MutableList<TimeSlot>, false)

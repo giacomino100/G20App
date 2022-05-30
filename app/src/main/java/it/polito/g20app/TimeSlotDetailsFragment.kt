@@ -1,20 +1,18 @@
 package it.polito.g20app
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 
 class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
 
     private var idSelected: String = " "
     private var idTimeslotSkill: String = " "
 
-    val viewModelT by viewModels<TimeSlotVM>()
-    val viewModelS by viewModels<SkillVM>()
+    private val viewModelT by viewModels<TimeSlotVM>()
+    private val viewModelS by viewModels<SkillVM>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

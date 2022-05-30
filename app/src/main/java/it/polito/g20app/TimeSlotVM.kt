@@ -1,18 +1,12 @@
 package it.polito.g20app
 
-import android.app.Application
-import android.os.Parcel
-import android.os.Parcelable
-import androidx.lifecycle.AndroidViewModel
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
-import com.google.firebase.ktx.Firebase
 
 data class TimeSlot(
     var id: String = " ",
@@ -55,7 +49,11 @@ class TimeSlotVM: ViewModel(){
             "duration" to timeSlot.duration,
             "date" to timeSlot.date
         )
-        db.collection("timeslots").document().set(newTimeSlot)
+        db.collection("timeslots").document().set(newTimeSlot).addOnSuccessListener {
+            Log.d("database", "New entry successfully added in timeslots collection")
+        }.addOnFailureListener {
+            Log.d("database", "Error saving a new entry in timeslots collection")
+        }
     }
 
     fun updateTimeSlot(timeSlot: TimeSlot){
@@ -68,7 +66,11 @@ class TimeSlotVM: ViewModel(){
             "duration" to timeSlot.duration,
             "date" to timeSlot.date
         )
-        db.collection("timeslots").document(timeSlot.id).set(updatedTimeSlot)
+        db.collection("timeslots").document(timeSlot.id).set(updatedTimeSlot).addOnSuccessListener {
+            Log.d("database", "Timeslots successfully updated")
+        }.addOnFailureListener {
+            Log.d("database", "Error updating the selected timeslot in the timeslots collection")
+        }
     }
 
     private fun DocumentSnapshot.toTimeSlot(): TimeSlot? {

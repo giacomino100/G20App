@@ -1,13 +1,11 @@
 package it.polito.g20app
 
-import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -15,8 +13,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 
 class SkillProfileAdapter(val data: MutableList<Skill>, isEditProfile: Boolean): RecyclerView.Adapter<SkillProfileAdapter.SkillProfileViewHolder>() {
-    var displayData = data.toMutableList()
-    val flag = isEditProfile
+    private var displayData = data.toMutableList()
+    private val flag = isEditProfile
 
     class SkillProfileViewHolder(v: View): RecyclerView.ViewHolder(v) {
         private var id: String = " "
@@ -27,7 +25,7 @@ class SkillProfileAdapter(val data: MutableList<Skill>, isEditProfile: Boolean):
         private var auth: FirebaseAuth = Firebase.auth
 
 
-        fun bind(skill: Skill, flag: Boolean, action: (v: View)->Unit) {
+        fun bind(skill: Skill, flag: Boolean) {
             id = skill.id
             title.text = skill.name
             desc.text = skill.description
@@ -65,15 +63,8 @@ class SkillProfileAdapter(val data: MutableList<Skill>, isEditProfile: Boolean):
     override fun onBindViewHolder(holder: SkillProfileViewHolder, position: Int) {
         val item = displayData[position]
         val flag2 = flag
-        holder.bind(item, flag = flag2) {
-            //cliccando sull'edit si apre il TimeSlotDetailsFragment
-            //passaggio di informazioni tra fragment with a Bundle
-            val bundle = Bundle()
-            bundle.putString("id", item.id) //idSkill
-            bundle.putString("name", item.name)
-            bundle.putString("description", item.description)
-            it.findNavController().navigate(R.id.action_nav_show_profile_to_nav_edit_profile, bundle)
-        }    }
+        holder.bind(item, flag = flag2)
+    }
 
 
 }

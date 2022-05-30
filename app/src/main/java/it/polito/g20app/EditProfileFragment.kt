@@ -7,7 +7,6 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.Image
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -42,8 +41,8 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
 
     private val db = Firebase.firestore
     private var auth: FirebaseAuth = Firebase.auth
-    val viewModel by viewModels<SkillVM>()
-    val viewModel2 by viewModels<ProfileVM>()
+    private val viewModelS by viewModels<SkillVM>()
+    private val viewModelP by viewModels<ProfileVM>()
     private var storageReference: StorageReference = FirebaseStorage.getInstance().getReference("images/")
 
     override fun onCreateView(
@@ -78,12 +77,12 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
                 val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
                 img.setImageBitmap(bitmap)
             }
-        }.addOnFailureListener() {
+        }.addOnFailureListener {
             if(progressDialog.isShowing) progressDialog.dismiss()
             Log.d("dialogDismiss", "failure")
         }
 
-        viewModel2.profile.observe(viewLifecycleOwner){
+        viewModelP.profile.observe(viewLifecycleOwner){
             tv1.text = it.fullname
             tv2.text = it.nickname
             tv3.text = it.email
@@ -94,36 +93,14 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 //se nello spinner non ho selezionato alcuna skill
                 if (p0?.getItemAtPosition(p2) != "Select the skill") {
-                    val newSkill = viewModel.skills.value?.filter { it.name == p0?.getItemAtPosition(p2)}!![0].id
-                    val newSkillProfile = hashMapOf(
-                        "idUser" to auth.uid.toString(),
-                        "idSkill" to newSkill
-                    )
-                    db.collection("skillsProfile").get().addOnSuccessListener {
-                        //verifico se la skill selezionata è già presente tra le skill associate al mio profilo
-                        if (it.documents.none { d ->
-                                d.data?.get("idUser") == newSkillProfile["idUser"] &&
-                                        d.data?.get("idSkill") == newSkillProfile["idSkill"]
-                            }) {
-                                //se non è presente, la aggiungo tra le skill associate ad un utente, altrimenti non faccio nulla
-                            db.collection("skillsProfile").add(newSkillProfile).addOnSuccessListener {
-                                Log.d("AddingSkill", "Skill saved for ${auth.currentUser!!.displayName} user")
-                            }.addOnFailureListener {
-                                Log.d("AddingSkill", "Error saving a new skill for ${auth.currentUser!!.displayName} user")
-                            }
-                            db.collection("skillsProfile").get()
-                                .addOnCompleteListener { task ->
-                                    Log.d("readingSkillsProfile", "Reading the skillsProfile")
-                                    val skillsP = task.result.documents.filter { d -> d.data?.get("idUser") == auth.uid }.map{ d -> d.get("idSkill") }
-
-                                    Log.d("readingSkillsProfile", viewModel.skills.value?.filter{ skill -> skillsP.contains(skill.id)}.toString())
-                                    val adapter = SkillProfileAdapter(viewModel.skills.value?.filter{ skill -> skillsP.contains(skill.id)} as MutableList<Skill>, true)
-                                    rv.adapter = adapter
-                                }
-                                .addOnFailureListener {
-                                    Log.d("readingSkillsProfile", "cannot read the skillsProfile")
-                                }
-                        }
+                    val newSkill = viewModelS.skills.value?.filter { it.name == p0?.getItemAtPosition(p2)}!![0].id
+                    val newSkillProfile = SkillProfile("", newSkill, auth.uid!!)
+                    //verifico se la skill selezionata è già presente tra le skill associate al mio profilo
+                    if (!viewModelS.skillsProfile.value!!.map { it.idSkill }.contains(newSkill)){
+                        //se non è presente, la aggiungo tra le skill associate ad un utente, altrimenti non faccio nulla
+                        viewModelS.addSkillProfile(newSkillProfile)
+                    } else {
+                        Toast.makeText(requireContext(), "Skill already stored for ${auth.currentUser!!.displayName}", Toast.LENGTH_LONG ).show()
                     }
                 }
             }
@@ -133,18 +110,11 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
             }
         }
 
-        viewModel.skills.observe(viewLifecycleOwner){ it ->
-            db.collection("skillsProfile").get()
-                .addOnCompleteListener { task ->
-                    val skillsP = task.result.documents.filter { it.data?.get("idUser") == auth.uid }.map{ it.get("idSkill") }
-                    val adapter = SkillProfileAdapter(it.filter { skill -> skillsP.contains(skill.id)} as MutableList<Skill>, true)
-                    rv.adapter = adapter
-                }
-                .addOnFailureListener {
-                    Log.d("readingSkillsProfile", "cannot read the skillsProfile")
-                }
+        viewModelS.skillsProfile.observe(viewLifecycleOwner){
+            val adapter = SkillProfileAdapter(viewModelS.skills.value?.filter { s -> it.map { sp -> sp.idSkill }.contains(s.id) } as MutableList<Skill>, true)
+            rv.adapter = adapter
             val spinnerChoices = mutableListOf("Select the skill")
-            spinnerChoices.addAll(it.map { skill -> skill.name })
+            spinnerChoices.addAll(viewModelS.skills.value!!.map { skill -> skill.name })
             spinner.adapter = ArrayAdapter(this.requireContext(), android.R.layout.simple_spinner_item, spinnerChoices)
         }
 
@@ -155,6 +125,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
             .onBackPressedDispatcher
             .addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
                     override fun handleOnBackPressed() {
+                        @Suppress("NAME_SHADOWING", "NAME_SHADOWING")
                         val root = view!!.rootView
                         val docData = hashMapOf(
                             "fullname" to view?.findViewById<EditText>(R.id.edit_fullname)!!.text.toString(),
@@ -176,10 +147,10 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
                             } else {
                                 Log.d("TAG", "Error: ", task.exception)
                             }
-                            if (isEnabled) {
-                                isEnabled = false
-                                requireActivity().onBackPressed()
-                            }
+                        }
+                        if (isEnabled) {
+                            isEnabled = false
+                            requireActivity().onBackPressed()
                         }
                     }
                 }
@@ -236,7 +207,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
                     if(it.isSuccessful){
                         //Management snackbar
                         val root = requireView().rootView
-                        Snackbar.make(root, "Woow, image has been uploaded", Snackbar.LENGTH_SHORT).show()
+                        Snackbar.make(root, "Image successfully uploaded", Snackbar.LENGTH_SHORT).show()
                     }
                 }
             }
