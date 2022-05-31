@@ -160,6 +160,12 @@ class FirebaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         if(item.itemId == R.id.nav_show_profile){
             findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.action_nav_skills_list_to_nav_show_profile)
         }
+        if(item.itemId == R.id.nav_time_slots_saved){
+            findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.action_nav_skills_list_to_nav_time_slots_saved)
+        }
+        if(item.itemId == R.id.nav_time_slots_assigned){
+            findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.action_nav_skills_list_to_time_slots_assigned)
+        }
 
         drawerLayout.closeDrawer(GravityCompat.START)
 

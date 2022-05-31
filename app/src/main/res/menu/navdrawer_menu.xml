@@ -7,11 +7,17 @@
             android:id="@+id/nav_skills_list"
             android:title="All skills" />
         <item
+            android:id="@+id/nav_show_profile"
+            android:title="@string/home" />
+        <item
             android:id="@+id/nav_adv_list"
             android:title="My time slots" />
         <item
-            android:id="@+id/nav_show_profile"
-            android:title="@string/home" />
+            android:id="@+id/nav_time_slots_saved"
+            android:title="Time Slots saved" />
+        <item
+            android:id="@+id/nav_time_slots_assigned"
+            android:title="Time Slots assigned" />
     </group>
 
 

@@ -48,6 +48,12 @@
         <action
             android:id="@+id/action_nav_skills_list_to_nav_skill_details"
             app:destination="@id/nav_skill_details" />
+        <action
+            android:id="@+id/action_nav_skills_list_to_nav_time_slots_saved"
+            app:destination="@id/nav_time_slots_saved" />
+        <action
+            android:id="@+id/action_nav_skills_list_to_time_slots_assigned"
+            app:destination="@id/nav_time_slots_assigned" />
     </fragment>
     <fragment
         android:id="@+id/nav_skill_details"
@@ -57,5 +63,15 @@
             android:id="@+id/action_nav_skill_details_to_nav_slot_details3"
             app:destination="@id/nav_slot_details" />
     </fragment>
+    <fragment
+        android:id="@+id/nav_time_slots_saved"
+        android:name="it.polito.g20app.TimeSlotsSaved"
+        android:label="fragment_time_slots_saved"
+        tools:layout="@layout/fragment_time_slots_saved" />
+    <fragment
+        android:id="@+id/nav_time_slots_assigned"
+        android:name="it.polito.g20app.TimeSlotsAssigned"
+        android:label="fragment_time_slots_assigned"
+        tools:layout="@layout/fragment_time_slots_assigned" />
 
 </navigation>
