@@ -39,6 +39,8 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
             root.findViewById<TextView>(R.id.slot_skill).text = it.filter { s -> s.id == idTimeslotSkill }[0].name
         }
 
+        //TODO: settare bottone per far partire la chat
+
         return root
     }
 
