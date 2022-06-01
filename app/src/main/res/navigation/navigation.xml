@@ -30,7 +30,11 @@
     <fragment
         android:id="@+id/nav_slot_details"
         android:name="it.polito.g20app.TimeSlotDetailsFragment"
-        android:label="Time Slot Details"/>
+        android:label="Time Slot Details">
+        <action
+            android:id="@+id/action_nav_slot_details_to_chat_fragment"
+            app:destination="@id/chatFragment" />
+    </fragment>
     <fragment
         android:id="@+id/timeSlotEditFragment"
         android:name="it.polito.g20app.TimeSlotEditFragment" />
@@ -73,5 +77,10 @@
         android:name="it.polito.g20app.TimeSlotsAssigned"
         android:label="fragment_time_slots_assigned"
         tools:layout="@layout/fragment_time_slots_assigned" />
+    <fragment
+        android:id="@+id/chatFragment"
+        android:name="it.polito.g20app.ChatFragment"
+        android:label="fragment_chat"
+        tools:layout="@layout/fragment_chat" />
 
 </navigation>

@@ -2,9 +2,11 @@ package it.polito.g20app
 
 import android.os.Bundle
 import android.view.*
+import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 
 class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
 
@@ -40,7 +42,9 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
         }
 
         //TODO: settare bottone per far partire la chat
-
+        root.findViewById<Button>(R.id.chat_button)?.setOnClickListener{
+            findNavController().navigate(R.id.action_nav_slot_details_to_chat_fragment)
+        }
         return root
     }
 
