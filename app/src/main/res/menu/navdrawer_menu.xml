@@ -14,10 +14,10 @@
             android:title="My time slots" />
         <item
             android:id="@+id/nav_time_slots_saved"
-            android:title="Time Slots saved" />
+            android:title="Favourite Time Slots" />
         <item
             android:id="@+id/nav_time_slots_assigned"
-            android:title="Time Slots assigned" />
+            android:title="Assigned Time Slots" />
     </group>
 
 
