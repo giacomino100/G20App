@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -85,9 +86,10 @@ class TimeSlotEditFragment : Fragment() {
             //Create a new TimeSlot
             (activity as FirebaseActivity).supportActionBar?.setTitle(R.string.create_new_time_slot)
 
-            viewModelS.skills.observe(viewLifecycleOwner){
+            viewModelS.skillsProfile.observe(viewLifecycleOwner) {
                 val spinnerChoices = mutableListOf("Select the skill")
-                spinnerChoices.addAll(it.map { skill -> skill.name })
+                Log.d("skillsFiltrate", viewModelS.skills.value?.filter { s -> it.map { sp -> sp.idSkill }.contains(s.id) }.toString())
+                spinnerChoices.addAll(viewModelS.skills.value?.filter { s -> it.map { sp -> sp.idSkill }.contains(s.id) }!!.map { skill -> skill.name })
                 spinner.adapter = ArrayAdapter(this.requireContext(), android.R.layout.simple_spinner_item, spinnerChoices)
             }
 
