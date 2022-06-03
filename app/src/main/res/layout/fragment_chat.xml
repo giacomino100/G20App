@@ -14,32 +14,34 @@
         app:layout_constraintBottom_toBottomOf="parent"/>
 
     <ImageView
-        android:id="@+id/imageView_button_sent"
+        android:id="@+id/button_send"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_baseline_send_24"
-        android:padding="10dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
+        android:contentDescription="button to sent the message"
+        android:minHeight="48dp"
+        android:padding="10dp"
+        android:src="@drawable/ic_baseline_send_24"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="0dp"
         android:layout_height="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/imageView_button_sent"
+        app:layout_constraintEnd_toStartOf="@id/button_send"
         android:layout_marginHorizontal="8dp"
         android:layout_marginBottom="8dp"
         app:cardCornerRadius="30dp">
 
         <EditText
+            android:id="@+id/messageBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:id="@+id/messageBox"
+            android:minHeight="48dp"
             android:text="new message" />
 
 

@@ -40,22 +40,19 @@ class ChatFragment : Fragment() {
         rv.layoutManager = LinearLayoutManager(root.context)
 
         vm.chats.observe(viewLifecycleOwner){
-            if(it.filter { item -> item.idTimeSlot == idTimeSlot }.isNotEmpty()){
+            if(it.any { item -> item.idTimeSlot == idTimeSlot }){
                 //Loading the chat
-                val myChat = it.filter { item -> item.idTimeSlot == idTimeSlot && item.receiver == receiver }
-                Log.d("chatfiltered", myChat.toString())
+                val myChat = it.filter { item -> item.idTimeSlot == idTimeSlot && item.receiver == receiver }[0]
                 val myListOfMessage = mutableListOf<Message>()
-                myChat[0].messages.mapNotNull { item ->
+                myChat.messages.mapNotNull { item ->
                     val messages = item.values.toMutableList()
-                    Log.d("messages", item.values.toMutableList().toString())
                     myListOfMessage.add(Message(messages[1].toString(), messages[0].toString()))
                 }
-                Log.d("mymessageList", myListOfMessage.toString())
                 val adapter = MessageAdapter(myListOfMessage, auth.uid.toString(), receiver)
                 rv.adapter = adapter
             } else {
                 //Creating a new chat
-                val newChat = Chat(auth.uid.toString(), emptyList(), idTimeSlot, receiver)
+                val newChat = Chat("", auth.uid.toString(), emptyList(), idTimeSlot, receiver)
                 vm.addChat(newChat)
             }
         }

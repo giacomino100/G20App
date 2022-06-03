@@ -13,6 +13,7 @@ import com.google.firebase.ktx.Firebase
 import java.util.*
 
 data class Chat(
+    val id: String,
     val sender: String,
     var messages: List<Map<*,*>>,
     val idTimeSlot: String,
@@ -50,7 +51,6 @@ class ChatVM: ViewModel() {
             "idVendor" to newChat.receiver,
             "idTimeSlot" to newChat.idTimeSlot,
         )
-        Log.d("newChat", newChat.toString())
 
         db.collection("chats").document().set(newChat).addOnSuccessListener {
             Log.d("database", "New entry successfully added in chats collection")
@@ -65,7 +65,7 @@ class ChatVM: ViewModel() {
             val sender = get("idBuyer") as String
             val idTimeSlot = get("idTimeSlot") as String
             val receiver = get("idVendor") as String
-            Chat(sender, messages, idTimeSlot, receiver)
+            Chat(id, sender, messages, idTimeSlot, receiver)
         } catch (e: Exception) {
             e.printStackTrace()
             null

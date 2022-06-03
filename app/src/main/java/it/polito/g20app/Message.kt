@@ -14,7 +14,7 @@ data class Message(
     val role : String
 )
 
-class MessageAdapter(val data: MutableList<Message>, val idBuyer: String, val idVendor: String): RecyclerView.Adapter<MessageAdapter.MessageViewHolder>() {
+class MessageAdapter(val data: MutableList<Message>, private val idBuyer: String, private val idVendor: String): RecyclerView.Adapter<MessageAdapter.MessageViewHolder>() {
     private var displayData = data.toMutableList()
     private var auth: FirebaseAuth = Firebase.auth
 
@@ -40,6 +40,7 @@ class MessageAdapter(val data: MutableList<Message>, val idBuyer: String, val id
 
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
         val item = displayData[position]
+
         if (auth.uid == idBuyer) {
             if (item.role == idBuyer) {
                 holder.itemView.findViewById<TextView>(R.id.sent_message).apply {
