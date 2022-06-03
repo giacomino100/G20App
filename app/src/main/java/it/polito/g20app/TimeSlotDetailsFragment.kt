@@ -1,6 +1,7 @@
 package it.polito.g20app
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.TextView
@@ -42,8 +43,12 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
         }
 
         root.findViewById<Button>(R.id.chat_button)?.setOnClickListener{
-            findNavController().navigate(R.id.action_nav_slot_details_to_chat_fragment)
+            var bundle = Bundle()
+            bundle.putString("idTimeSlot", idSelected)
+            //questo bundle è necessario per recuperare dal db i messaggi relativi ad un time slot e ad uno user
+            findNavController().navigate(R.id.action_nav_slot_details_to_chat_fragment, bundle)
         }
+
         return root
     }
 

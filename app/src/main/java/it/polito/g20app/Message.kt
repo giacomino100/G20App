@@ -14,6 +14,11 @@ import com.google.firebase.ktx.Firebase
 
 var type = ""
 
+data class Message(
+    val text : String,
+    val type : String
+)
+
 class MessageAdapter(val data: MutableList<Message>): RecyclerView.Adapter<MessageAdapter.MessageViewHolder>() {
     private var displayData = data.toMutableList()
 

@@ -12,16 +12,16 @@ import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.ktx.Firebase
 import java.util.*
 
-data class Message(
-    val idUser: String,
-    val text: String,
-    val type: String  //campo per selezionare se un messaggio deve andare a destra quindi tra i messaggi inviati o tra quuelli ricevuti
+data class Chat(
+    val sender: String,
+    val messaggi: List<Map<*,*>>,
+    val idTimeSlot: String  //campo per selezionare se un messaggio deve andare a destra quindi tra i messaggi inviati o tra quuelli ricevuti
 )
 
 class MessageVM: ViewModel() {
-    private val _messages1 = MutableLiveData<List<Message>>()
+    private val _messages1 = MutableLiveData<List<Chat>>()
 
-    val messages1 : LiveData<List<Message>> = _messages1
+    val messages1 : LiveData<List<Chat>> = _messages1
 
     private var l1: ListenerRegistration
 
@@ -31,24 +31,30 @@ class MessageVM: ViewModel() {
     init {
         //qua occorre selezionare la chat con id receiver e sender corretti
         l1 = db.collection("chats")
-            .whereEqualTo("sender", auth.uid.toString())
+            .whereEqualTo("sender", auth.uid.toString()) //OK
             .addSnapshotListener { v, e ->
-                if (e==null) {
+                /*if (e==null) {
                     //LOGICA:
                         // -> si prende il documento dal db che contiente un vettore di mappe di messaggi
                             // -> si prende questo vettore e si crea una lista di messaggi con messageList
                     _messages1.value = v!!.mapNotNull { d ->
                         d.toMessageList()
                     }[0]
-            }else
+            }*/
+                if(e==null){
+                    _messages1.value = v!!.mapNotNull { d ->
+                        d.toChat()
+                    }
+                }
+                else
                     _messages1.value = emptyList()
                 }
             }
 
-    private fun DocumentSnapshot.toMessageList(): List<Message>? {
+    private fun DocumentSnapshot.toChat(): Chat? {
         return try {
             //settaggio vettore di messaggi che viene dal DB
-            val messaggi = get("messaggi") as List<Map<*,*>>
+           /* val messaggi = get("messaggi") as List<Map<*,*>>
             val list = mutableListOf<Message>()
 
             //per ogni mappa (messaggio) si crea un nuovo elemento Message da dare alla recycler view
@@ -58,7 +64,11 @@ class MessageVM: ViewModel() {
                 list.add(Message(valori[0].toString(), valori[1].toString(), valori[2].toString()))
             }
 
-            list
+            list*/
+            val messaggi = get("messaggi") as List<Map<*,*>>
+            val sender = get("sender") as String
+            val receiver = get("idTimeSlot") as String
+            Chat(sender, messaggi, receiver)
         } catch (e: Exception) {
             e.printStackTrace()
             null
