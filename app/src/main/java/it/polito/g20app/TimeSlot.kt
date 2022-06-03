@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 class TimeSlotAdapter(val data: MutableList<TimeSlot>, isSkillDetails: Boolean): RecyclerView.Adapter<TimeSlotAdapter.TimeSlotViewHolder>() {
     private var displayData = data.toMutableList()
     private var flag = isSkillDetails
+
     class TimeSlotViewHolder(v: View): RecyclerView.ViewHolder(v) {
         private val title: TextView = v.findViewById(R.id.slot_title)
         private val edit: ImageView = v.findViewById(R.id.editTimeSlot)
@@ -54,6 +55,8 @@ class TimeSlotAdapter(val data: MutableList<TimeSlot>, isSkillDetails: Boolean):
 
         holder.bind(timeslot =  item, flag = flag2) {
             val bundle = Bundle()
+            if (flag) bundle.putInt("fromSkillDet", 1)
+            else bundle.putInt("fromSkillDet", 0)
             bundle.putString("id", item.id)
             bundle.putString("idUser", item.idUser)
             bundle.putString("title", item.title)

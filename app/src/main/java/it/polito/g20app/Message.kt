@@ -1,45 +1,37 @@
 package it.polito.g20app
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-
-var type = ""
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 data class Message(
     val text : String,
-    val type : String
+    val role : String
 )
 
-class MessageAdapter(val data: MutableList<Message>): RecyclerView.Adapter<MessageAdapter.MessageViewHolder>() {
+class MessageAdapter(val data: MutableList<Message>, val idBuyer: String, val idVendor: String): RecyclerView.Adapter<MessageAdapter.MessageViewHolder>() {
     private var displayData = data.toMutableList()
-
+    private var auth: FirebaseAuth = Firebase.auth
 
     class MessageViewHolder(v: View): RecyclerView.ViewHolder(v) {
-        private var message = v.findViewById<TextView>(R.id.sent_message)
+        private var messageBlue = v.findViewById<TextView>(R.id.sent_message)
+        private var messageWhite = v.findViewById<TextView>(R.id.receiver_message)
+
         fun bind(mess: Message) {
-            message.text = mess.text
-            type = mess.type
+            messageBlue.text = mess.text
+            messageWhite.text = mess.text
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
-        val vg: View
-        if(type == "1"){
-            vg = LayoutInflater
-                .from(parent.context)
-                .inflate(R.layout.sent_item, parent, false)
-        } else {
-            vg = LayoutInflater
-                .from(parent.context)
-                .inflate(R.layout.receiver_item_layout, parent, false)
-        }
-
-
-        return MessageViewHolder(vg)
+        return MessageViewHolder(LayoutInflater
+            .from(parent.context)
+            .inflate(R.layout.sent_item, parent, false))
     }
 
     override fun getItemCount(): Int {
@@ -48,7 +40,27 @@ class MessageAdapter(val data: MutableList<Message>): RecyclerView.Adapter<Messa
 
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
         val item = displayData[position]
-        Log.d("chats", item.text)
+        if (auth.uid == idBuyer) {
+            if (item.role == idBuyer) {
+                holder.itemView.findViewById<TextView>(R.id.sent_message).apply {
+                    visibility = View.VISIBLE
+                }
+            } else {
+                holder.itemView.findViewById<TextView>(R.id.receiver_message).apply {
+                    visibility = View.VISIBLE
+                }
+            }
+        } else {
+            if (item.role == idVendor){
+                holder.itemView.findViewById<TextView>(R.id.receiver_message).apply {
+                    visibility = View.VISIBLE
+                }
+            } else {
+                holder.itemView.findViewById<TextView>(R.id.sent_message).apply {
+                    visibility = View.VISIBLE
+                }
+            }
+        }
         holder.bind(item)
     }
 
