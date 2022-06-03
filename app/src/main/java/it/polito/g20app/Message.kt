@@ -4,13 +4,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.ktx.Firebase
 
 var type = ""
 
@@ -25,10 +20,6 @@ class MessageAdapter(val data: MutableList<Message>): RecyclerView.Adapter<Messa
 
     class MessageViewHolder(v: View): RecyclerView.ViewHolder(v) {
         private var message = v.findViewById<TextView>(R.id.sent_message)
-
-        private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
-        private var auth: FirebaseAuth = Firebase.auth
-
         fun bind(mess: Message) {
             message.text = mess.text
             type = mess.type

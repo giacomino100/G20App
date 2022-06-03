@@ -15,15 +15,17 @@ import com.google.firebase.ktx.Firebase
 
 class ChatFragment : Fragment() {
 
-    private val vm by viewModels<MessageVM>()
-    private var auth: FirebaseAuth = Firebase.auth
+    private val vm by viewModels<ChatVM>()
     private var idTimeSlot: String = " "
+    private var receiver: String = " "
+    private var auth: FirebaseAuth = Firebase.auth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments.let {
             if (it != null) {
                 idTimeSlot = it.getString("idTimeSlot") as String
+                receiver = it.getString("receiver") as String
             }
         }
 
@@ -38,15 +40,26 @@ class ChatFragment : Fragment() {
         rv.layoutManager = LinearLayoutManager(root.context)
 
         vm.messages1.observe(viewLifecycleOwner){
-            if(!it.isEmpty()){
-                val myChat = it.filter { item -> item.idTimeSlot == idTimeSlot }
+            if(!it.filter { item -> item.idTimeSlot == idTimeSlot }.isEmpty()){
+                Log.d("DebugChat", idTimeSlot + " " + receiver)
+                val myChat = it.filter { item -> item.idTimeSlot == idTimeSlot && item.receiver == receiver }
                 val myListOfMessage = mutableListOf<Message>()
-                myChat[0].messaggi.mapNotNull {
-                    val valori =  it.values.toMutableList()
+                Log.d("DebugChat", myChat[0].toString())
+                myChat[0].messaggi.mapNotNull { item ->
+                    val valori = item.values.toMutableList()
                     myListOfMessage.add(Message(valori[0].toString(), valori[1].toString()))
                 }
                 val adapter = MessageAdapter(myListOfMessage)
                 rv.adapter = adapter
+            } else {
+                //CREAZIONE NUOVA CHAT
+                val newChat = Chat(auth.uid.toString(), emptyList(), idTimeSlot, receiver)
+                Log.d("newChat", newChat.toString())
+                vm.addChat(newChat)
+                /*val myListOfMessage = mutableListOf<Message>()
+                myListOfMessage.add(Message("", "-1"))
+                val adapter = MessageAdapter(myListOfMessage)
+                rv.adapter = adapter*/
             }
         }
 

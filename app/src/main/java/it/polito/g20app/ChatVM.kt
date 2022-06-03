@@ -14,11 +14,12 @@ import java.util.*
 
 data class Chat(
     val sender: String,
-    val messaggi: List<Map<*,*>>,
-    val idTimeSlot: String  //campo per selezionare se un messaggio deve andare a destra quindi tra i messaggi inviati o tra quuelli ricevuti
-)
+    var messaggi: List<Map<*,*>>,
+    val idTimeSlot: String, //campo per selezionare se un messaggio deve andare a destra quindi tra i messaggi inviati o tra quuelli ricevuti
+    val receiver: String
+    )
 
-class MessageVM: ViewModel() {
+class ChatVM: ViewModel() {
     private val _messages1 = MutableLiveData<List<Chat>>()
 
     val messages1 : LiveData<List<Chat>> = _messages1
@@ -33,42 +34,40 @@ class MessageVM: ViewModel() {
         l1 = db.collection("chats")
             .whereEqualTo("sender", auth.uid.toString()) //OK
             .addSnapshotListener { v, e ->
-                /*if (e==null) {
-                    //LOGICA:
-                        // -> si prende il documento dal db che contiente un vettore di mappe di messaggi
-                            // -> si prende questo vettore e si crea una lista di messaggi con messageList
-                    _messages1.value = v!!.mapNotNull { d ->
-                        d.toMessageList()
-                    }[0]
-            }*/
                 if(e==null){
                     _messages1.value = v!!.mapNotNull { d ->
                         d.toChat()
                     }
                 }
-                else
+                else {
                     _messages1.value = emptyList()
                 }
             }
+        }
+
+    fun addChat(newChat: Chat){
+        val newChat = hashMapOf(
+            "sender" to newChat.sender,
+            "messaggi" to newChat.messaggi,
+            "receiver" to newChat.receiver,
+            "idTimeSlot" to newChat.idTimeSlot,
+        )
+        Log.d("newChat", newChat.toString())
+
+        db.collection("chats").document().set(newChat).addOnSuccessListener {
+            Log.d("database", "New entry successfully added in chats collection")
+        }.addOnFailureListener {
+            Log.d("database", "Error saving a new entry in chats collection")
+        }
+    }
 
     private fun DocumentSnapshot.toChat(): Chat? {
         return try {
-            //settaggio vettore di messaggi che viene dal DB
-           /* val messaggi = get("messaggi") as List<Map<*,*>>
-            val list = mutableListOf<Message>()
-
-            //per ogni mappa (messaggio) si crea un nuovo elemento Message da dare alla recycler view
-            messaggi.mapNotNull {
-                val valori =  it.values.toMutableList()
-                Log.d("chats", valori[0].toString())
-                list.add(Message(valori[0].toString(), valori[1].toString(), valori[2].toString()))
-            }
-
-            list*/
             val messaggi = get("messaggi") as List<Map<*,*>>
             val sender = get("sender") as String
-            val receiver = get("idTimeSlot") as String
-            Chat(sender, messaggi, receiver)
+            val idTimeSlot = get("idTimeSlot") as String
+            val receiver = get("receiver") as String
+            Chat(sender, messaggi, idTimeSlot, receiver)
         } catch (e: Exception) {
             e.printStackTrace()
             null
