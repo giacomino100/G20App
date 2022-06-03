@@ -30,7 +30,6 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
     ): View? {
         val root = inflater.inflate(R.layout.fragment_time_slot_list, container, false)
         activity?.findViewById<NavigationView?>(R.id.nav_view)?.setCheckedItem(R.id.nav_adv_list)
-        Log.d("timeSlotDetails", "entering in timeslot list ")
         (activity as FirebaseActivity).supportActionBar?.setHomeButtonEnabled(true)
         (activity as FirebaseActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -49,11 +48,9 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
         }
 
         fab.setOnClickListener {
-            //aggiungere un nuovo elemento alla lista
-            //il nuovo elemento deve essere creato dall'utente utilizzando il fragment TimeSlotEditFragment
+            //adding a new timeSlot
             val bundle = Bundle()
-            it.findNavController()
-                .navigate(R.id.action_nav_adv_list_to_timeSlotEditFragment, bundle)
+            it.findNavController().navigate(R.id.action_nav_adv_list_to_timeSlotEditFragment, bundle)
         }
 
         return root

@@ -6,40 +6,54 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-
-var type = ""
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 data class Message(
     val text : String,
-    val type : String
+    val role : String
 )
 
-class MessageAdapter(val data: MutableList<Message>): RecyclerView.Adapter<MessageAdapter.MessageViewHolder>() {
+class MessageAdapter(val data: MutableList<Message>, val idBuyer: String, val idVendor: String): RecyclerView.Adapter<MessageAdapter.MessageViewHolder>() {
     private var displayData = data.toMutableList()
-
+    private var auth: FirebaseAuth = Firebase.auth
 
     class MessageViewHolder(v: View): RecyclerView.ViewHolder(v) {
         private var message = v.findViewById<TextView>(R.id.sent_message)
-        fun bind(mess: Message) {
+
+        fun bind(mess: Message, role: String) {
             message.text = mess.text
-            type = mess.type
+            role = mess.role
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
-        val vg: View
-        if(type == "1"){
-            vg = LayoutInflater
-                .from(parent.context)
-                .inflate(R.layout.sent_item, parent, false)
+        if (auth.uid == idBuyer){
+            if(role == idBuyer){
+                Log.d("checkif", auth.uid + " 1 " + role)
+                return MessageViewHolder(LayoutInflater
+                    .from(parent.context)
+                    .inflate(R.layout.sent_item, parent, false))
+                } else {
+                Log.d("checkif", auth.uid + " 2 " + role)
+                    return MessageViewHolder(LayoutInflater
+                        .from(parent.context)
+                        .inflate(R.layout.receiver_item_layout, parent, false))
+                }
         } else {
-            vg = LayoutInflater
-                .from(parent.context)
-                .inflate(R.layout.receiver_item_layout, parent, false)
+            if(role == idVendor){
+                Log.d("checkif", auth.uid + " 3 " + role)
+                return MessageViewHolder(LayoutInflater
+                    .from(parent.context)
+                    .inflate(R.layout.sent_item, parent, false))
+                } else {
+                Log.d("checkif", auth.uid + " 4 " + role)
+                    return MessageViewHolder(LayoutInflater
+                        .from(parent.context)
+                        .inflate(R.layout.receiver_item_layout, parent, false))
+                }
         }
-
-
-        return MessageViewHolder(vg)
     }
 
     override fun getItemCount(): Int {
@@ -49,7 +63,7 @@ class MessageAdapter(val data: MutableList<Message>): RecyclerView.Adapter<Messa
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
         val item = displayData[position]
         Log.d("chats", item.text)
-        holder.bind(item)
+        holder.bind(item, item.role)
     }
 
 }

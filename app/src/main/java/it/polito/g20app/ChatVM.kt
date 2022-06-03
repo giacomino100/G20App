@@ -14,15 +14,15 @@ import java.util.*
 
 data class Chat(
     val sender: String,
-    var messaggi: List<Map<*,*>>,
-    val idTimeSlot: String, //campo per selezionare se un messaggio deve andare a destra quindi tra i messaggi inviati o tra quuelli ricevuti
+    var messages: List<Map<*,*>>,
+    val idTimeSlot: String,
     val receiver: String
     )
 
 class ChatVM: ViewModel() {
-    private val _messages1 = MutableLiveData<List<Chat>>()
+    private val _chats = MutableLiveData<List<Chat>>()
 
-    val messages1 : LiveData<List<Chat>> = _messages1
+    val chats : LiveData<List<Chat>> = _chats
 
     private var l1: ListenerRegistration
 
@@ -30,26 +30,24 @@ class ChatVM: ViewModel() {
     private var auth: FirebaseAuth = Firebase.auth
 
     init {
-        //qua occorre selezionare la chat con id receiver e sender corretti
         l1 = db.collection("chats")
-            .whereEqualTo("sender", auth.uid.toString()) //OK
             .addSnapshotListener { v, e ->
                 if(e==null){
-                    _messages1.value = v!!.mapNotNull { d ->
+                    _chats.value = v!!.mapNotNull { d ->
                         d.toChat()
                     }
                 }
                 else {
-                    _messages1.value = emptyList()
+                    _chats.value = emptyList()
                 }
             }
         }
 
     fun addChat(newChat: Chat){
         val newChat = hashMapOf(
-            "sender" to newChat.sender,
-            "messaggi" to newChat.messaggi,
-            "receiver" to newChat.receiver,
+            "idBuyer" to newChat.sender,
+            "messages" to newChat.messages,
+            "idVendor" to newChat.receiver,
             "idTimeSlot" to newChat.idTimeSlot,
         )
         Log.d("newChat", newChat.toString())
@@ -63,17 +61,14 @@ class ChatVM: ViewModel() {
 
     private fun DocumentSnapshot.toChat(): Chat? {
         return try {
-            val messaggi = get("messaggi") as List<Map<*,*>>
-            val sender = get("sender") as String
+            val messages = get("messages") as List<Map<*,*>>
+            val sender = get("idBuyer") as String
             val idTimeSlot = get("idTimeSlot") as String
-            val receiver = get("receiver") as String
-            Chat(sender, messaggi, idTimeSlot, receiver)
+            val receiver = get("idVendor") as String
+            Chat(sender, messages, idTimeSlot, receiver)
         } catch (e: Exception) {
             e.printStackTrace()
             null
         }
     }
-
-
-
 }

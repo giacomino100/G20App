@@ -48,17 +48,17 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
         root.findViewById<Button>(R.id.chat_button)?.setOnClickListener{
             val bundle = Bundle()
             bundle.putString("idTimeSlot", idSelected)
-            Log.d("DebugChat", viewModelT.timeSlots.value.toString())
             receiver = viewModelT.timeSlots.value!!.filter { t -> t.id == idSelected }[0].idUser
             bundle.putString("receiver", receiver)
-
-            //questo bundle è necessario per recuperare dal db i messaggi relativi ad un time slot e ad uno user
-            findNavController().navigate(R.id.action_nav_slot_details_to_chat_fragment, bundle)
-
-            //TODO: Aggiungere condizione per mostrare chat dal punto di vista del proprietario
-            //findNavController().navigate(R.id.action_nav_slot_details_to_recycler view, bundle)
-
-
+            if (arguments?.get("fromSkillDet") == 1) {
+                Log.d("fromSkillDet?", "yes")
+                //if the navigation path is: nav_skills_list -> nav_skill_details, the app goes to the nav_chat_fragment
+                findNavController().navigate(R.id.action_nav_slot_details_to_chat_fragment, bundle)
+            } else {
+                Log.d("fromSkillDet?", "no")
+                //the navigation path is: menù -> nav_adv_list, the app goes to nav_timeslot_chats_fragment
+                findNavController().navigate(R.id.action_nav_slot_details_to_nav_timeslot_chats_fragment)
+            }
         }
         return root
     }

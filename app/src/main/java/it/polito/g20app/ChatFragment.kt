@@ -39,27 +39,24 @@ class ChatFragment : Fragment() {
         val rv = root.findViewById<RecyclerView>(R.id.recyclerView_messages)
         rv.layoutManager = LinearLayoutManager(root.context)
 
-        vm.messages1.observe(viewLifecycleOwner){
-            if(!it.filter { item -> item.idTimeSlot == idTimeSlot }.isEmpty()){
-                Log.d("DebugChat", idTimeSlot + " " + receiver)
+        vm.chats.observe(viewLifecycleOwner){
+            if(it.filter { item -> item.idTimeSlot == idTimeSlot }.isNotEmpty()){
+                //Loading the chat
                 val myChat = it.filter { item -> item.idTimeSlot == idTimeSlot && item.receiver == receiver }
+                Log.d("chatfiltered", myChat.toString())
                 val myListOfMessage = mutableListOf<Message>()
-                Log.d("DebugChat", myChat[0].toString())
-                myChat[0].messaggi.mapNotNull { item ->
-                    val valori = item.values.toMutableList()
-                    myListOfMessage.add(Message(valori[0].toString(), valori[1].toString()))
+                myChat[0].messages.mapNotNull { item ->
+                    val messages = item.values.toMutableList()
+                    Log.d("messages", item.values.toMutableList().toString())
+                    myListOfMessage.add(Message(messages[1].toString(), messages[0].toString()))
                 }
-                val adapter = MessageAdapter(myListOfMessage)
+                Log.d("mymessageList", myListOfMessage.toString())
+                val adapter = MessageAdapter(myListOfMessage, auth.uid.toString(), receiver)
                 rv.adapter = adapter
             } else {
-                //CREAZIONE NUOVA CHAT
+                //Creating a new chat
                 val newChat = Chat(auth.uid.toString(), emptyList(), idTimeSlot, receiver)
-                Log.d("newChat", newChat.toString())
                 vm.addChat(newChat)
-                /*val myListOfMessage = mutableListOf<Message>()
-                myListOfMessage.add(Message("", "-1"))
-                val adapter = MessageAdapter(myListOfMessage)
-                rv.adapter = adapter*/
             }
         }
 
