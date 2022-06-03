@@ -17,10 +17,6 @@ class ChatFragment : Fragment() {
     private val vm by viewModels<MessageVM>()
     private var auth: FirebaseAuth = Firebase.auth
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -31,9 +27,10 @@ class ChatFragment : Fragment() {
         rv.layoutManager = LinearLayoutManager(root.context)
 
         vm.messages1.observe(viewLifecycleOwner){
-            val adapter = MessageAdapter(it as MutableList<Message>)
-            rv.adapter = adapter
-
+            if(!it.isEmpty()){
+                val adapter = MessageAdapter(it as MutableList<Message>)
+                rv.adapter = adapter
+            }
         }
 
         return root

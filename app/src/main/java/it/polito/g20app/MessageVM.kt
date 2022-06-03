@@ -25,12 +25,13 @@ class MessageVM: ViewModel() {
 
     private var l1: ListenerRegistration
 
-
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
     private var auth: FirebaseAuth = Firebase.auth
 
     init {
+        //qua occorre selezionare la chat con id receiver e sender corretti
         l1 = db.collection("chats")
+            .whereEqualTo("sender", auth.uid.toString())
             .addSnapshotListener { v, e ->
                 if (e==null) {
                     //LOGICA:
