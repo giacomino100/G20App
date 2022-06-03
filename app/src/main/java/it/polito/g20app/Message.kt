@@ -1,7 +1,5 @@
 package it.polito.g20app
 
-import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
