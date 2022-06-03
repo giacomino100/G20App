@@ -114,6 +114,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
             val adapter = SkillProfileAdapter(viewModelS.skills.value?.filter { s -> it.map { sp -> sp.idSkill }.contains(s.id) } as MutableList<Skill>, true)
             rv.adapter = adapter
             val spinnerChoices = mutableListOf("Select the skill")
+            //TODO: filter{it-> it.idUser == auth.uid}
             spinnerChoices.addAll(viewModelS.skills.value!!.map { skill -> skill.name })
             spinner.adapter = ArrayAdapter(this.requireContext(), android.R.layout.simple_spinner_item, spinnerChoices)
         }
