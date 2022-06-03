@@ -16,7 +16,8 @@ data class TimeSlot(
     var description: String = " ",
     var location: String = " ",
     var duration: String = " ",
-    var date: String = " "
+    var date: String = " ",
+    var userInterested: List<String> = listOf()
 )
 
 class TimeSlotVM: ViewModel(){
@@ -25,9 +26,7 @@ class TimeSlotVM: ViewModel(){
     val timeSlots : LiveData<List<TimeSlot>> = _timeSlots
 
     private var l1: ListenerRegistration
-
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
-
 
     init {
         l1 = db.collection("timeslots")
@@ -38,7 +37,6 @@ class TimeSlotVM: ViewModel(){
             }
     }
 
-
     fun addTimeSlot(timeSlot: TimeSlot){
         val newTimeSlot = hashMapOf(
             "idUser" to timeSlot.idUser,
@@ -47,7 +45,8 @@ class TimeSlotVM: ViewModel(){
             "description" to timeSlot.description,
             "location" to timeSlot.location,
             "duration" to timeSlot.duration,
-            "date" to timeSlot.date
+            "date" to timeSlot.date,
+            "userInterested" to timeSlot.userInterested
         )
         db.collection("timeslots").document().set(newTimeSlot).addOnSuccessListener {
             Log.d("database", "New entry successfully added in timeslots collection")
@@ -64,7 +63,8 @@ class TimeSlotVM: ViewModel(){
             "description" to timeSlot.description,
             "location" to timeSlot.location,
             "duration" to timeSlot.duration,
-            "date" to timeSlot.date
+            "date" to timeSlot.date,
+            "userInterested" to timeSlot.userInterested
         )
         db.collection("timeslots").document(timeSlot.id).set(updatedTimeSlot).addOnSuccessListener {
             Log.d("database", "Timeslots successfully updated")
@@ -83,7 +83,8 @@ class TimeSlotVM: ViewModel(){
             val date = get("date") as String
             val location = get("location") as String
             val duration = get("duration") as String
-            TimeSlot(id, idUser, idSkill, title, description, location, duration, date)
+            val userInterested = get("userInterested") as List<String>
+            TimeSlot(id, idUser, idSkill, title, description, location, duration, date, userInterested)
         } catch (e: Exception) {
             e.printStackTrace()
             null

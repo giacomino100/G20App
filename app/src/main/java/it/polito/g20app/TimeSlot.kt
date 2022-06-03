@@ -39,6 +39,8 @@ class TimeSlotAdapter(val data: MutableList<TimeSlot>, isSkillDetails: Boolean):
                 bundle.putString("idSkill", timeslot.idSkill)
                 it.findNavController().navigate(R.id.action_nav_adv_list_to_timeSlotEditFragment, bundle)
             }
+
+
         }
     }
 

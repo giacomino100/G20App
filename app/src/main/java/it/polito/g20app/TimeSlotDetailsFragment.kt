@@ -9,6 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.map
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
 
@@ -17,6 +20,7 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
     private var receiver: String = " " //receiver of chat
     private val viewModelT by viewModels<TimeSlotVM>()
     private val viewModelS by viewModels<SkillVM>()
+    private var auth: FirebaseAuth = Firebase.auth
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -24,8 +28,11 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
     ): View? {
         // Inflate the layout for this fragment
         val root = inflater.inflate(R.layout.fragment_time_slot_details, container, false)
+
         //recupero id del time slot dal Bundle
-         arguments.let { idSelected = it!!.getString("id").toString() }
+        arguments.let { idSelected = it!!.getString("id").toString() }
+
+
 
         //Loading time slot dal db
          viewModelT.timeSlots.observe(viewLifecycleOwner) {
@@ -60,11 +67,72 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
                 findNavController().navigate(R.id.action_nav_slot_details_to_nav_timeslot_chats_fragment)
             }
         }
+
+        //setting like button
+        root.findViewById<Button>(R.id.like_button).let {
+            if (it != null) {
+                 viewModelT.timeSlots.observe(viewLifecycleOwner){ it1 ->
+                    val userInterested = it1.filter{it.id == idSelected}.map { it.userInterested }.get(0)
+                     if (userInterested.contains(auth.uid)){
+                         it.text = "Remove from favorites"
+                     } else {
+                         it.text = "Add to your favorites"
+                     }
+                }
+            }
+        }
+
+        root.findViewById<Button>(R.id.like_button).setOnClickListener {
+            val timeSlotToUpdate = viewModelT.timeSlots.value?.filter { it.id == idSelected }?.get(0)
+            var liked = false
+            val userInterested = viewModelT.timeSlots.value?.filter{it.id == idSelected}?.map { it.userInterested }?.get(0)
+
+            if (userInterested != null) {
+                liked = userInterested.contains(auth.uid)
+            }
+
+            var newUserInterested = mutableListOf<String>()
+
+            if(liked){
+                if (userInterested != null) {
+                    newUserInterested = userInterested.filter { it != auth.uid } as MutableList<String>
+                }
+            } else {
+                if (userInterested != null) {
+                    newUserInterested.addAll(userInterested)
+                }
+                newUserInterested.add(auth.uid.toString())
+            }
+
+
+            val updatedTimeSlot = timeSlotToUpdate?.let { it1 ->
+                TimeSlot(
+                    it1.id,
+                    timeSlotToUpdate.idUser,
+                    timeSlotToUpdate.idSkill,
+                    timeSlotToUpdate.title,
+                    timeSlotToUpdate.description,
+                    timeSlotToUpdate.location,
+                    timeSlotToUpdate.duration,
+                    timeSlotToUpdate.date,
+                    newUserInterested
+                )
+            }
+            if (updatedTimeSlot != null) {
+                viewModelT.updateTimeSlot(updatedTimeSlot)
+            }
+        }
         return root
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+
     }
 }
