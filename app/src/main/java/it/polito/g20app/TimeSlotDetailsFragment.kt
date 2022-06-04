@@ -72,12 +72,20 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
         root.findViewById<Button>(R.id.like_button).let {
             if (it != null) {
                  viewModelT.timeSlots.observe(viewLifecycleOwner){ it1 ->
-                    val userInterested = it1.filter{it.id == idSelected}.map { it.userInterested }.get(0)
-                     if (userInterested.contains(auth.uid)){
-                         it.text = "Remove from favorites"
-                     } else {
-                         it.text = "Add to your favorites"
+                     if(it1.filter{it.id == idSelected}.map{it.idUser}.get(0) == auth.uid){
+                         it.isEnabled = false
                      }
+                         val checkUserInterested =
+                             it1.filter { it.id == idSelected }.map { it.userInterested }
+                         if (checkUserInterested.size > 0) {
+                             val userInterested = checkUserInterested.get(0)
+                             if (userInterested.contains(auth.uid)) {
+                                 it.text = "Remove from favorites"
+                             } else {
+                                 it.text = "Add to your favorites"
+                             }
+                         }
+
                 }
             }
         }

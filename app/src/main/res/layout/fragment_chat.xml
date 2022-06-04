@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:contentDescription="button to sent the message"
+        android:contentDescription="button to send the message"
         android:minHeight="48dp"
         android:padding="10dp"
         android:src="@drawable/ic_baseline_send_24"
