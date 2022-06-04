@@ -51,7 +51,7 @@ class SkillDetailsFragment : Fragment() {
                 switchSort.visibility = View.VISIBLE
                 switchFilter.visibility = View.VISIBLE
                 flag = true
-                val adapter = TimeSlotAdapter(it.filter { t -> t.idSkill == idSkill } as MutableList<TimeSlot>, flag)
+                val adapter = TimeSlotAdapter(it.filter { t -> t.idSkill == idSkill } as MutableList<TimeSlot>, flag, false)
                 rv.adapter = adapter
             }
         }
@@ -63,7 +63,7 @@ class SkillDetailsFragment : Fragment() {
                                else it.filter { it.idSkill == idSkill }
 
                 sortedSlots.let {
-                    val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>, true)
+                    val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>, true, false)
                     rv.adapter = adapter
                 }
             }
@@ -82,7 +82,7 @@ class SkillDetailsFragment : Fragment() {
                 } else it.filter { it.idSkill == idSkill }
 
                 filteredSlots.let {
-                    val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>, true)
+                    val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>, true, false)
                     rv.adapter = adapter
                 }
             }
