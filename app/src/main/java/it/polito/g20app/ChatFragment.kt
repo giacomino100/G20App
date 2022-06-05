@@ -45,15 +45,17 @@ class ChatFragment : Fragment() {
         val rv = root.findViewById<RecyclerView>(R.id.recyclerView_messages)
         rv.layoutManager = LinearLayoutManager(root.context)
 
+        val reject = root.findViewById<Button>(R.id.button2)
+        val accept = root.findViewById<Button>(R.id.button3)
+        if (idVendor != auth.uid){
+            reject.isVisible = false
+            accept.isVisible = false
+        }
+
         vm.chats.observe(viewLifecycleOwner){
             if(it.any { item -> item.idTimeSlot == idTimeSlot }){
                 //Loading the chat
-                val reject = root.findViewById<Button>(R.id.button2)
-                val accept = root.findViewById<Button>(R.id.button3)
-                if (idVendor != auth.uid){
-                    reject.isVisible = false
-                    accept.isVisible = false
-                }
+
                 val myChat = it.filter { item -> item.idTimeSlot == idTimeSlot && item.idVendor == idVendor }[0]
                 val myListOfMessage = mutableListOf<Message>()
                 myChat.messages.mapNotNull { item ->
