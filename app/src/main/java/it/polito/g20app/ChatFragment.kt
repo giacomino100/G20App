@@ -6,9 +6,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -45,6 +48,12 @@ class ChatFragment : Fragment() {
         vm.chats.observe(viewLifecycleOwner){
             if(it.any { item -> item.idTimeSlot == idTimeSlot }){
                 //Loading the chat
+                val reject = root.findViewById<Button>(R.id.button2)
+                val accept = root.findViewById<Button>(R.id.button3)
+                if (idVendor != auth.uid){
+                    reject.isVisible = false
+                    accept.isVisible = false
+                }
                 val myChat = it.filter { item -> item.idTimeSlot == idTimeSlot && item.idVendor == idVendor }[0]
                 val myListOfMessage = mutableListOf<Message>()
                 myChat.messages.mapNotNull { item ->
@@ -78,6 +87,7 @@ class ChatFragment : Fragment() {
              //aggiornamento della chat con il vettore dei messaggi aggiornato
              val newChat = Chat(myChat.id, myChat.idBuyer, oldMessage, myChat.idTimeSlot, myChat.idVendor)
              vm.addMessage(newChat)
+
 
              //pulizia campo edit
              root.findViewById<EditText>(R.id.messageBox).text.clear()
