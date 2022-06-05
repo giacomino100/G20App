@@ -1,25 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#DCDCDC"
     tools:context=".ChatFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView_messages"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintVertical_bias="0.0"
+        tools:layout_editor_absoluteX="105dp" />
 
-    <ImageView
+    <ImageButton
         android:id="@+id/button_send"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
+        android:adjustViewBounds="false"
+        android:background="@drawable/button_sent_drawable"
         android:contentDescription="button to send the message"
+        android:minWidth="48dp"
         android:minHeight="48dp"
         android:padding="10dp"
         android:src="@drawable/ic_baseline_send_24"
@@ -27,14 +33,16 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/materialCardView"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/button_send"
         android:layout_marginHorizontal="8dp"
         android:layout_marginBottom="8dp"
-        app:cardCornerRadius="30dp">
+        app:cardBackgroundColor="#FFFFFF"
+        app:cardCornerRadius="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/button_send"
+        app:layout_constraintStart_toStartOf="parent">
 
         <EditText
             android:id="@+id/messageBox"
@@ -42,7 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:minHeight="48dp"
-            android:text="new message" />
+            android:hint="new message" />
 
 
     </com.google.android.material.card.MaterialCardView>

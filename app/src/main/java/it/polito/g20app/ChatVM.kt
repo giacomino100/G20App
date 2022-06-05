@@ -17,7 +17,7 @@ data class Chat(
     val sender: String,
     var messages: List<Map<*,*>>,
     val idTimeSlot: String,
-    val receiver: String
+    val idVendor: String
     )
 
 class ChatVM: ViewModel() {
@@ -48,11 +48,25 @@ class ChatVM: ViewModel() {
         val newChat = hashMapOf(
             "idBuyer" to newChat.sender,
             "messages" to newChat.messages,
-            "idVendor" to newChat.receiver,
+            "idVendor" to newChat.idVendor,
             "idTimeSlot" to newChat.idTimeSlot,
         )
 
         db.collection("chats").document().set(newChat).addOnSuccessListener {
+            Log.d("database", "New entry successfully added in chats collection")
+        }.addOnFailureListener {
+            Log.d("database", "Error saving a new entry in chats collection")
+        }
+    }
+
+    fun addMessage(updatedChat: Chat){
+        val newChat = hashMapOf(
+            "idBuyer" to updatedChat.sender,
+            "messages" to updatedChat.messages,
+            "idVendor" to updatedChat.idVendor,
+            "idTimeSlot" to updatedChat.idTimeSlot,
+        )
+        db.collection("chats").document(updatedChat.id).set(newChat).addOnSuccessListener {
             Log.d("database", "New entry successfully added in chats collection")
         }.addOnFailureListener {
             Log.d("database", "Error saving a new entry in chats collection")
@@ -64,8 +78,8 @@ class ChatVM: ViewModel() {
             val messages = get("messages") as List<Map<*,*>>
             val sender = get("idBuyer") as String
             val idTimeSlot = get("idTimeSlot") as String
-            val receiver = get("idVendor") as String
-            Chat(id, sender, messages, idTimeSlot, receiver)
+            val idVendor = get("idVendor") as String
+            Chat(id, sender, messages, idTimeSlot, idVendor)
         } catch (e: Exception) {
             e.printStackTrace()
             null

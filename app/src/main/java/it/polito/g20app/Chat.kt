@@ -41,7 +41,7 @@ class ChatAdapter(val data: MutableList<Chat>): RecyclerView.Adapter<ChatAdapter
         holder.bind(chat =  item) {
             val bundle = Bundle()
             bundle.putString("idTimeSlot", item.idTimeSlot)
-            bundle.putString("receiver", item.receiver)
+            bundle.putString("idVendor", item.idVendor)
             it.findNavController().navigate(R.id.action_nav_timeslot_chats_fragment_to_nav_chatFragment, bundle)
         }
     }

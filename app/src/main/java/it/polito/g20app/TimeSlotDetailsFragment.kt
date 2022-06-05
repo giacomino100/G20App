@@ -17,7 +17,7 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
 
     private var idSelected: String = " "
     private var idTimeslotSkill: String = " "
-    private var receiver: String = " " //receiver of chat
+    private var idVendor: String = " " //receiver of chat
     private val viewModelT by viewModels<TimeSlotVM>()
     private val viewModelS by viewModels<SkillVM>()
     private var auth: FirebaseAuth = Firebase.auth
@@ -32,12 +32,10 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
         //recupero id del time slot dal Bundle
         arguments.let { idSelected = it!!.getString("id").toString() }
 
-
-
         //Loading time slot dal db
          viewModelT.timeSlots.observe(viewLifecycleOwner) {
              val ts = it.filter { t -> t.id == idSelected }[0]
-             receiver = ts.idUser
+             idVendor = ts.idUser
              root.findViewById<TextView>(R.id.slot_title).text = ts.title
              root.findViewById<TextView>(R.id.slot_description).text = ts.description
              root.findViewById<TextView>(R.id.slot_date_and_time).text = ts.date
@@ -55,8 +53,8 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
         root.findViewById<Button>(R.id.chat_button)?.setOnClickListener{
             val bundle = Bundle()
             bundle.putString("idTimeSlot", idSelected)
-            receiver = viewModelT.timeSlots.value!!.filter { t -> t.id == idSelected }[0].idUser
-            bundle.putString("receiver", receiver)
+            idVendor = viewModelT.timeSlots.value!!.filter { t -> t.id == idSelected }[0].idUser
+            bundle.putString("idVendor", idVendor)
             if (arguments?.get("fromSkillDet") == 1) {
                 Log.d("fromSkillDet?", "yes")
                 //if the navigation path is: nav_skills_list -> nav_skill_details, the app goes to the nav_chat_fragment
@@ -138,9 +136,4 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
         setHasOptionsMenu(true)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-
-    }
 }
