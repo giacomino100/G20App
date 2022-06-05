@@ -12,10 +12,14 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 class SkillDetailsFragment : Fragment() {
 
     private val vm by viewModels<TimeSlotVM>()
+    private var auth: FirebaseAuth = Firebase.auth
 
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     override fun onCreateView(
@@ -51,7 +55,7 @@ class SkillDetailsFragment : Fragment() {
                 switchSort.visibility = View.VISIBLE
                 switchFilter.visibility = View.VISIBLE
                 flag = true
-                val adapter = TimeSlotAdapter(it.filter { t -> t.idSkill == idSkill } as MutableList<TimeSlot>, flag, false)
+                val adapter = TimeSlotAdapter(it.filter { t -> t.idSkill == idSkill && t.idUser != auth.uid} as MutableList<TimeSlot>, flag, false)
                 rv.adapter = adapter
             }
         }
@@ -87,7 +91,6 @@ class SkillDetailsFragment : Fragment() {
                 }
             }
         }
-
         return root
     }
 
