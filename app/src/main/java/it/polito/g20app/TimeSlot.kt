@@ -37,6 +37,7 @@ class TimeSlotAdapter(val data: MutableList<TimeSlot>, isSkillDetails: Boolean, 
                 bundle.putString("dateAndTime", timeslot.date)
                 bundle.putString("duration", timeslot.duration)
                 bundle.putString("location", timeslot.location)
+                bundle.putBoolean("taken", timeslot.taken)
                 bundle.putString("idSkill", timeslot.idSkill)
                 it.findNavController().navigate(R.id.action_nav_adv_list_to_timeSlotEditFragment, bundle)
             }
@@ -65,6 +66,7 @@ class TimeSlotAdapter(val data: MutableList<TimeSlot>, isSkillDetails: Boolean, 
             bundle.putString("dateAndTime", item.date)
             bundle.putString("duration", item.duration)
             bundle.putString("location", item.location)
+            bundle.putBoolean("taken", item.taken)
             bundle.putString("idSkill", item.idSkill)
             if (flag && !_isTimeSlotSaved) it.findNavController().navigate(R.id.action_nav_skill_details_to_nav_slot_details3, bundle)
             else it.findNavController().navigate(R.id.action_nav_adv_list_to_nav_slot_details, bundle)

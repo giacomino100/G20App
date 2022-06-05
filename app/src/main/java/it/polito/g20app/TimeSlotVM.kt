@@ -17,6 +17,7 @@ data class TimeSlot(
     var location: String = " ",
     var duration: String = " ",
     var date: String = " ",
+    var taken: Boolean = false,
     var userInterested: List<String> = listOf()
 )
 
@@ -46,6 +47,7 @@ class TimeSlotVM: ViewModel(){
             "location" to timeSlot.location,
             "duration" to timeSlot.duration,
             "date" to timeSlot.date,
+            "taken" to timeSlot.taken,
             "userInterested" to timeSlot.userInterested
         )
         db.collection("timeslots").document().set(newTimeSlot).addOnSuccessListener {
@@ -64,6 +66,7 @@ class TimeSlotVM: ViewModel(){
             "location" to timeSlot.location,
             "duration" to timeSlot.duration,
             "date" to timeSlot.date,
+            "taken" to timeSlot.taken,
             "userInterested" to timeSlot.userInterested
         )
         db.collection("timeslots").document(timeSlot.id).set(updatedTimeSlot).addOnSuccessListener {
@@ -83,8 +86,9 @@ class TimeSlotVM: ViewModel(){
             val date = get("date") as String
             val location = get("location") as String
             val duration = get("duration") as String
+            val taken = get("taken") as Boolean
             val userInterested = get("userInterested") as List<String>
-            TimeSlot(id, idUser, idSkill, title, description, location, duration, date, userInterested)
+            TimeSlot(id, idUser, idSkill, title, description, location, duration, date, taken, userInterested)
         } catch (e: Exception) {
             e.printStackTrace()
             null
