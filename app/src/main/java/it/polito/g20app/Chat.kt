@@ -7,19 +7,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 
 class ChatAdapter(val data: MutableList<Chat>): RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
     private var displayData = data.toMutableList()
 
-
     class ChatViewHolder(v: View): RecyclerView.ViewHolder(v) {
         private val title: TextView = v.findViewById(R.id.chat_title)
         private val card: CardView = v.findViewById(R.id.chat_card)
 
         fun bind(chat: Chat, action: (v: View)->Unit) {
-            title.text = chat.sender
+            title.text = chat.idBuyer
             card.setOnClickListener(action)
         }
     }

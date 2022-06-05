@@ -84,7 +84,7 @@
         tools:layout="@layout/fragment_timeslot_chats" >
         <action
             android:id="@+id/action_nav_timeslot_chats_fragment_to_nav_chatFragment"
-            app:destination="@id/nav_timeslot_chats_fragment" />
+            app:destination="@id/nav_chatFragment" />
     </fragment>
 
 </navigation>

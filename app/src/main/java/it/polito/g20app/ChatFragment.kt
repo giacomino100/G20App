@@ -62,18 +62,24 @@ class ChatFragment : Fragment() {
 
 
          root.findViewById<ImageView>(R.id.button_send).setOnClickListener {
+             //creazione nuovo messaggio
              val newMessage = mapOf(
                  "idUser" to auth.uid.toString(),
                  "text" to root.findViewById<EditText>(R.id.messageBox).text.toString()
              )
 
+             //mychat da aggiornare
              val myChat = vm.chats.value?.filter { item -> item.idTimeSlot == idTimeSlot && item.idVendor == idVendor }?.get(0)
 
+             //aggiunta del nuovo messaggio
              val oldMessage = myChat?.messages as MutableList<Map<*,*>>
              oldMessage.add(newMessage)
 
-             val newChat = Chat(myChat.id, myChat.sender, oldMessage, myChat.idTimeSlot, myChat.idVendor)
+             //aggiornamento della chat con il vettore dei messaggi aggiornato
+             val newChat = Chat(myChat.id, myChat.idBuyer, oldMessage, myChat.idTimeSlot, myChat.idVendor)
              vm.addMessage(newChat)
+
+             //pulizia campo edit
              root.findViewById<EditText>(R.id.messageBox).text.clear()
         }
 

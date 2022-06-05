@@ -14,7 +14,7 @@ import java.util.*
 
 data class Chat(
     val id: String,
-    val sender: String,
+    val idBuyer: String,
     var messages: List<Map<*,*>>,
     val idTimeSlot: String,
     val idVendor: String
@@ -46,7 +46,7 @@ class ChatVM: ViewModel() {
 
     fun addChat(newChat: Chat){
         val newChat = hashMapOf(
-            "idBuyer" to newChat.sender,
+            "idBuyer" to newChat.idBuyer,
             "messages" to newChat.messages,
             "idVendor" to newChat.idVendor,
             "idTimeSlot" to newChat.idTimeSlot,
@@ -61,7 +61,7 @@ class ChatVM: ViewModel() {
 
     fun addMessage(updatedChat: Chat){
         val newChat = hashMapOf(
-            "idBuyer" to updatedChat.sender,
+            "idBuyer" to updatedChat.idBuyer,
             "messages" to updatedChat.messages,
             "idVendor" to updatedChat.idVendor,
             "idTimeSlot" to updatedChat.idTimeSlot,
@@ -76,10 +76,10 @@ class ChatVM: ViewModel() {
     private fun DocumentSnapshot.toChat(): Chat? {
         return try {
             val messages = get("messages") as List<Map<*,*>>
-            val sender = get("idBuyer") as String
+            val idBuyer = get("idBuyer") as String
             val idTimeSlot = get("idTimeSlot") as String
             val idVendor = get("idVendor") as String
-            Chat(id, sender, messages, idTimeSlot, idVendor)
+            Chat(id, idBuyer, messages, idTimeSlot, idVendor)
         } catch (e: Exception) {
             e.printStackTrace()
             null

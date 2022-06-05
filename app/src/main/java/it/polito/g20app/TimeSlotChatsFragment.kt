@@ -31,7 +31,7 @@ class TimeSlotChatsFragment : Fragment(R.layout.fragment_timeslot_chats) {
 
         viewModelC.chats.observe(viewLifecycleOwner) {
             Log.d("timeslotChatsFragment", it.toString())
-            val adapter = ChatAdapter(it as MutableList<Chat>)
+            val adapter = ChatAdapter(it.filter { it.idBuyer != auth.uid } as MutableList<Chat>)
             rv.adapter = adapter
         }
 
