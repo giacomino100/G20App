@@ -73,8 +73,8 @@ class ChatFragment : Fragment() {
              oldMessage.add(newMessage)
 
              val newChat = Chat(myChat.id, myChat.sender, oldMessage, myChat.idTimeSlot, myChat.idVendor)
-
              vm.addMessage(newChat)
+             root.findViewById<EditText>(R.id.messageBox).text.clear()
         }
 
 
