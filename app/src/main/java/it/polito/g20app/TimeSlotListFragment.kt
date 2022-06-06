@@ -58,6 +58,7 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
 
         rv.layoutManager = LinearLayoutManager(root.context)
 
+
         //defining ViewModel
         viewModelT.timeSlots.observe(viewLifecycleOwner) {
             if (isTimeSlotSaved){
