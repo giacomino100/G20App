@@ -166,7 +166,9 @@ class FirebaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.action_nav_skills_list_to_nav_adv_list, bundle)
         }
         if(item.itemId == R.id.nav_time_slots_assigned){
-            findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.action_nav_skills_list_to_time_slots_assigned)
+            val bundle = Bundle()
+            bundle.putString("flag", "trueAssigned") //bundle necessario per dire che dobbiamo visualizzare la GUI per i time slot assegnati
+            findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.action_nav_skills_list_to_nav_adv_list, bundle)
         }
 
         drawerLayout.closeDrawer(GravityCompat.START)

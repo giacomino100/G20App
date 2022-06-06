@@ -47,7 +47,7 @@
         <entry key="..\:/Users/PC/StudioProjects/G20App/app/src/main/res/layout/fragment_skills.xml" value="0.25" />
         <entry key="..\:/Users/PC/StudioProjects/G20App/app/src/main/res/layout/fragment_time_slot_details.xml" value="0.5" />
         <entry key="..\:/Users/PC/StudioProjects/G20App/app/src/main/res/layout/fragment_time_slot_edit.xml" value="0.1" />
-        <entry key="..\:/Users/PC/StudioProjects/G20App/app/src/main/res/layout/fragment_time_slot_list.xml" value="0.18" />
+        <entry key="..\:/Users/PC/StudioProjects/G20App/app/src/main/res/layout/fragment_time_slot_list.xml" value="0.22" />
         <entry key="..\:/Users/PC/StudioProjects/G20App/app/src/main/res/layout/fragment_time_slots_assigned.xml" value="0.16614583333333333" />
         <entry key="..\:/Users/PC/StudioProjects/G20App/app/src/main/res/layout/fragment_time_slots_saved.xml" value="0.18020833333333333" />
         <entry key="..\:/Users/PC/StudioProjects/G20App/app/src/main/res/layout/nav_drawer_header_main.xml" value="0.21" />
@@ -71,7 +71,6 @@
         <entry key="app/src/main/res/layout/fragment_time_slot_list.xml" value="0.2874873353596758" />
         <entry key="app/src/main/res/layout/nav_drawer_header_main.xml" value="0.5911458333333334" />
         <entry key="app/src/main/res/layout/nav_host_fragment.xml" value="0.2874873353596758" />
-        <entry key="app/src/main/res/layout/sent_item.xml" value="0.15070921985815602" />
         <entry key="app/src/main/res/layout/skill.xml" value="0.2874873353596758" />
         <entry key="app/src/main/res/layout/skill_profile.xml" value="0.5911458333333334" />
         <entry key="app/src/main/res/layout/time_slot.xml" value="0.2874873353596758" />
