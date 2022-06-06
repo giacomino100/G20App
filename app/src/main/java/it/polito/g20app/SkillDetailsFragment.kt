@@ -91,6 +91,7 @@ class SkillDetailsFragment : Fragment() {
                             rv.adapter = adapter
 
                     }
+
                 }
         }
         return root
