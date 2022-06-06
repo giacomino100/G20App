@@ -1,10 +1,12 @@
 package it.polito.g20app
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Switch
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -23,6 +25,7 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
     private val viewModelT by viewModels<TimeSlotVM>()
     private var auth: FirebaseAuth = Firebase.auth
     private var isTimeSlotSaved = false
+    private var isTimeSlotAssigned = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,10 +35,15 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
                     Log.d("saved", it.get("flag") as String)
                     isTimeSlotSaved = true
                 }
+                if (it.get("flag") as String == "trueAssigned"){
+                    Log.d("saved", it.get("flag") as String)
+                    isTimeSlotAssigned = true
+                }
             }
         }
     }
 
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -48,13 +56,21 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
 
         //setting name of toolbar
         if(isTimeSlotSaved)(activity as FirebaseActivity).supportActionBar?.title = "My favorites"
+        if(isTimeSlotAssigned)(activity as FirebaseActivity).supportActionBar?.title = "Assigned"
 
         val rv = root.findViewById<RecyclerView>(R.id.rv)
         val fab = root.findViewById<FloatingActionButton>(R.id.fab)
+        val switchAssigned = root.findViewById<Switch>(R.id.switch_assignedTS)
 
         //favourite timeslots case
         if(isTimeSlotSaved)
             fab.visibility = View.GONE
+
+        //assigned timeslots case
+        if(isTimeSlotAssigned) {
+            fab.visibility = View.GONE
+            switchAssigned.visibility = View.VISIBLE
+        }
 
         rv.layoutManager = LinearLayoutManager(root.context)
 
@@ -65,7 +81,9 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
                 root.findViewById<TextView>(R.id.alert).isVisible = it.isEmpty()
                 val adapter = TimeSlotAdapter(it.filter { ts -> ts.userInterested.contains(auth.uid) } as MutableList<TimeSlot>, true, isTimeSlotSaved)
                 rv.adapter = adapter
-            } else {
+            } else if(isTimeSlotAssigned) {
+                //TODO: gestire i due casi, time slot comprati da me, timeslot venduti
+            } else{
                 //this row is needed to show the message in case the list is empty
                 root.findViewById<TextView>(R.id.alert).isVisible = it.isEmpty()
                 val adapter = TimeSlotAdapter(it.filter { ts -> ts.idUser == auth.uid } as MutableList<TimeSlot>, false, isTimeSlotSaved)
