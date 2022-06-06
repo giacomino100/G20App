@@ -32,7 +32,7 @@ class TimeSlotChatsFragment : Fragment(R.layout.fragment_timeslot_chats) {
         val root = inflater.inflate(R.layout.fragment_timeslot_chats, container, false)
 
         val rv = root.findViewById<RecyclerView>(R.id.rv_chats)
-
+        (activity as FirebaseActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         rv.layoutManager = LinearLayoutManager(root.context)
 
         arguments.let {
