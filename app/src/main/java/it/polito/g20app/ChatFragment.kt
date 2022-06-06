@@ -79,16 +79,11 @@ class ChatFragment : Fragment() {
                     val newChat = Chat("", auth.uid.toString(), emptyList(), idTimeSlot, idVendor)
                     viewModelC.addChat(newChat).addOnSuccessListener { it1 ->
                         idChat = it1.id
-                        Log.d("chat_init2",idChat)
                         Log.d("database", "New entry successfully added in chats collection")
                     }.addOnFailureListener {
                         Log.d("database", "Error saving a new entry in chats collection")
                     }
                 }
-                    Log.d("chats","$idTimeSlot + $idVendor" )
-                    Log.d("chats", viewModelC.chats.value!!.filter { it1 -> it1.idTimeSlot == idTimeSlot && it1.idBuyer == auth.uid && it1.idVendor == idVendor }.toString())
-                    Log.d("chat_init",idChat)
-
             } else {
                 //Coming from timeSlots list
                 //So we have to filter chats containing auth.uid as idVendor
@@ -107,13 +102,12 @@ class ChatFragment : Fragment() {
         accept.setOnClickListener {
             //Clicking the accept button, the timeslot 'taken' property will be updated (with the value true) on the db
             //TODO: check sul funzionamento
-            viewModelT.timeSlots.observe(viewLifecycleOwner) {
-                val ts = it.filter { t -> t.id == idTimeSlot }[0]
-                ts.taken = true
-                viewModelT.updateTimeSlot(ts) //update del db, forse non conviene farlo qui, bisognerebbe controllare
-                //TODO: perchè non si può fare qui l'update?
-            }
+            val ts = viewModelT.timeSlots.value!!.filter { t -> t.id == idTimeSlot }[0]
+            ts.taken = true
+            viewModelT.updateTimeSlot(ts)
+
         }
+
 
         reject.setOnClickListener {
             //Rejecting buyer request: deleting the chat for the specified timeslot
@@ -123,7 +117,7 @@ class ChatFragment : Fragment() {
             bundle.putString("idVendor", idVendor)
             bundle.putInt("isSkillDet", fromSkillDet)
             Log.d("deleteChat", viewModelC.chats.value!!.filter { c -> c.id  == arguments.let { b -> b!!.getString("idChat") }}.toString())
-            viewModelC.deleteChat(viewModelC.chats.value!!.filter { c -> c.id  == arguments.let { b -> b!!.getString("idChat") }}.map { it.id }.toString())
+            viewModelC.deleteChat(viewModelC.chats.value!!.filter { c -> c.id  == arguments.let { b -> b!!.getString("idChat") }}.map { it.id }[0])
             findNavController().navigate(R.id.action_nav_chatFragment_to_nav_timeslot_chats_fragment, bundle)
         }
 

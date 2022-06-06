@@ -92,6 +92,9 @@
         <action
             android:id="@+id/action_nav_timeslot_chats_fragment_to_nav_chatFragment"
             app:destination="@id/nav_chatFragment" />
+        <action
+            android:id="@+id/action_nav_timeslot_chats_fragment_to_nav_slot_details"
+            app:destination="@id/nav_slot_details" />
     </fragment>
 
 </navigation>

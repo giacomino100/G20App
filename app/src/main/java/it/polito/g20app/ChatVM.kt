@@ -53,18 +53,7 @@ class ChatVM: ViewModel() {
             "idVendor" to newChat.idVendor,
             "idTimeSlot" to newChat.idTimeSlot,
         )
-        var idChat = "chat"
-/*
-        db.collection("chats").add(newChat).addOnSuccessListener { it1 ->
-            idChat = it1.id
-            Log.d("database", "New entry successfully added in chats collection")
-        }.addOnFailureListener {
-            Log.d("database", "Error saving a new entry in chats collection")
-        }
 
-
- */
-       // Log.d("chatVM",idChat)
         return db.collection("chats").add(newChat)
     }
 
@@ -84,7 +73,11 @@ class ChatVM: ViewModel() {
 
     fun deleteChat(idChat :String){
         //TODO: check delete chat when request is rejected
-        db.collection("chats").document(idChat).delete()
+        db.collection("chats").document(idChat).delete().addOnSuccessListener {
+            Log.d("delete", "New entry successfully deleted in chats collection")
+        }.addOnFailureListener {
+            Log.d("delete", "New entry error while deleting chat in collection")
+        }
     }
 
     private fun DocumentSnapshot.toChat(): Chat? {
