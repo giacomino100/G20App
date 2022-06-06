@@ -76,21 +76,21 @@ class SkillDetailsFragment : Fragment() {
 
         switchFilter?.setOnCheckedChangeListener { _, isChecked ->
             vm.timeSlots.observe(viewLifecycleOwner) { it ->
-                val filteredSlots = if (isChecked) it.filter { it.idSkill == idSkill }.filter {
-                    val time = it.date.split(" ")
-                    val params = time[3].split(":")
-                    if (params[0].toInt() == 12) {
-                        if (params[1].toInt() == 0) {
-                            params[2].toInt() == 0
-                        } else params[1].toInt() < 60
-                    } else params[0].toInt() < 12
-                } else it.filter { it.idSkill == idSkill }
+                    val filteredSlots = if (isChecked) it.filter { it.idSkill == idSkill }.filter {
+                        val time = it.date.split(" ")
+                        val params = time[3].split(":")
+                        if (params[0].toInt() == 12) {
+                            if (params[1].toInt() == 0) {
+                                params[2].toInt() == 0
+                            } else params[1].toInt() < 60
+                        } else params[0].toInt() < 12
+                    } else it.filter { it.idSkill == idSkill }
+                        filteredSlots.let {
+                            val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>, true, false)
+                            rv.adapter = adapter
 
-                filteredSlots.let {
-                    val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>, true, false)
-                    rv.adapter = adapter
+                    }
                 }
-            }
         }
         return root
     }
