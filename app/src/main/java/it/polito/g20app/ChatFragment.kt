@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 
 class ChatFragment : Fragment() {
@@ -25,6 +26,7 @@ class ChatFragment : Fragment() {
     private var fromSkillDet: Int = 0
     private var auth: FirebaseAuth = Firebase.auth
     private val viewModelT by viewModels<TimeSlotVM>()
+    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +35,10 @@ class ChatFragment : Fragment() {
                 idTimeSlot = it.getString("idTimeSlot") as String
                 idVendor = it.getString("idVendor") as String
                 fromSkillDet = it.getInt("fromSkillDet")
-                idChat = it.getString("idChat") as String
+                if(fromSkillDet == 0) {
+                    idChat = it.getString("idChat") as String
+                    Log.d("chat_init1",idChat)
+                }
             }
         }
 
@@ -72,8 +77,17 @@ class ChatFragment : Fragment() {
                 } else {
                     //Creating a new chat
                     val newChat = Chat("", auth.uid.toString(), emptyList(), idTimeSlot, idVendor)
-                    viewModelC.addChat(newChat)
+                    idChat = viewModelC.addChat(newChat)
+                    db.collection("chats").get().addOnSuccessListener { it3 ->
+                        idChat = it3.filter { it2->
+                            it2.data.get("idBuyer") == newChat.idBuyer && it2.data.get("idVendor") == newChat.idVendor && it2.data.get("idTimeSlot") == newChat.idTimeSlot
+                        }.map { it1 -> it1.id }.get(0)
+                    }
                 }
+                    Log.d("chats","$idTimeSlot + $idVendor" )
+                    Log.d("chats", viewModelC.chats.value!!.filter { it1 -> it1.idTimeSlot == idTimeSlot && it1.idBuyer == auth.uid && it1.idVendor == idVendor }.toString())
+                    Log.d("chat_init",idChat)
+
             } else {
                 //Coming from timeSlots list
                 //So we have to filter chats containing auth.uid as idVendor
@@ -121,7 +135,8 @@ class ChatFragment : Fragment() {
              )
 
              //updating the chat
-             val myChat = viewModelC.chats.value?.filter { c -> c.idTimeSlot == idTimeSlot && c.idVendor == idVendor }?.get(0)
+             val myChat = viewModelC.chats.value?.filter { c -> c.id == idChat }?.get(0)
+             Log.d("chat",myChat.toString())
 
              //adding the new message
              val oldMessage = myChat?.messages as MutableList<Map<*,*>>

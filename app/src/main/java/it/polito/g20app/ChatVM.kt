@@ -44,19 +44,27 @@ class ChatVM: ViewModel() {
             }
         }
 
-    fun addChat(newChat: Chat){
+    fun addChat(newChat: Chat) : String{
         val newChat = hashMapOf(
             "idBuyer" to newChat.idBuyer,
             "messages" to newChat.messages,
             "idVendor" to newChat.idVendor,
             "idTimeSlot" to newChat.idTimeSlot,
         )
+        var idChat = "chat"
 
         db.collection("chats").document().set(newChat).addOnSuccessListener {
             Log.d("database", "New entry successfully added in chats collection")
-        }.addOnFailureListener {
+        }./*also {
+            db.collection("chats").get().addOnSuccessListener {
+              idChat = it.filter {
+                    it.data.get("idBuyer") == newChat.get("idBuyer") && it.data.get("idVendor") == newChat.get("idVendor") && it.data.get("idTimeSlot") == newChat.get("idTimeSlot")
+                }.map { it -> it.id }.get(0)
+            }
+        }.*/addOnFailureListener {
             Log.d("database", "Error saving a new entry in chats collection")
         }
+        return idChat
     }
 
     fun addMessage(updatedChat: Chat){
