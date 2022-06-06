@@ -2,6 +2,7 @@ package it.polito.g20app
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -45,7 +46,7 @@ class SkillDetailsFragment : Fragment() {
         vm.timeSlots.observe(viewLifecycleOwner){
             val flag: Boolean
 
-            if (it.none { t -> t.idSkill == idSkill }){
+            if (it.none { t -> t.idSkill == idSkill && t.idUser != auth.uid}){
                 //if the timeslots list is empty, hide the switches
                 switchSort.visibility = View.GONE
                 switchFilter.visibility = View.GONE
@@ -64,8 +65,8 @@ class SkillDetailsFragment : Fragment() {
 
         switchSort?.setOnCheckedChangeListener { _, isChecked ->
             vm.timeSlots.observe(viewLifecycleOwner) { it ->
-                val sortedSlots = if (isChecked) it.filter { it.idSkill == idSkill }.sortedBy { it.title }
-                               else it.filter { it.idSkill == idSkill }
+                val sortedSlots = if (isChecked) it.filter { it.idSkill == idSkill && it.idUser != auth.uid }.sortedBy { it.title }
+                               else it.filter { it.idSkill == idSkill && it.idUser != auth.uid }
 
                 sortedSlots.let {
                     val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>, true, false)
@@ -76,7 +77,7 @@ class SkillDetailsFragment : Fragment() {
 
         switchFilter?.setOnCheckedChangeListener { _, isChecked ->
             vm.timeSlots.observe(viewLifecycleOwner) { it ->
-                    val filteredSlots = if (isChecked) it.filter { it.idSkill == idSkill }.filter {
+                    val filteredSlots = if (isChecked) it.filter { it.idSkill == idSkill && it.idUser != auth.uid }.filter {
                         val time = it.date.split(" ")
                         val params = time[3].split(":")
                         if (params[0].toInt() == 12) {
@@ -84,7 +85,7 @@ class SkillDetailsFragment : Fragment() {
                                 params[2].toInt() == 0
                             } else params[1].toInt() < 60
                         } else params[0].toInt() < 12
-                    } else it.filter { it.idSkill == idSkill }
+                    } else it.filter { it.idSkill == idSkill && it.idUser != auth.uid}
                         filteredSlots.let {
                             val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>, true, false)
                             rv.adapter = adapter
