@@ -29,9 +29,9 @@ class TimeSlotChatsFragment : Fragment(R.layout.fragment_timeslot_chats) {
 
         rv.layoutManager = LinearLayoutManager(root.context)
 
-        viewModelC.chats.observe(viewLifecycleOwner) {
-            Log.d("timeslotChatsFragment", it.toString())
-            val adapter = ChatAdapter(it.filter { it.idBuyer != auth.uid } as MutableList<Chat>)
+        viewModelC.chats.observe(viewLifecycleOwner) { it ->
+            val adapter = ChatAdapter(it.filter { arguments.let { b -> b!!.get("idTimeSlot")
+            } == it.idTimeSlot && it.idVendor == auth.uid} as MutableList<Chat>)
             rv.adapter = adapter
         }
 

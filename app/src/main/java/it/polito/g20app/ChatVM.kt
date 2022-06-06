@@ -36,7 +36,7 @@ class ChatVM: ViewModel() {
                 if(e==null){
                     _chats.value = v!!.mapNotNull { d ->
                         d.toChat()
-                    }
+                    }.filter { c -> c.idBuyer == auth.uid || c.idVendor == auth.uid }
                 }
                 else {
                     _chats.value = emptyList()

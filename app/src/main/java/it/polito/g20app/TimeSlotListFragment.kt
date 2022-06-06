@@ -52,7 +52,7 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
         val rv = root.findViewById<RecyclerView>(R.id.rv)
         val fab = root.findViewById<FloatingActionButton>(R.id.fab)
 
-        //se stiamo visualizzando i time slot preferiti non possiamo aggiungerne altri
+        //favourite timeslots case
         if(isTimeSlotSaved)
             fab.visibility = View.GONE
 
@@ -61,7 +61,7 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
         //defining ViewModel
         viewModelT.timeSlots.observe(viewLifecycleOwner) {
             if (isTimeSlotSaved){
-                //qui dentro se vogliamo visualizzare i time slot aggiunti ai favoriti da un utente
+                //user favourite timeslots case
                 root.findViewById<TextView>(R.id.alert).isVisible = it.isEmpty()
                 val adapter = TimeSlotAdapter(it.filter { ts -> ts.userInterested.contains(auth.uid) } as MutableList<TimeSlot>, true, isTimeSlotSaved)
                 rv.adapter = adapter

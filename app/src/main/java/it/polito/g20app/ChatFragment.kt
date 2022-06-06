@@ -19,6 +19,7 @@ class ChatFragment : Fragment() {
     private val vmChat by viewModels<ChatVM>()
     private var idTimeSlot: String = " "
     private var idVendor: String = " "
+    private var fromSkillDet: Int = 0
     private var auth: FirebaseAuth = Firebase.auth
     private val viewModelT by viewModels<TimeSlotVM>()
 
@@ -28,6 +29,7 @@ class ChatFragment : Fragment() {
             if (it != null) {
                 idTimeSlot = it.getString("idTimeSlot") as String
                 idVendor = it.getString("idVendor") as String
+                fromSkillDet = it.getInt("fromSkillDet")
             }
         }
 
@@ -49,21 +51,38 @@ class ChatFragment : Fragment() {
         }
 
         vmChat.chats.observe(viewLifecycleOwner){
-            if(it.any { item -> item.idTimeSlot == idTimeSlot }){
-                //Loading the chat
-                val myChat = it.filter { item -> item.idTimeSlot == idTimeSlot && item.idVendor == idVendor }[0]
+            if (fromSkillDet == 1) {
+                //Coming from skillDet, I'm a buyer
+                //So we have to filter chats containing auth.uid as idBuyer
+                if (it.any { c -> c.idTimeSlot == idTimeSlot && c.idBuyer == auth.uid }) {
+                    //if there a chat for auth.uid as buyer, for the clicked timeslot ->
+                    //Loading the chat (if exists)
+                    val myChat = it.filter { c -> c.idTimeSlot == idTimeSlot && c.idBuyer == auth.uid }[0]
+                    val myListOfMessage = mutableListOf<Message>()
+                    myChat.messages.mapNotNull { item ->
+                        val messages = item.values.toMutableList()
+                        myListOfMessage.add(Message(messages[1].toString(), messages[0].toString()))
+                    }
+                    val adapter = MessageAdapter(myListOfMessage, auth.uid.toString(), idVendor)
+                    rv.adapter = adapter
+                } else {
+                    //Creating a new chat
+                    val newChat = Chat("", auth.uid.toString(), emptyList(), idTimeSlot, idVendor)
+                    vmChat.addChat(newChat)
+                }
+            } else {
+                //Coming from timeSlots list
+                //So we have to filter chats containing auth.uid as idVendor
+                val myChat = it.filter { c -> c.id == arguments.let { b -> b!!.getString("idChat") } }[0]
                 val myListOfMessage = mutableListOf<Message>()
                 myChat.messages.mapNotNull { item ->
                     val messages = item.values.toMutableList()
                     myListOfMessage.add(Message(messages[1].toString(), messages[0].toString()))
                 }
-                val adapter = MessageAdapter(myListOfMessage, auth.uid.toString(), idVendor)
+                val adapter = MessageAdapter(myListOfMessage, myChat.idBuyer, myChat.idVendor)
                 rv.adapter = adapter
-            } else {
-                //Creating a new chat
-                val newChat = Chat("", auth.uid.toString(), emptyList(), idTimeSlot, idVendor)
-                vmChat.addChat(newChat)
             }
+
         }
 
         accept.setOnClickListener {
