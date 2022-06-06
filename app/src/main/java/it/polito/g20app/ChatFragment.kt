@@ -6,10 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.ImageView
+import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -25,6 +22,7 @@ class ChatFragment : Fragment() {
     private var idTimeSlot: String = " "
     private var idVendor: String = " "
     private var auth: FirebaseAuth = Firebase.auth
+    private val viewModelT by viewModels<TimeSlotVM>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +53,6 @@ class ChatFragment : Fragment() {
         vm.chats.observe(viewLifecycleOwner){
             if(it.any { item -> item.idTimeSlot == idTimeSlot }){
                 //Loading the chat
-
                 val myChat = it.filter { item -> item.idTimeSlot == idTimeSlot && item.idVendor == idVendor }[0]
                 val myListOfMessage = mutableListOf<Message>()
                 myChat.messages.mapNotNull { item ->
@@ -69,6 +66,20 @@ class ChatFragment : Fragment() {
                 val newChat = Chat("", auth.uid.toString(), emptyList(), idTimeSlot, idVendor)
                 vm.addChat(newChat)
             }
+        }
+
+        accept.setOnClickListener {
+            //se accetto la richiesta per il timeslot, il timeslot a cui appartiene la chat metterà taken = true
+            //TODO: check sul funzionamento
+            viewModelT.timeSlots.observe(viewLifecycleOwner) {
+                val ts = it.filter { t -> t.id == idTimeSlot }[0]
+                ts.taken = true
+                viewModelT.updateTimeSlot(ts) //update del db, forse non conviene farlo qui, bisognerebbe controllare
+            }
+        }
+
+        reject.setOnClickListener {
+            //TODO: se si clicca sul reject si chiude la chat
         }
 
 
