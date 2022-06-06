@@ -79,7 +79,7 @@ class ChatFragment : Fragment() {
                     val messages = item.values.toMutableList()
                     myListOfMessage.add(Message(messages[1].toString(), messages[0].toString()))
                 }
-                val adapter = MessageAdapter(myListOfMessage, myChat.idBuyer, myChat.idVendor)
+                val adapter = MessageAdapter(myListOfMessage, myChat.idVendor, myChat.idBuyer)
                 rv.adapter = adapter
             }
 
