@@ -59,9 +59,10 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
         val switchAssigned = root.findViewById<Switch>(R.id.switch_assignedTS)
 
         //favourite timeslots case
-        if(isTimeSlotSaved)
+        if(isTimeSlotSaved) {
             (activity as FirebaseActivity).supportActionBar?.title = "My favorites"
             fab.visibility = View.GONE
+        }
 
         //assigned timeslots case
         if(isTimeSlotAssigned) {
@@ -71,14 +72,6 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
         }
 
         rv.layoutManager = LinearLayoutManager(root.context)
-
-        if (isTimeSlotAssigned){
-            viewModelT.timeSlots.observe(viewLifecycleOwner){
-                Log.d("assigned", it.filter { it.idUser != auth.uid && it.buyer == auth.uid }.toString())
-                val adapter = TimeSlotAdapter(it.filter { it.idUser != auth.uid && it.buyer == auth.uid } as MutableList<TimeSlot>, true, false)
-                rv.adapter = adapter
-            }
-        }
 
         switchAssigned?.setOnCheckedChangeListener { _, isChecked ->
             viewModelT.timeSlots.observe(viewLifecycleOwner){
@@ -93,7 +86,7 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
                 Log.d("assigned", it.filter { it.idUser != auth.uid && it.buyer == auth.uid }.toString())
 
                 sortedSlots.let {
-                    val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>, true, false)
+                    val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>, true, false, true)
                     rv.adapter = adapter
                 }
             }
@@ -104,15 +97,16 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
             if (isTimeSlotSaved){
                 //user favourite timeslots case
                 root.findViewById<TextView>(R.id.alert).isVisible = it.isEmpty()
-                val adapter = TimeSlotAdapter(it.filter { ts -> ts.userInterested.contains(auth.uid) } as MutableList<TimeSlot>, true, isTimeSlotSaved)
+                val adapter = TimeSlotAdapter(it.filter { ts -> ts.userInterested.contains(auth.uid) } as MutableList<TimeSlot>, true, isTimeSlotSaved, false)
                 rv.adapter = adapter
             } else if(isTimeSlotAssigned) {
                 //TODO: gestire i due casi, time slot comprati da me, timeslot venduti
-
+                val adapter = TimeSlotAdapter(it.filter { it.idUser != auth.uid && it.buyer == auth.uid } as MutableList<TimeSlot>, true, false, true)
+                rv.adapter = adapter
             } else{
                 //this row is needed to show the message in case the list is empty
                 root.findViewById<TextView>(R.id.alert).isVisible = it.isEmpty()
-                val adapter = TimeSlotAdapter(it.filter { ts -> ts.idUser == auth.uid } as MutableList<TimeSlot>, false, isTimeSlotSaved)
+                val adapter = TimeSlotAdapter(it.filter { ts -> ts.idUser == auth.uid } as MutableList<TimeSlot>, false, isTimeSlotSaved, false)
                 rv.adapter = adapter
             }
         }

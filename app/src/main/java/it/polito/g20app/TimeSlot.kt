@@ -11,10 +11,11 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 
 
-class TimeSlotAdapter(val data: MutableList<TimeSlot>, isSkillDetails: Boolean, isTimeSlotSaved: Boolean): RecyclerView.Adapter<TimeSlotAdapter.TimeSlotViewHolder>() {
+class TimeSlotAdapter(val data: MutableList<TimeSlot>, isSkillDetails: Boolean, isTimeSlotSaved: Boolean, isTimeSlotAssigned: Boolean): RecyclerView.Adapter<TimeSlotAdapter.TimeSlotViewHolder>() {
     private var displayData = data.toMutableList()
     private var flag = isSkillDetails
     private var _isTimeSlotSaved = isTimeSlotSaved
+    private var _isTimeSlotAssigned = isTimeSlotAssigned
 
     class TimeSlotViewHolder(v: View): RecyclerView.ViewHolder(v) {
         private val title: TextView = v.findViewById(R.id.slot_title)
@@ -68,7 +69,7 @@ class TimeSlotAdapter(val data: MutableList<TimeSlot>, isSkillDetails: Boolean, 
             bundle.putString("location", item.location)
             bundle.putBoolean("taken", item.taken)
             bundle.putString("idSkill", item.idSkill)
-            if (flag && !_isTimeSlotSaved) it.findNavController().navigate(R.id.action_nav_skill_details_to_nav_slot_details3, bundle)
+            if (flag && !_isTimeSlotSaved && !_isTimeSlotAssigned) it.findNavController().navigate(R.id.action_nav_skill_details_to_nav_slot_details3, bundle)
             else it.findNavController().navigate(R.id.action_nav_adv_list_to_nav_slot_details, bundle)
         }
     }

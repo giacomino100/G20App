@@ -102,12 +102,21 @@ class ChatFragment : Fragment() {
         accept.setOnClickListener {
             //Clicking the accept button, the timeslot 'taken' property will be updated (with the value true) on the db
             //TODO: check sul funzionamento
-            val ts = viewModelT.timeSlots.value!!.filter { t -> t.id == idTimeSlot }[0]
-            val idBuyer = viewModelC.chats.value!!.filter { c -> c.id == arguments.let { b -> b!!.getString("idChat") } }[0].idBuyer
-            ts.buyer = idBuyer
-            ts.taken = true
-            viewModelT.updateTimeSlot(ts)
-
+            val ts = viewModelT.timeSlots.value?.filter { t -> t.id == idTimeSlot }?.get(0)
+            val idBuyer = viewModelC.chats.value?.filter { c -> c.id == arguments.let { b -> b!!.getString("idChat") } }?.get(0)?.idBuyer
+            if (ts != null) {
+                if (idBuyer != null) {
+                    ts.buyer = idBuyer
+                }
+            }
+            if (ts != null) {
+                ts.taken = true
+            }
+            if (ts != null) {
+                viewModelT.updateTimeSlot(ts)
+                viewModelC.deleteChat(viewModelC.chats.value!!.filter { c -> c.id  == arguments.let { b -> b!!.getString("idChat") }}.map { it.id }[0])
+                requireActivity().onBackPressed()
+            }
         }
 
 

@@ -2,6 +2,7 @@ package it.polito.g20app
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.TextView
@@ -30,7 +31,12 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
         val root = inflater.inflate(R.layout.fragment_time_slot_details, container, false)
 
         //getting the timeSlot id from bundle
-        arguments.let { idSelected = it!!.getString("id").toString() }
+        arguments.let {
+            idSelected = it!!.getString("id").toString()
+            val taken = it.getBoolean("taken")
+            if (taken)
+                root.findViewById<Button>(R.id.chat_button).visibility = View.INVISIBLE
+        }
 
         //Loading timeSlot
          viewModelT.timeSlots.observe(viewLifecycleOwner) {

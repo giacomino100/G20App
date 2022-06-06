@@ -60,7 +60,7 @@ class SkillDetailsFragment : Fragment() {
                     it.filter { t -> t.idSkill == idSkill && t.idUser != auth.uid && !t.taken}.toString()
                 )
                 // !t.taken -> if the timeslot has not already been taken, it will be shown
-                val adapter = TimeSlotAdapter(it.filter { t -> t.idSkill == idSkill && t.idUser != auth.uid && !t.taken} as MutableList<TimeSlot>, flag, false)
+                val adapter = TimeSlotAdapter(it.filter { t -> t.idSkill == idSkill && t.idUser != auth.uid && !t.taken} as MutableList<TimeSlot>, flag, false, false)
                 rv.adapter = adapter
             }
         }
@@ -72,7 +72,7 @@ class SkillDetailsFragment : Fragment() {
                                else it.filter { it.idSkill == idSkill && it.idUser != auth.uid }
 
                 sortedSlots.let {
-                    val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>, true, false)
+                    val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>, true, false, false)
                     rv.adapter = adapter
                 }
             }
@@ -90,7 +90,7 @@ class SkillDetailsFragment : Fragment() {
                         } else params[0].toInt() < 12
                     } else it.filter { it.idSkill == idSkill && it.idUser != auth.uid}
                         filteredSlots.let {
-                            val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>, true, false)
+                            val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>, true, false, false)
                             rv.adapter = adapter
 
                     }
