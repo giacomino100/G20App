@@ -77,11 +77,12 @@ class ChatFragment : Fragment() {
                 } else {
                     //Creating a new chat
                     val newChat = Chat("", auth.uid.toString(), emptyList(), idTimeSlot, idVendor)
-                    idChat = viewModelC.addChat(newChat)
-                    db.collection("chats").get().addOnSuccessListener { it3 ->
-                        idChat = it3.filter { it2->
-                            it2.data.get("idBuyer") == newChat.idBuyer && it2.data.get("idVendor") == newChat.idVendor && it2.data.get("idTimeSlot") == newChat.idTimeSlot
-                        }.map { it1 -> it1.id }.get(0)
+                    viewModelC.addChat(newChat).addOnSuccessListener { it1 ->
+                        idChat = it1.id
+                        Log.d("chat_init2",idChat)
+                        Log.d("database", "New entry successfully added in chats collection")
+                    }.addOnFailureListener {
+                        Log.d("database", "Error saving a new entry in chats collection")
                     }
                 }
                     Log.d("chats","$idTimeSlot + $idVendor" )

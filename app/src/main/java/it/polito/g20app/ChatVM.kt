@@ -4,8 +4,10 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
@@ -44,7 +46,7 @@ class ChatVM: ViewModel() {
             }
         }
 
-    fun addChat(newChat: Chat) : String{
+    fun addChat(newChat: Chat) : Task<DocumentReference> {
         val newChat = hashMapOf(
             "idBuyer" to newChat.idBuyer,
             "messages" to newChat.messages,
@@ -52,19 +54,18 @@ class ChatVM: ViewModel() {
             "idTimeSlot" to newChat.idTimeSlot,
         )
         var idChat = "chat"
-
-        db.collection("chats").document().set(newChat).addOnSuccessListener {
+/*
+        db.collection("chats").add(newChat).addOnSuccessListener { it1 ->
+            idChat = it1.id
             Log.d("database", "New entry successfully added in chats collection")
-        }./*also {
-            db.collection("chats").get().addOnSuccessListener {
-              idChat = it.filter {
-                    it.data.get("idBuyer") == newChat.get("idBuyer") && it.data.get("idVendor") == newChat.get("idVendor") && it.data.get("idTimeSlot") == newChat.get("idTimeSlot")
-                }.map { it -> it.id }.get(0)
-            }
-        }.*/addOnFailureListener {
+        }.addOnFailureListener {
             Log.d("database", "Error saving a new entry in chats collection")
         }
-        return idChat
+
+
+ */
+       // Log.d("chatVM",idChat)
+        return db.collection("chats").add(newChat)
     }
 
     fun addMessage(updatedChat: Chat){
