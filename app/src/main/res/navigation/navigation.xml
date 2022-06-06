@@ -80,6 +80,9 @@
         <action
             android:id="@+id/action_nav_chatFragment_to_nav_slot_details"
             app:destination="@id/nav_slot_details" />
+        <action
+            android:id="@+id/action_nav_chatFragment_to_nav_timeslot_chats_fragment"
+            app:destination="@id/nav_timeslot_chats_fragment" />
     </fragment>
     <fragment
         android:id="@+id/nav_timeslot_chats_fragment"

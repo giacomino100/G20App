@@ -28,7 +28,7 @@ class TimeSlotAdapter(val data: MutableList<TimeSlot>, isSkillDetails: Boolean, 
             if (flag) edit.visibility = View.GONE
 
             edit.setOnClickListener {
-                //Cliccando il tasto edit nella Lista
+                //Clicking the edit button
                 val bundle = Bundle()
                 bundle.putString("id", timeslot.id)
                 bundle.putString("idUser", timeslot.idUser)

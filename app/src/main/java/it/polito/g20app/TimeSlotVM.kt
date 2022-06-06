@@ -21,6 +21,7 @@ data class TimeSlot(
     var userInterested: List<String> = listOf()
 )
 
+@Suppress("UNCHECKED_CAST")
 class TimeSlotVM: ViewModel(){
 
     private val _timeSlots = MutableLiveData<List<TimeSlot>>()

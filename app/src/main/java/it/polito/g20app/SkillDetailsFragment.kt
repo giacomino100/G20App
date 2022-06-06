@@ -45,8 +45,8 @@ class SkillDetailsFragment : Fragment() {
         vm.timeSlots.observe(viewLifecycleOwner){
             val flag: Boolean
 
-            if (it.filter { t -> t.idSkill == idSkill }.isNullOrEmpty()){
-                //se la lista di timeslots è vuota, non visualizzo gli switch
+            if (it.none { t -> t.idSkill == idSkill }){
+                //if the timeslots list is empty, hide the switches
                 switchSort.visibility = View.GONE
                 switchFilter.visibility = View.GONE
                 Snackbar.make(root, "There are no TimeSlots for the selected skill", Snackbar.LENGTH_LONG).show()
@@ -55,7 +55,7 @@ class SkillDetailsFragment : Fragment() {
                 switchSort.visibility = View.VISIBLE
                 switchFilter.visibility = View.VISIBLE
                 flag = true
-                // !t.taken -> se il timeslot non è già preso allora viene mostrato altrimenti no
+                // !t.taken -> if the timeslot has not already been taken, it will be shown
                 val adapter = TimeSlotAdapter(it.filter { t -> t.idSkill == idSkill && t.idUser != auth.uid && !t.taken} as MutableList<TimeSlot>, flag, false)
                 rv.adapter = adapter
             }

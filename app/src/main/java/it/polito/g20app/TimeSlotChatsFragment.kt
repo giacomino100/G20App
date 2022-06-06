@@ -1,7 +1,6 @@
 package it.polito.g20app
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -30,11 +30,14 @@ class TimeSlotChatsFragment : Fragment(R.layout.fragment_timeslot_chats) {
         rv.layoutManager = LinearLayoutManager(root.context)
 
         viewModelC.chats.observe(viewLifecycleOwner) { it ->
-            val adapter = ChatAdapter(it.filter { arguments.let { b -> b!!.get("idTimeSlot")
-            } == it.idTimeSlot && it.idVendor == auth.uid} as MutableList<Chat>)
-            rv.adapter = adapter
+            if (it.none { c -> c.idTimeSlot == arguments.let { b -> b!!.getString("idTimeSlot") } })
+                Snackbar.make(root, "No opened chats for the selected timeslot", Snackbar.LENGTH_LONG).show()
+            else {
+                val adapter = ChatAdapter(it.filter { arguments.let { b -> b!!.get("idTimeSlot")
+                } == it.idTimeSlot && it.idVendor == auth.uid} as MutableList<Chat>)
+                rv.adapter = adapter
+            }
         }
-
         return root
     }
 

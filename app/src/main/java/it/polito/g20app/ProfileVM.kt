@@ -38,7 +38,7 @@ class ProfileVM: ViewModel() {
             }
     }
 
-    fun DocumentSnapshot.toProfile(): Profile? {
+    private fun DocumentSnapshot.toProfile(): Profile? {
         return try {
             val id = id
             val fullname = get("fullname") as String

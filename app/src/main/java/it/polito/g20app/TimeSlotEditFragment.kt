@@ -31,10 +31,6 @@ class TimeSlotEditFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_time_slot_edit, container, false)
-
-        // android:configChanges="orientation|screenSize" da aggiungere sotto activity nel manifest
-        // serve per avere la stessa toolbar quando ruotiamo lo schermo
-
         (activity as FirebaseActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         (activity as FirebaseActivity).supportActionBar?.setHomeButtonEnabled(false)
 
@@ -112,7 +108,7 @@ class TimeSlotEditFragment : Fragment() {
                         //db timeslot insert
                         viewModelT.addTimeSlot(newTimeSlot)
 
-                        //Management snackbar
+                        //Management snack bar
                         val root = view.rootView
                         Snackbar.make(root, "TimeSlot created", Snackbar.LENGTH_LONG)
                             .show()
@@ -166,7 +162,7 @@ class TimeSlotEditFragment : Fragment() {
 
                             viewModelT.updateTimeSlot(updatedTimeSlot)
 
-                            //Management snackbar
+                            //Management snack bar
                             val root = view.rootView
                             Snackbar.make(root, "Time slot updated", Snackbar.LENGTH_LONG).show()
 

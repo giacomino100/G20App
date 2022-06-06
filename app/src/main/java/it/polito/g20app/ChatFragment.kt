@@ -1,6 +1,7 @@
 package it.polito.g20app
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
@@ -16,9 +18,10 @@ import com.google.firebase.ktx.Firebase
 
 class ChatFragment : Fragment() {
 
-    private val vmChat by viewModels<ChatVM>()
+    private val viewModelC by viewModels<ChatVM>()
     private var idTimeSlot: String = " "
     private var idVendor: String = " "
+    private var idChat: String = " "
     private var fromSkillDet: Int = 0
     private var auth: FirebaseAuth = Firebase.auth
     private val viewModelT by viewModels<TimeSlotVM>()
@@ -30,6 +33,7 @@ class ChatFragment : Fragment() {
                 idTimeSlot = it.getString("idTimeSlot") as String
                 idVendor = it.getString("idVendor") as String
                 fromSkillDet = it.getInt("fromSkillDet")
+                idChat = it.getString("idChat") as String
             }
         }
 
@@ -50,7 +54,7 @@ class ChatFragment : Fragment() {
             accept.isVisible = false
         }
 
-        vmChat.chats.observe(viewLifecycleOwner){
+        viewModelC.chats.observe(viewLifecycleOwner){
             if (fromSkillDet == 1) {
                 //Coming from skillDet, I'm a buyer
                 //So we have to filter chats containing auth.uid as idBuyer
@@ -59,7 +63,7 @@ class ChatFragment : Fragment() {
                     //Loading the chat (if exists)
                     val myChat = it.filter { c -> c.idTimeSlot == idTimeSlot && c.idBuyer == auth.uid }[0]
                     val myListOfMessage = mutableListOf<Message>()
-                    myChat.messages.mapNotNull { item ->
+                    myChat.messages.map { item ->
                         val messages = item.values.toMutableList()
                         myListOfMessage.add(Message(messages[1].toString(), messages[0].toString()))
                     }
@@ -68,14 +72,14 @@ class ChatFragment : Fragment() {
                 } else {
                     //Creating a new chat
                     val newChat = Chat("", auth.uid.toString(), emptyList(), idTimeSlot, idVendor)
-                    vmChat.addChat(newChat)
+                    viewModelC.addChat(newChat)
                 }
             } else {
                 //Coming from timeSlots list
                 //So we have to filter chats containing auth.uid as idVendor
                 val myChat = it.filter { c -> c.id == arguments.let { b -> b!!.getString("idChat") } }[0]
                 val myListOfMessage = mutableListOf<Message>()
-                myChat.messages.mapNotNull { item ->
+                myChat.messages.map { item ->
                     val messages = item.values.toMutableList()
                     myListOfMessage.add(Message(messages[1].toString(), messages[0].toString()))
                 }
@@ -86,56 +90,50 @@ class ChatFragment : Fragment() {
         }
 
         accept.setOnClickListener {
-            //se accetto la richiesta per il timeslot, il timeslot a cui appartiene la chat metterà taken = true
+            //Clicking the accept button, the timeslot 'taken' property will be updated (with the value true) on the db
             //TODO: check sul funzionamento
             viewModelT.timeSlots.observe(viewLifecycleOwner) {
                 val ts = it.filter { t -> t.id == idTimeSlot }[0]
                 ts.taken = true
                 viewModelT.updateTimeSlot(ts) //update del db, forse non conviene farlo qui, bisognerebbe controllare
+                //TODO: perchè non si può fare qui l'update?
             }
         }
 
         reject.setOnClickListener {
+            //Rejecting buyer request: deleting the chat for the specified timeslot
             //TODO: se si clicca sul reject si chiude la chat e si manda un messaggio automatico al requestor
-            //cancelliamo anche la chat dal db
-            //findNavController().navigate(R.id.action_nav_chatFragment_to_nav_slot_details)
-            //come prendiamo l'id della chat corrente?
-            /*
-            vmChat.chats.observe(viewLifecycleOwner){
-                if(it.any { item -> item.idTimeSlot == idTimeSlot }){
-                    //Loading the chat
-                    val myChat = it.filter { item -> item.idTimeSlot == idTimeSlot && item.idVendor == idVendor }[0]
-                    vmChat.deleteChat(myChat.id)
-                }
-
-             */
+            val bundle = Bundle()
+            bundle.putString("idTimeSlot", idTimeSlot)
+            bundle.putString("idVendor", idVendor)
+            bundle.putInt("isSkillDet", fromSkillDet)
+            Log.d("deleteChat", viewModelC.chats.value!!.filter { c -> c.id  == arguments.let { b -> b!!.getString("idChat") }}.toString())
+            viewModelC.deleteChat(viewModelC.chats.value!!.filter { c -> c.id  == arguments.let { b -> b!!.getString("idChat") }}.map { it.id }.toString())
+            findNavController().navigate(R.id.action_nav_chatFragment_to_nav_timeslot_chats_fragment, bundle)
         }
 
 
          root.findViewById<ImageView>(R.id.button_send).setOnClickListener {
-             //creazione nuovo messaggio
+             //creating a new message
              val newMessage = mapOf(
                  "idUser" to auth.uid.toString(),
                  "text" to root.findViewById<EditText>(R.id.messageBox).text.toString()
              )
 
-             //mychat da aggiornare
-             val myChat = vmChat.chats.value?.filter { item -> item.idTimeSlot == idTimeSlot && item.idVendor == idVendor }?.get(0)
+             //updating the chat
+             val myChat = viewModelC.chats.value?.filter { c -> c.idTimeSlot == idTimeSlot && c.idVendor == idVendor }?.get(0)
 
-             //aggiunta del nuovo messaggio
+             //adding the new message
              val oldMessage = myChat?.messages as MutableList<Map<*,*>>
              oldMessage.add(newMessage)
 
-             //aggiornamento della chat con il vettore dei messaggi aggiornato
+             //updating the messages vector of the chat
              val newChat = Chat(myChat.id, myChat.idBuyer, oldMessage, myChat.idTimeSlot, myChat.idVendor)
-             vmChat.addMessage(newChat)
+             viewModelC.addMessage(newChat)
 
-
-             //pulizia campo edit
+             //cleaning the edit field
              root.findViewById<EditText>(R.id.messageBox).text.clear()
         }
-
-
         return root
     }
 

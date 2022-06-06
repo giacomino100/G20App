@@ -10,7 +10,6 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.ktx.Firebase
-import java.util.*
 
 data class Chat(
     val id: String,
@@ -20,6 +19,7 @@ data class Chat(
     val idVendor: String
     )
 
+@Suppress("NAME_SHADOWING", "UNCHECKED_CAST")
 class ChatVM: ViewModel() {
     private val _chats = MutableLiveData<List<Chat>>()
 
