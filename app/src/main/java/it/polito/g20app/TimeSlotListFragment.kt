@@ -54,25 +54,50 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
         (activity as FirebaseActivity).supportActionBar?.setHomeButtonEnabled(true)
         (activity as FirebaseActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        //setting name of toolbar
-        if(isTimeSlotSaved)(activity as FirebaseActivity).supportActionBar?.title = "My favorites"
-        if(isTimeSlotAssigned)(activity as FirebaseActivity).supportActionBar?.title = "Assigned"
-
         val rv = root.findViewById<RecyclerView>(R.id.rv)
         val fab = root.findViewById<FloatingActionButton>(R.id.fab)
         val switchAssigned = root.findViewById<Switch>(R.id.switch_assignedTS)
 
         //favourite timeslots case
         if(isTimeSlotSaved)
+            (activity as FirebaseActivity).supportActionBar?.title = "My favorites"
             fab.visibility = View.GONE
 
         //assigned timeslots case
         if(isTimeSlotAssigned) {
             fab.visibility = View.GONE
             switchAssigned.visibility = View.VISIBLE
+            (activity as FirebaseActivity).supportActionBar?.title = "My timeslots comprati"
         }
 
         rv.layoutManager = LinearLayoutManager(root.context)
+
+        if (isTimeSlotAssigned){
+            viewModelT.timeSlots.observe(viewLifecycleOwner){
+                Log.d("assigned", it.filter { it.idUser != auth.uid && it.buyer == auth.uid }.toString())
+                val adapter = TimeSlotAdapter(it.filter { it.idUser != auth.uid && it.buyer == auth.uid } as MutableList<TimeSlot>, true, false)
+                rv.adapter = adapter
+            }
+        }
+
+        switchAssigned?.setOnCheckedChangeListener { _, isChecked ->
+            viewModelT.timeSlots.observe(viewLifecycleOwner){
+                Log.d("assigned", isChecked.toString())
+
+                if(isChecked)(activity as FirebaseActivity).supportActionBar?.title = "My timeslots venduti"
+                else (activity as FirebaseActivity).supportActionBar?.title = "My timeslots comprati"
+
+                val sortedSlots = if (isChecked) it.filter { it.idUser == auth.uid && it.taken }
+                else it.filter { it.idUser != auth.uid && it.buyer == auth.uid }
+
+                Log.d("assigned", it.filter { it.idUser != auth.uid && it.buyer == auth.uid }.toString())
+
+                sortedSlots.let {
+                    val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>, true, false)
+                    rv.adapter = adapter
+                }
+            }
+        }
 
         //defining ViewModel
         viewModelT.timeSlots.observe(viewLifecycleOwner) {
@@ -83,6 +108,7 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
                 rv.adapter = adapter
             } else if(isTimeSlotAssigned) {
                 //TODO: gestire i due casi, time slot comprati da me, timeslot venduti
+
             } else{
                 //this row is needed to show the message in case the list is empty
                 root.findViewById<TextView>(R.id.alert).isVisible = it.isEmpty()

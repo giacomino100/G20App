@@ -18,7 +18,8 @@ data class TimeSlot(
     var duration: String = " ",
     var date: String = " ",
     var taken: Boolean = false,
-    var userInterested: List<String> = listOf()
+    var userInterested: List<String> = listOf(),
+    var buyer: String = " "
 )
 
 @Suppress("UNCHECKED_CAST")
@@ -49,7 +50,8 @@ class TimeSlotVM: ViewModel(){
             "duration" to timeSlot.duration,
             "date" to timeSlot.date,
             "taken" to timeSlot.taken,
-            "userInterested" to timeSlot.userInterested
+            "userInterested" to timeSlot.userInterested,
+            "buyer" to timeSlot.buyer
         )
         db.collection("timeslots").document().set(newTimeSlot).addOnSuccessListener {
             Log.d("database", "New entry successfully added in timeslots collection")
@@ -68,7 +70,8 @@ class TimeSlotVM: ViewModel(){
             "duration" to timeSlot.duration,
             "date" to timeSlot.date,
             "taken" to timeSlot.taken,
-            "userInterested" to timeSlot.userInterested
+            "userInterested" to timeSlot.userInterested,
+            "buyer" to timeSlot.buyer
         )
         db.collection("timeslots").document(timeSlot.id).set(updatedTimeSlot).addOnSuccessListener {
             Log.d("database", "Timeslots successfully updated")
@@ -89,7 +92,8 @@ class TimeSlotVM: ViewModel(){
             val duration = get("duration") as String
             val taken = get("taken") as Boolean
             val userInterested = get("userInterested") as List<String>
-            TimeSlot(id, idUser, idSkill, title, description, location, duration, date, taken, userInterested)
+            val buyer = get("buyer") as String
+            TimeSlot(id, idUser, idSkill, title, description, location, duration, date, taken, userInterested, buyer)
         } catch (e: Exception) {
             e.printStackTrace()
             null
