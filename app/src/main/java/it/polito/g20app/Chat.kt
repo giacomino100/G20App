@@ -10,6 +10,7 @@ import androidx.cardview.widget.CardView
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.firestore.FirebaseFirestore
 
 class ChatAdapter(val data: MutableList<Chat>): RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
     private var displayData = data.toMutableList()
@@ -17,9 +18,17 @@ class ChatAdapter(val data: MutableList<Chat>): RecyclerView.Adapter<ChatAdapter
     class ChatViewHolder(v: View): RecyclerView.ViewHolder(v) {
         private val title: TextView = v.findViewById(R.id.chat_title)
         private val card: CardView = v.findViewById(R.id.chat_card)
+        private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 
         fun bind(chat: Chat, action: (v: View)->Unit) {
-            title.text = chat.idBuyer
+            title.text = "Loading..."
+            db.collection("profiles").document(chat.idBuyer).get().addOnSuccessListener {
+                val fullname = it.get("fullname") as String
+                title.text = fullname
+            }.addOnFailureListener {
+                Log.d("timeslotChatsFragment", "Error saving a new entry in timeslots collection")
+            }
+
             card.setOnClickListener(action)
         }
     }

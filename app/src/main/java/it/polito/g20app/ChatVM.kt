@@ -28,7 +28,6 @@ class ChatVM: ViewModel() {
     private var l1: ListenerRegistration
 
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
-    private var auth: FirebaseAuth = Firebase.auth
 
     init {
         l1 = db.collection("chats")
