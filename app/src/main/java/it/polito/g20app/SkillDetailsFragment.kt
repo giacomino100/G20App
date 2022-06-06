@@ -56,6 +56,9 @@ class SkillDetailsFragment : Fragment() {
                 switchSort.visibility = View.VISIBLE
                 switchFilter.visibility = View.VISIBLE
                 flag = true
+                Log.d("timeslots",
+                    it.filter { t -> t.idSkill == idSkill && t.idUser != auth.uid && !t.taken}.toString()
+                )
                 // !t.taken -> if the timeslot has not already been taken, it will be shown
                 val adapter = TimeSlotAdapter(it.filter { t -> t.idSkill == idSkill && t.idUser != auth.uid && !t.taken} as MutableList<TimeSlot>, flag, false)
                 rv.adapter = adapter

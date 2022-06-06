@@ -49,6 +49,10 @@
     <string name="_05_05_2022">05/05/2022</string>
     <string name="time_slot_title">Time Slot Title</string>
     <string name="nav_head_avatar">nav_head_avatar</string>
+    <string name="hint_rating_comment"><font size="14">Write any comment about the trip here</font></string>
+    <string name="placeholder_rating_comment">Leave a Comment</string>
+    <string name="placeholder_assign_rating">Assign a Rating</string>
+
     <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
     <string name="facebook_application_id" translatable="false">YOUR_APP_ID</string>
     <string name="facebook_login_protocol_scheme" translatable="false">fbYOUR_APP_ID</string>
