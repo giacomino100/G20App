@@ -1,13 +1,11 @@
 package it.polito.g20app
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,7 +16,7 @@ import com.google.firebase.ktx.Firebase
 
 class ChatFragment : Fragment() {
 
-    private val vm by viewModels<ChatVM>()
+    private val vmChat by viewModels<ChatVM>()
     private var idTimeSlot: String = " "
     private var idVendor: String = " "
     private var auth: FirebaseAuth = Firebase.auth
@@ -50,7 +48,7 @@ class ChatFragment : Fragment() {
             accept.isVisible = false
         }
 
-        vm.chats.observe(viewLifecycleOwner){
+        vmChat.chats.observe(viewLifecycleOwner){
             if(it.any { item -> item.idTimeSlot == idTimeSlot }){
                 //Loading the chat
                 val myChat = it.filter { item -> item.idTimeSlot == idTimeSlot && item.idVendor == idVendor }[0]
@@ -64,7 +62,7 @@ class ChatFragment : Fragment() {
             } else {
                 //Creating a new chat
                 val newChat = Chat("", auth.uid.toString(), emptyList(), idTimeSlot, idVendor)
-                vm.addChat(newChat)
+                vmChat.addChat(newChat)
             }
         }
 
@@ -79,7 +77,19 @@ class ChatFragment : Fragment() {
         }
 
         reject.setOnClickListener {
-            //TODO: se si clicca sul reject si chiude la chat
+            //TODO: se si clicca sul reject si chiude la chat e si manda un messaggio automatico al requestor
+            //cancelliamo anche la chat dal db
+            //findNavController().navigate(R.id.action_nav_chatFragment_to_nav_slot_details)
+            //come prendiamo l'id della chat corrente?
+            /*
+            vmChat.chats.observe(viewLifecycleOwner){
+                if(it.any { item -> item.idTimeSlot == idTimeSlot }){
+                    //Loading the chat
+                    val myChat = it.filter { item -> item.idTimeSlot == idTimeSlot && item.idVendor == idVendor }[0]
+                    vmChat.deleteChat(myChat.id)
+                }
+
+             */
         }
 
 
@@ -91,7 +101,7 @@ class ChatFragment : Fragment() {
              )
 
              //mychat da aggiornare
-             val myChat = vm.chats.value?.filter { item -> item.idTimeSlot == idTimeSlot && item.idVendor == idVendor }?.get(0)
+             val myChat = vmChat.chats.value?.filter { item -> item.idTimeSlot == idTimeSlot && item.idVendor == idVendor }?.get(0)
 
              //aggiunta del nuovo messaggio
              val oldMessage = myChat?.messages as MutableList<Map<*,*>>
@@ -99,7 +109,7 @@ class ChatFragment : Fragment() {
 
              //aggiornamento della chat con il vettore dei messaggi aggiornato
              val newChat = Chat(myChat.id, myChat.idBuyer, oldMessage, myChat.idTimeSlot, myChat.idVendor)
-             vm.addMessage(newChat)
+             vmChat.addMessage(newChat)
 
 
              //pulizia campo edit

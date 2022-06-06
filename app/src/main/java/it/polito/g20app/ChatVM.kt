@@ -73,6 +73,11 @@ class ChatVM: ViewModel() {
         }
     }
 
+    fun deleteChat(idChat :String){
+        //TODO: check delete chat when request is rejected
+        db.collection("chats").document(idChat).delete()
+    }
+
     private fun DocumentSnapshot.toChat(): Chat? {
         return try {
             val messages = get("messages") as List<Map<*,*>>
