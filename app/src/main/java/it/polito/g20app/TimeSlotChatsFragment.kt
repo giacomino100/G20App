@@ -30,25 +30,9 @@ class TimeSlotChatsFragment : Fragment(R.layout.fragment_timeslot_chats) {
         savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_timeslot_chats, container, false)
+        Log.d("navigation", "TimeSlotChatsFragment")
 
-        val rv = root.findViewById<RecyclerView>(R.id.rv_chats)
-        (activity as FirebaseActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        rv.layoutManager = LinearLayoutManager(root.context)
-
-        arguments.let {
-                idTimeSlot = it!!.getString("idTimeSlot") as String
-        }
-
-        viewModelC.chats.observe(viewLifecycleOwner) { it ->
-            if (it.none { c -> c.idTimeSlot == arguments.let { b -> b!!.getString("idTimeSlot") } })
-                Snackbar.make(root, "No opened chats for the selected timeslot", Snackbar.LENGTH_LONG).show()
-            else {
-                val adapter = ChatAdapter(it.filter { arguments.let { b -> b!!.get("idTimeSlot")
-                } == it.idTimeSlot && it.idVendor == auth.uid} as MutableList<Chat>)
-                rv.adapter = adapter
-            }
-        }
-
+        /*
         requireActivity()
             .onBackPressedDispatcher
             .addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
@@ -63,10 +47,27 @@ class TimeSlotChatsFragment : Fragment(R.layout.fragment_timeslot_chats) {
                     }
                 }
             }
-            )
+            )*/
         return root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val rv = view.findViewById<RecyclerView>(R.id.rv_chats)
+        (activity as FirebaseActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        rv.layoutManager = LinearLayoutManager(view.context)
 
+        arguments.let {
+            idTimeSlot = it!!.getString("idTimeSlot") as String
+        }
+
+        viewModelC.chats.observe(viewLifecycleOwner) { it ->
+            if (it.none { c -> c.idTimeSlot == arguments.let { b -> b!!.getString("idTimeSlot") } })
+                Snackbar.make(view, "No opened chats for the selected timeslot", Snackbar.LENGTH_LONG).show()
+            val adapter = ChatAdapter(it.filter { arguments.let { b -> b!!.get("idTimeSlot")
+            } == it.idTimeSlot && it.idVendor == auth.uid} as MutableList<Chat>)
+            rv.adapter = adapter
+        }
+        super.onViewCreated(view, savedInstanceState)
+    }
 
 }

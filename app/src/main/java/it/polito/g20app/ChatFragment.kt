@@ -116,9 +116,9 @@ class ChatFragment : Fragment() {
             bundle.putString("idTimeSlot", idTimeSlot)
             bundle.putString("idVendor", idVendor)
             bundle.putInt("isSkillDet", fromSkillDet)
-            Log.d("deleteChat", viewModelC.chats.value!!.filter { c -> c.id  == arguments.let { b -> b!!.getString("idChat") }}.toString())
             viewModelC.deleteChat(viewModelC.chats.value!!.filter { c -> c.id  == arguments.let { b -> b!!.getString("idChat") }}.map { it.id }[0])
-            findNavController().navigate(R.id.action_nav_chatFragment_to_nav_timeslot_chats_fragment, bundle)
+        //findNavController().navigate(R.id.action_nav_chatFragment_to_nav_timeslot_chats_fragment, bundle)
+            requireActivity().onBackPressed()
         }
 
 

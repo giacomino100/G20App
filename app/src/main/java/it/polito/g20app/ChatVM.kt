@@ -31,6 +31,8 @@ class ChatVM: ViewModel() {
 
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 
+    private var auth: FirebaseAuth = Firebase.auth
+
     init {
         l1 = db.collection("chats")
             .addSnapshotListener { v, e ->
