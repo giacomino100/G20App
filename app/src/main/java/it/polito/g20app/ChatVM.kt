@@ -4,13 +4,14 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.ktx.Firebase
-import java.util.*
 
 data class Chat(
     val id: String,
@@ -20,6 +21,7 @@ data class Chat(
     val idVendor: String
     )
 
+@Suppress("NAME_SHADOWING", "UNCHECKED_CAST")
 class ChatVM: ViewModel() {
     private val _chats = MutableLiveData<List<Chat>>()
 
@@ -35,7 +37,7 @@ class ChatVM: ViewModel() {
                 if(e==null){
                     _chats.value = v!!.mapNotNull { d ->
                         d.toChat()
-                    }
+                    }.filter { c -> c.idBuyer == auth.uid || c.idVendor == auth.uid }
                 }
                 else {
                     _chats.value = emptyList()
@@ -43,7 +45,7 @@ class ChatVM: ViewModel() {
             }
         }
 
-    fun addChat(newChat: Chat){
+    fun addChat(newChat: Chat) : Task<DocumentReference> {
         val newChat = hashMapOf(
             "idBuyer" to newChat.idBuyer,
             "messages" to newChat.messages,
@@ -51,11 +53,7 @@ class ChatVM: ViewModel() {
             "idTimeSlot" to newChat.idTimeSlot,
         )
 
-        db.collection("chats").document().set(newChat).addOnSuccessListener {
-            Log.d("database", "New entry successfully added in chats collection")
-        }.addOnFailureListener {
-            Log.d("database", "Error saving a new entry in chats collection")
-        }
+        return db.collection("chats").add(newChat)
     }
 
     fun addMessage(updatedChat: Chat){
@@ -69,6 +67,15 @@ class ChatVM: ViewModel() {
             Log.d("database", "New entry successfully added in chats collection")
         }.addOnFailureListener {
             Log.d("database", "Error saving a new entry in chats collection")
+        }
+    }
+
+    fun deleteChat(idChat :String){
+        //TODO: check delete chat when request is rejected
+        db.collection("chats").document(idChat).delete().addOnSuccessListener {
+            Log.d("delete", "New entry successfully deleted in chats collection")
+        }.addOnFailureListener {
+            Log.d("delete", "New entry error while deleting chat in collection")
         }
     }
 

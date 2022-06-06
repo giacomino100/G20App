@@ -1,13 +1,11 @@
 package it.polito.g20app
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
@@ -49,8 +47,10 @@ class ChatAdapter(val data: MutableList<Chat>): RecyclerView.Adapter<ChatAdapter
 
         holder.bind(chat =  item) {
             val bundle = Bundle()
+            bundle.putInt("fromSkillDet", 0)
             bundle.putString("idTimeSlot", item.idTimeSlot)
             bundle.putString("idVendor", item.idVendor)
+            bundle.putString("idChat", item.id)
             it.findNavController().navigate(R.id.action_nav_timeslot_chats_fragment_to_nav_chatFragment, bundle)
         }
     }
