@@ -91,12 +91,22 @@ class SkillDetailsFragment : Fragment() {
 
                         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
                         val dataFormatted = yearTS + "-" + convertMonthFromNameToNumber(monthTS) + "-" + dayTS + " ${hourTS}:${minTS}:${secondsTS}.000"
-                        LocalDateTime.parse(dataFormatted, formatter).plusHours(2).isBefore(
-                            LocalDateTime.now())
+                        !LocalDateTime.parse(dataFormatted, formatter).plusHours(2).isBefore(LocalDateTime.now())
                     }.toString()
                 )
                 // !t.taken -> if the timeslot has not already been taken, it will be shown
-                val adapter = TimeSlotAdapter(it.filter { t -> t.idSkill == idSkill && t.idUser != auth.uid && !t.taken } as MutableList<TimeSlot>, flag, false, false)
+                val adapter = TimeSlotAdapter(it.filter { t -> t.idSkill == idSkill && t.idUser != auth.uid }.filter{ t->
+                    val dayTS = t.date.split(" ")[2]
+                    val monthTS = t.date.split(" ")[1]
+                    val yearTS = t.date.split(" ")[5]
+                    val hourTS = t.date.split(" ")[3].split(":")[0]
+                    val minTS = t.date.split(" ")[3].split(":")[1]
+                    val secondsTS = t.date.split(" ")[3].split(":")[2]
+
+                    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
+                    val dataFormatted = yearTS + "-" + convertMonthFromNameToNumber(monthTS) + "-" + dayTS + " ${hourTS}:${minTS}:${secondsTS}.000"
+                    !LocalDateTime.parse(dataFormatted, formatter).plusHours(2).isBefore(LocalDateTime.now())
+                } as MutableList<TimeSlot>, flag, false, false)
                 rv.adapter = adapter
             }
         }
