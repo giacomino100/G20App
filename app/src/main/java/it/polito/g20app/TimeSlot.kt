@@ -31,21 +31,21 @@ import java.time.format.DateTimeFormatter
         private val card: CardView = v.findViewById(R.id.card)
 
 
-        fun convertMonthFromNameToNumber(month: String): Any {
+        fun convertMonthFromNameToNumber(month: String): String {
             val result = when(month){
-                "Jan" -> 1
-                "Feb" -> 2
-                "Mar" -> 3
-                "Apr" -> 4
-                "May" -> 5
-                "Jun" -> 6
-                "Jul" -> 7
-                "Aug" -> 8
-                "Set" -> 9
-                "Oct" -> 10
-                "Nov" -> 11
-                "Dec" -> 12
-                else -> { }
+                "Jan" -> "01"
+                "Feb" -> "02"
+                "Mar" -> "03"
+                "Apr" -> "04"
+                "May" -> "05"
+                "Jun" -> "06"
+                "Jul" -> "07"
+                "Aug" -> "08"
+                "Set" -> "09"
+                "Oct" -> "10"
+                "Nov" -> "11"
+                "Dec" -> "12"
+                else -> " "
             }
             return result
         }
@@ -64,15 +64,22 @@ import java.time.format.DateTimeFormatter
                 val monthTS = timeslot.date.split(" ")[1]
                 val yearTS = timeslot.date.split(" ")[5]
                 val hourTS = timeslot.date.split(" ")[3].split(":")[0]
+                val minutsTS = timeslot.date.split(" ")[3].split(":")[1]
+                val secondsTS = timeslot.date.split(" ")[3].split(":")[2]
 
                 val dayNow = LocalDate.now().toString().split("-")[2]
                 val monthNow = LocalDate.now().toString().split("-")[1]
                 val yearNow = LocalDate.now().toString().split("-")[0]
                 val hourNow = now().toString().split(":")[0]
 
-                val current = LocalDateTime.now().plusHours(2)
-
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
+                val dataFormatted = yearTS + "-" + convertMonthFromNameToNumber(monthTS) + "-" + dayTS + " ${hourTS}:${minutsTS}:${secondsTS}.000"
+
+                Log.d("dataFormatted", LocalDateTime.parse(dataFormatted, formatter).isBefore(LocalDateTime.now().plusHours(2)).toString())
+
+                val current = LocalDateTime.now()
+
+
                 val formatted = current.format(formatter)
                 Log.d("review", formatted)
 
