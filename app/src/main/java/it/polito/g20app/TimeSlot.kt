@@ -16,6 +16,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.LocalTime.*
+import java.time.format.DateTimeFormatter
 
 
  class TimeSlotAdapter(val data: MutableList<TimeSlot>, isSkillDetails: Boolean, isTimeSlotSaved: Boolean, isTimeSlotAssigned: Boolean): RecyclerView.Adapter<TimeSlotAdapter.TimeSlotViewHolder>() {
@@ -48,6 +49,7 @@ import java.time.LocalTime.*
             }
             return result
         }
+
         @RequiresApi(Build.VERSION_CODES.O)
         fun bind(timeslot: TimeSlot, flag: Boolean, action: (v: View)->Unit) {
             title.text = timeslot.title
@@ -68,7 +70,11 @@ import java.time.LocalTime.*
                 val yearNow = LocalDate.now().toString().split("-")[0]
                 val hourNow = now().toString().split(":")[0]
 
-                Log.d("review", LocalDateTime.now().toString())
+                val current = LocalDateTime.now().plusHours(2)
+
+                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
+                val formatted = current.format(formatter)
+                Log.d("review", formatted)
 
                 if((yearNow >= yearTS && monthNow >= monthTS && dayNow > dayTS) ||  (yearNow >= yearTS && monthNow >= monthTS && dayNow >= dayTS && hourNow >= (timeslot.duration + hourTS))){
                     //true se il giorno è maggiore, oppure se è uguale ma l'ora è maggiore

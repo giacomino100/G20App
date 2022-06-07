@@ -1,11 +1,13 @@
 package it.polito.g20app
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -13,6 +15,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import java.text.DateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
 
@@ -23,6 +28,7 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
     private val viewModelS by viewModels<SkillVM>()
     private var auth: FirebaseAuth = Firebase.auth
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,6 +48,7 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
         //Loading timeSlot
          viewModelT.timeSlots.observe(viewLifecycleOwner) {
              val ts = it.filter { t -> t.id == idSelected }[0]
+
              idVendor = ts.idUser
              root.findViewById<TextView>(R.id.slot_title).text = ts.title
              root.findViewById<TextView>(R.id.slot_description).text = ts.description
