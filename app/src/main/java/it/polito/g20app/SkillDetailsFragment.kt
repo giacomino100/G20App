@@ -46,7 +46,7 @@ class SkillDetailsFragment : Fragment() {
         vm.timeSlots.observe(viewLifecycleOwner){
             val flag: Boolean
 
-            if (it.none { t -> t.idSkill == idSkill && t.idUser != auth.uid}){
+            if (it.none { t -> t.idSkill == idSkill && t.idUser != auth.uid && !t.taken }){
                 //if the timeslots list is empty, hide the switches
                 switchSort.visibility = View.GONE
                 switchFilter.visibility = View.GONE
@@ -57,10 +57,10 @@ class SkillDetailsFragment : Fragment() {
                 switchFilter.visibility = View.VISIBLE
                 flag = true
                 Log.d("timeslots",
-                    it.filter { t -> t.idSkill == idSkill && t.idUser != auth.uid && !t.taken}.toString()
+                    it.filter { t -> t.idSkill == idSkill && t.idUser != auth.uid }.toString()
                 )
                 // !t.taken -> if the timeslot has not already been taken, it will be shown
-                val adapter = TimeSlotAdapter(it.filter { t -> t.idSkill == idSkill && t.idUser != auth.uid && !t.taken} as MutableList<TimeSlot>, flag, false, false)
+                val adapter = TimeSlotAdapter(it.filter { t -> t.idSkill == idSkill && t.idUser != auth.uid && !t.taken } as MutableList<TimeSlot>, flag, false, false)
                 rv.adapter = adapter
             }
         }
@@ -68,8 +68,8 @@ class SkillDetailsFragment : Fragment() {
 
         switchSort?.setOnCheckedChangeListener { _, isChecked ->
             vm.timeSlots.observe(viewLifecycleOwner) { it ->
-                val sortedSlots = if (isChecked) it.filter { it.idSkill == idSkill && it.idUser != auth.uid }.sortedBy { it.title }
-                               else it.filter { it.idSkill == idSkill && it.idUser != auth.uid }
+                val sortedSlots = if (isChecked) it.filter { it.idSkill == idSkill && it.idUser != auth.uid && !it.taken }.sortedBy { it.title }
+                               else it.filter { it.idSkill == idSkill && it.idUser != auth.uid && !it.taken}
 
                 sortedSlots.let {
                     val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>, true, false, false)
@@ -80,7 +80,7 @@ class SkillDetailsFragment : Fragment() {
 
         switchFilter?.setOnCheckedChangeListener { _, isChecked ->
             vm.timeSlots.observe(viewLifecycleOwner) { it ->
-                    val filteredSlots = if (isChecked) it.filter { it.idSkill == idSkill && it.idUser != auth.uid }.filter {
+                    val filteredSlots = if (isChecked) it.filter { it.idSkill == idSkill && it.idUser != auth.uid && !it.taken }.filter {
                         val time = it.date.split(" ")
                         val params = time[3].split(":")
                         if (params[0].toInt() == 12) {
@@ -88,7 +88,7 @@ class SkillDetailsFragment : Fragment() {
                                 params[2].toInt() == 0
                             } else params[1].toInt() < 60
                         } else params[0].toInt() < 12
-                    } else it.filter { it.idSkill == idSkill && it.idUser != auth.uid}
+                    } else it.filter { it.idSkill == idSkill && it.idUser != auth.uid && !it.taken }
                         filteredSlots.let {
                             val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>, true, false, false)
                             rv.adapter = adapter

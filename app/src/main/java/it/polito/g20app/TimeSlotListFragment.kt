@@ -80,19 +80,19 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
                 if(isChecked)(activity as FirebaseActivity).supportActionBar?.title = "My timeslots sold"
                 else (activity as FirebaseActivity).supportActionBar?.title = "My timeslots purchased"
 
-                val sortedSlots = if (isChecked) it.filter { it.idUser == auth.uid && it.taken }
-                else it.filter { it.idUser != auth.uid && it.buyer == auth.uid }
+                val sortedSlots = if (isChecked) it.filter { t-> t.idUser == auth.uid && t.taken }
+                else it.filter { t-> t.idUser != auth.uid && t.buyer == auth.uid }
 
-                Log.d("assigned", it.filter { it.idUser != auth.uid && it.buyer == auth.uid }.toString())
+                Log.d("assigned", it.filter { t-> t.idUser != auth.uid && t.buyer == auth.uid }.toString())
 
-                sortedSlots.let {
-                    val adapter = TimeSlotAdapter(it as MutableList<TimeSlot>, true, false, true)
+                sortedSlots.let { list ->
+                    val adapter = TimeSlotAdapter(list as MutableList<TimeSlot>, true, false, true)
                     rv.adapter = adapter
                 }
             }
         }
 
-        //defining ViewModel
+        //Loading timeslots
         viewModelT.timeSlots.observe(viewLifecycleOwner) {
             if (isTimeSlotSaved){
                 //user favourite timeslots case
@@ -101,7 +101,7 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
                 rv.adapter = adapter
             } else if(isTimeSlotAssigned) {
                 //caricamento della recycler view inizialmente con quelli comprati
-                val adapter = TimeSlotAdapter(it.filter { it.idUser != auth.uid && it.buyer == auth.uid } as MutableList<TimeSlot>, true, false, true)
+                val adapter = TimeSlotAdapter(it.filter { ts -> ts.idUser != auth.uid && ts.buyer == auth.uid } as MutableList<TimeSlot>, true, false, true)
                 rv.adapter = adapter
             } else{
                 //this row is needed to show the message in case the list is empty
