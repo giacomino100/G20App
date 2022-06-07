@@ -137,6 +137,7 @@ class ChatFragment : Fragment() {
                     myListOfMessage.add(Message(messages[1].toString(), messages[0].toString()))
                 }
                 myListOfMessage.add(refused)
+
             }
             requireActivity().onBackPressed()
         }
