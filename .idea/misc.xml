@@ -3,7 +3,6 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/drawable-v24/bg_empty_list.xml" value="0.1" />
         <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/activity_firebase.xml" value="0.1461499493414387" />
         <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/activity_main.xml" value="0.1461499493414387" />
         <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/app_bar_main.xml" value="0.1461499493414387" />
@@ -12,7 +11,6 @@
         <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/fragment_check.xml" value="0.1461499493414387" />
         <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/fragment_edit.xml" value="0.1461499493414387" />
         <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/fragment_home.xml" value="0.1461499493414387" />
-        <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/fragment_list_rating.xml" value="0.1" />
         <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/fragment_rating.xml" value="0.24592391304347827" />
         <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/fragment_skill_details.xml" value="0.1461499493414387" />
         <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/fragment_skill_profile.xml" value="0.1461499493414387" />
@@ -23,7 +21,6 @@
         <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/fragment_time_slots_saved.xml" value="0.1461499493414387" />
         <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/nav_drawer_header_main.xml" value="0.1461499493414387" />
         <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/nav_host_fragment.xml" value="0.1461499493414387" />
-        <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/rating.xml" value="0.1" />
         <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/receiver_item_layout.xml" value="0.1461499493414387" />
         <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/sent_item.xml" value="0.1461499493414387" />
         <entry key="..\:/Davide Mammone/PoliTo/II magistrale/MAD/G20App/app/src/main/res/layout/skill.xml" value="0.1461499493414387" />
@@ -63,20 +60,28 @@
         <entry key="..\:/Users/PC/StudioProjects/G20App/app/src/main/res/layout/skill_profile.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/PC/StudioProjects/G20App/app/src/main/res/layout/time_slot.xml" value="0.33" />
         <entry key="..\:/Users/PC/StudioProjects/G20App/app/src/main/res/menu/navdrawer_menu.xml" value="0.18854166666666666" />
+        <entry key="..\:/Users/PC/StudioProjects/G20App/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_firebase.xml" value="0.5911458333333334" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.2874873353596758" />
         <entry key="app/src/main/res/layout/app_bar_main.xml" value="0.2874873353596758" />
+        <entry key="app/src/main/res/layout/chat.xml" value="0.1983695652173913" />
+        <entry key="app/src/main/res/layout/fragment_chat.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_check.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_edit.xml" value="0.2874873353596758" />
-        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.4986413043478261" />
+        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.3098958333333333" />
+        <entry key="app/src/main/res/layout/fragment_list_rating.xml" value="0.2368659420289855" />
+        <entry key="app/src/main/res/layout/fragment_rating.xml" value="0.2368659420289855" />
         <entry key="app/src/main/res/layout/fragment_skill_details.xml" value="0.5040760869565217" />
         <entry key="app/src/main/res/layout/fragment_skills.xml" value="0.5606884057971014" />
         <entry key="app/src/main/res/layout/fragment_time_slot_details.xml" value="0.2874873353596758" />
         <entry key="app/src/main/res/layout/fragment_time_slot_edit.xml" value="0.2874873353596758" />
         <entry key="app/src/main/res/layout/fragment_time_slot_list.xml" value="0.2874873353596758" />
+        <entry key="app/src/main/res/layout/fragment_timeslot_chats.xml" value="0.1983695652173913" />
         <entry key="app/src/main/res/layout/nav_drawer_header_main.xml" value="0.5911458333333334" />
         <entry key="app/src/main/res/layout/nav_host_fragment.xml" value="0.2874873353596758" />
+        <entry key="app/src/main/res/layout/rating.xml" value="0.2368659420289855" />
         <entry key="app/src/main/res/layout/skill.xml" value="0.2874873353596758" />
-        <entry key="app/src/main/res/layout/skill_profile.xml" value="0.5911458333333334" />
+        <entry key="app/src/main/res/layout/skill_profile.xml" value="0.5" />
         <entry key="app/src/main/res/layout/time_slot.xml" value="0.2874873353596758" />
         <entry key="app/src/main/res/menu/navdrawer_menu.xml" value="0.5820512820512821" />
         <entry key="app/src/main/res/menu/show_profile_menu.xml" value="0.5296296296296297" />
