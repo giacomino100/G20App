@@ -70,9 +70,15 @@ class ChatFragment : Fragment() {
                     val myListOfMessage = mutableListOf<Message>()
                     //Mapping the chat messages
                     myChat.messages.map { item ->
+                        val refused = Message("Richiesta rifiutata", idVendor)
                         val messages = item.values.toMutableList()
+                        if (messages.contains(refused)) {
+                            viewModelC.deleteChat(viewModelC.chats.value!!.filter { c -> c.id  == arguments.let { b -> b!!.getString("idChat") }}.map { it.id }[0])
+                            requireActivity().onBackPressed()
+                        }
                         myListOfMessage.add(Message(messages[1].toString(), messages[0].toString()))
                     }
+
                     val adapter = MessageAdapter(myListOfMessage, auth.uid.toString(), idVendor)
                     rv.adapter = adapter
                 } else {
@@ -86,14 +92,11 @@ class ChatFragment : Fragment() {
                         Log.d("database", "Error creating a new chat")
                     }
                 }
-                /*viewModelC.chats.observe(viewLifecycleOwner) { list->
-                    if (list.none { c -> c.idTimeSlot == idTimeSlot && c.idBuyer == auth.uid })
-                        root.findNavController().popBackStack()
-                }*/
             } else {
                 //Coming from timeSlots list
                 //So we have to filter chats containing auth.uid as idVendor
-                val myChat = it.filter { c -> c.id == arguments.let { b -> b!!.getString("idChat") } }[0]
+                val myChat =
+                    it.filter { c -> c.id == arguments.let { b -> b!!.getString("idChat") } }[0]
                 val myListOfMessage = mutableListOf<Message>()
                 //Mapping the chat messages
                 myChat.messages.map { item ->
@@ -103,7 +106,6 @@ class ChatFragment : Fragment() {
                 val adapter = MessageAdapter(myListOfMessage, myChat.idVendor, myChat.idBuyer)
                 rv.adapter = adapter
             }
-
         }
 
         accept.setOnClickListener {
@@ -124,7 +126,18 @@ class ChatFragment : Fragment() {
         reject.setOnClickListener {
             //TODO: se si clicca sul reject si chiude la chat e si manda un messaggio automatico al requestor
             //Once a timeslot transaction is rejected by the vendor, the related chat is deleted from the db
-            viewModelC.deleteChat(viewModelC.chats.value!!.filter { c -> c.id  == arguments.let { b -> b!!.getString("idChat") }}.map { it.id }[0])
+            //viewModelC.deleteChat(viewModelC.chats.value!!.filter { c -> c.id  == arguments.let { b -> b!!.getString("idChat") }}.map { it.id }[0])
+            viewModelC.chats.observe(viewLifecycleOwner) {
+                val myChat = it.filter { c -> c.idTimeSlot == idTimeSlot && c.idBuyer == auth.uid }[0]
+                val myListOfMessage = mutableListOf<Message>()
+                //Mapping the chat messages
+                val refused = Message("Richiesta rifiutata", idVendor)
+                myChat.messages.map { item ->
+                    val messages = item.values.toMutableList()
+                    myListOfMessage.add(Message(messages[1].toString(), messages[0].toString()))
+                }
+                myListOfMessage.add(refused)
+            }
             requireActivity().onBackPressed()
         }
 
@@ -152,5 +165,4 @@ class ChatFragment : Fragment() {
         }
         return root
     }
-
 }
