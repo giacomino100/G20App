@@ -11,6 +11,9 @@ import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -25,6 +28,7 @@ import java.time.format.DateTimeFormatter
         private val title: TextView = v.findViewById(R.id.slot_title)
         private val edit: ImageView = v.findViewById(R.id.editTimeSlot)
         private val card: CardView = v.findViewById(R.id.card)
+        private var auth: FirebaseAuth = Firebase.auth
 
         private fun convertMonthFromNameToNumber(month: String): String {
             val result = when(month){
@@ -71,7 +75,11 @@ import java.time.format.DateTimeFormatter
                     edit.visibility = View.VISIBLE
                     edit.setImageResource(R.drawable.ic_baseline_rate_review_24)
                     edit.setOnClickListener {
-                        it.findNavController().navigate(R.id.action_nav_adv_list_to_nav_rating_fragment)
+                        val bundle = Bundle()
+                        bundle.putString("idTimeSlot", timeslot.id)
+                        bundle.putString("idVendor", timeslot.idUser)
+                        bundle.putString("idBuyer", auth.uid)
+                        it.findNavController().navigate(R.id.action_nav_adv_list_to_nav_rating_fragment, bundle)
                     }
                 }
             }else{

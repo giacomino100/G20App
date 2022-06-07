@@ -3,8 +3,10 @@ package it.polito.g20app
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
@@ -36,6 +38,17 @@ class RatingVM: ViewModel() {
                     _ratings.value = v!!.filter { p -> p.id == auth.uid }[0].toRating()
                 } else _ratings.value = emptyList<Rating>()[0]
             }
+    }
+
+    fun addRating(newRating: Rating) : Task<DocumentReference> {
+        val newRating = hashMapOf(
+            "idVendor" to newRating.idVendor,
+            "idBuyer" to newRating.idBuyer,
+            "idTimeSlot" to newRating.idTimeSlot,
+            "rate" to newRating.rate,
+            "comment" to newRating.comment,
+            )
+        return db.collection("ratings").add(newRating)
     }
 
     private fun DocumentSnapshot.toRating(): Rating? {
