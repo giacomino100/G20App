@@ -18,6 +18,12 @@ class TimeSlotChatsFragment : Fragment(R.layout.fragment_timeslot_chats) {
     private val viewModelC by viewModels<ChatVM>()
     private var auth: FirebaseAuth = Firebase.auth
     private var idTimeSlot = " "
+    private var tsTitle = " "
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        arguments.let { b -> tsTitle = b!!.getString("tsTitle") as String }
+        super.onCreate(savedInstanceState)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,6 +33,8 @@ class TimeSlotChatsFragment : Fragment(R.layout.fragment_timeslot_chats) {
         val root = inflater.inflate(R.layout.fragment_timeslot_chats, container, false)
         val rv = root.findViewById<RecyclerView>(R.id.rv_chats)
         (activity as FirebaseActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (activity as FirebaseActivity).supportActionBar?.title = "$tsTitle chats"
+
         rv.layoutManager = LinearLayoutManager(root.context)
 
         arguments.let {

@@ -1,5 +1,6 @@
 package it.polito.g20app
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -19,15 +20,17 @@ class ChatAdapter(val data: MutableList<Chat>): RecyclerView.Adapter<ChatAdapter
         private val card: CardView = v.findViewById(R.id.chat_card)
         private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 
+        @SuppressLint("SetTextI18n")
         fun bind(chat: Chat, action: (v: View)->Unit) {
             title.text = "Loading..."
+            //Getting buyer name from the db: it's used to set the chat card title
             db.collection("profiles").document(chat.idBuyer).get().addOnSuccessListener {
                 val fullname = it.get("fullname") as String
                 title.text = fullname
+                Log.d("database", "Fullname successfully retrieved")
             }.addOnFailureListener {
-                Log.d("timeslotChatsFragment", "Error saving a new entry in timeslots collection")
+                Log.d("timeslotChatsFragment", "Error getting the buyer fullname")
             }
-
             card.setOnClickListener(action)
         }
     }

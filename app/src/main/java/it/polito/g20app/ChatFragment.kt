@@ -9,12 +9,10 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 
 class ChatFragment : Fragment() {
@@ -26,10 +24,10 @@ class ChatFragment : Fragment() {
     private var fromSkillDet: Int = 0
     private var auth: FirebaseAuth = Firebase.auth
     private val viewModelT by viewModels<TimeSlotVM>()
-    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //Getting data from bundle
         arguments.let {
             if (it != null) {
                 idTimeSlot = it.getString("idTimeSlot") as String
@@ -37,11 +35,9 @@ class ChatFragment : Fragment() {
                 fromSkillDet = it.getInt("fromSkillDet")
                 if(fromSkillDet == 0) {
                     idChat = it.getString("idChat") as String
-                    Log.d("chat_init1",idChat)
                 }
             }
         }
-
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,6 +50,8 @@ class ChatFragment : Fragment() {
 
         val reject = root.findViewById<Button>(R.id.button2)
         val accept = root.findViewById<Button>(R.id.button3)
+
+        //If the logged user is a buyer, he cannot accept/reject a timeslot transaction
         if (idVendor != auth.uid){
             reject.isVisible = false
             accept.isVisible = false
@@ -64,10 +62,12 @@ class ChatFragment : Fragment() {
                 //Coming from skillDet, I'm a buyer
                 //So we have to filter chats containing auth.uid as idBuyer
                 if (it.any { c -> c.idTimeSlot == idTimeSlot && c.idBuyer == auth.uid }) {
-                    //if there a chat for auth.uid as buyer, for the clicked timeslot ->
+                    //if there is a chat for auth.uid as buyer, for the clicked timeslot ->
                     //Loading the chat (if exists)
+                    (activity as FirebaseActivity).supportActionBar?.title = "Chat"
                     val myChat = it.filter { c -> c.idTimeSlot == idTimeSlot && c.idBuyer == auth.uid }[0]
                     val myListOfMessage = mutableListOf<Message>()
+                    //Mapping the chat messages
                     myChat.messages.map { item ->
                         val messages = item.values.toMutableList()
                         myListOfMessage.add(Message(messages[1].toString(), messages[0].toString()))
@@ -76,12 +76,13 @@ class ChatFragment : Fragment() {
                     rv.adapter = adapter
                 } else {
                     //Creating a new chat
+                    (activity as FirebaseActivity).supportActionBar?.title = "New chat"
                     val newChat = Chat("", auth.uid.toString(), emptyList(), idTimeSlot, idVendor)
                     viewModelC.addChat(newChat).addOnSuccessListener { it1 ->
                         idChat = it1.id
                         Log.d("database", "New entry successfully added in chats collection")
                     }.addOnFailureListener {
-                        Log.d("database", "Error saving a new entry in chats collection")
+                        Log.d("database", "Error creating a new chat")
                     }
                 }
             } else {
@@ -89,6 +90,7 @@ class ChatFragment : Fragment() {
                 //So we have to filter chats containing auth.uid as idVendor
                 val myChat = it.filter { c -> c.id == arguments.let { b -> b!!.getString("idChat") } }[0]
                 val myListOfMessage = mutableListOf<Message>()
+                //Mapping the chat messages
                 myChat.messages.map { item ->
                     val messages = item.values.toMutableList()
                     myListOfMessage.add(Message(messages[1].toString(), messages[0].toString()))
@@ -100,35 +102,25 @@ class ChatFragment : Fragment() {
         }
 
         accept.setOnClickListener {
-            //Clicking the accept button, the timeslot 'taken' property will be updated (with the value true) on the db
-            //TODO: check sul funzionamento
+            //Clicking the accept button, the timeslot 'taken' and 'buyer' properties will be updated (with the value true) on the db
             val ts = viewModelT.timeSlots.value?.filter { t -> t.id == idTimeSlot }?.get(0)
             val idBuyer = viewModelC.chats.value?.filter { c -> c.id == arguments.let { b -> b!!.getString("idChat") } }?.get(0)?.idBuyer
-            if (ts != null) {
-                if (idBuyer != null) {
-                    ts.buyer = idBuyer
-                }
-            }
-            if (ts != null) {
-                ts.taken = true
-            }
-            if (ts != null) {
-                viewModelT.updateTimeSlot(ts)
-                viewModelC.deleteChat(viewModelC.chats.value!!.filter { c -> c.id  == arguments.let { b -> b!!.getString("idChat") }}.map { it.id }[0])
-                requireActivity().onBackPressed()
-            }
+
+            //Updating timeslot properties
+            ts!!.buyer = idBuyer!!
+            ts.taken = true
+            viewModelT.updateTimeSlot(ts)
+
+            //Once a timeslot transaction is accepted by the vendor, the related chat is deleted from the db
+            viewModelC.deleteChat(viewModelC.chats.value!!.filter { c -> c.id  == arguments.let { b -> b!!.getString("idChat") }}.map { it.id }[0])
+            requireActivity().onBackPressed()
         }
 
 
         reject.setOnClickListener {
-            //Rejecting buyer request: deleting the chat for the specified timeslot
             //TODO: se si clicca sul reject si chiude la chat e si manda un messaggio automatico al requestor
-            val bundle = Bundle()
-            bundle.putString("idTimeSlot", idTimeSlot)
-            bundle.putString("idVendor", idVendor)
-            bundle.putInt("isSkillDet", fromSkillDet)
+            //Once a timeslot transaction is rejected by the vendor, the related chat is deleted from the db
             viewModelC.deleteChat(viewModelC.chats.value!!.filter { c -> c.id  == arguments.let { b -> b!!.getString("idChat") }}.map { it.id }[0])
-        //findNavController().navigate(R.id.action_nav_chatFragment_to_nav_timeslot_chats_fragment, bundle)
             requireActivity().onBackPressed()
         }
 

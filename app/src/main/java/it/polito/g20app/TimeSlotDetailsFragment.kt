@@ -3,7 +3,6 @@ package it.polito.g20app
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.TextView
@@ -14,16 +13,13 @@ import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import java.text.DateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.*
 
 class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
 
     private var idSelected: String = " "
     private var idTimeslotSkill: String = " "
     private var idVendor: String = " "
+    private var tsTitle: String = " "
     private val viewModelT by viewModels<TimeSlotVM>()
     private val viewModelS by viewModels<SkillVM>()
     private var auth: FirebaseAuth = Firebase.auth
@@ -51,6 +47,7 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
 
              idVendor = ts.idUser
              root.findViewById<TextView>(R.id.slot_title).text = ts.title
+             tsTitle = ts.title
              root.findViewById<TextView>(R.id.slot_description).text = ts.description
              root.findViewById<TextView>(R.id.slot_date_and_time).text = ts.date
              root.findViewById<TextView>(R.id.slot_duration).text = ts.duration
@@ -69,9 +66,29 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
             bundle.putString("idTimeSlot", idSelected)
             idVendor = viewModelT.timeSlots.value!!.filter { t -> t.id == idSelected }[0].idUser
             bundle.putString("idVendor", idVendor)
+            bundle.putString("tsTitle", tsTitle)
             if (arguments?.get("fromSkillDet") == 1) {
                 //if the navigation path is: nav_skills_list -> nav_skill_details, the app goes to the nav_chat_fragment
                 bundle.putInt("fromSkillDet", 1)
+                viewModelT.timeSlots.observe(viewLifecycleOwner) {
+                    //Creating a new chat, the buyer is added to the timeslot 'userinterested' array on the db
+                    val timeSlotToUpdate = viewModelT.timeSlots.value?.filter { it.id == idSelected }!![0]
+                    val usersInterested = timeSlotToUpdate.userInterested as MutableList<String>
+                    usersInterested.add(auth.uid.toString())
+                    val updatedTimeSlot = TimeSlot(
+                        timeSlotToUpdate.id,
+                        timeSlotToUpdate.idUser,
+                        timeSlotToUpdate.idSkill,
+                        timeSlotToUpdate.title,
+                        timeSlotToUpdate.description,
+                        timeSlotToUpdate.location,
+                        timeSlotToUpdate.duration,
+                        timeSlotToUpdate.date,
+                        timeSlotToUpdate.taken,
+                        usersInterested
+                    )
+                    viewModelT.updateTimeSlot(updatedTimeSlot)
+                }
                 findNavController().navigate(R.id.action_nav_slot_details_to_chat_fragment, bundle)
             } else {
                 //the navigation path is: menu'-> nav_adv_list, the app goes to nav_timeslot_chats_fragment
