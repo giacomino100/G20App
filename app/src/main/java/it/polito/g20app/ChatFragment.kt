@@ -99,7 +99,6 @@ class ChatFragment : Fragment() {
             } else {
                 //Coming from timeSlots list
                 //So we have to filter chats containing auth.uid as idVendor
-
                 val myChat =
                     it.filter { c -> c.id == arguments.let { b -> b!!.getString("idChat") } }[0]
                 val myListOfMessage = mutableListOf<Message>()
