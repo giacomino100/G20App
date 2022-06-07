@@ -59,5 +59,10 @@
     <string name="default_web_client_id_auth">1036561329267-553b65ikj5ts1ofio55579qadqrr0pai.apps.googleusercontent.com</string>
     <string name="there_are_no_time_slots">There are no time slots</string>
     <string name="there_are_no_skills">There are no skills</string>
+    <string name="placeholder_user_email">User Email</string>
+    <string name="placeholder_rating_card_comment">Comment</string>
+    <string name="placeholder_rating_card_comment_text">Comment Text</string>
+    <string name="review_list_empty_vendor_review">There are no vendor reviews for this user</string>
+    <string name="list_rating_empty_buyer_review">There are no buyer reviews for this user</string>
 
 </resources>
