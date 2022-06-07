@@ -56,7 +56,7 @@ import java.time.format.DateTimeFormatter
 
             if (flag) edit.visibility = View.GONE
 
-            if (timeslot.taken){
+            if (timeslot.taken && timeslot.idUser != auth.uid){
                 //Needed for user rating: once the timeslot is expired (according to the timeslot duration),
                 //the vendor can be rated
                 val dayTS = timeslot.date.split(" ")[2]

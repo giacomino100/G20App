@@ -15,37 +15,24 @@ import com.google.firebase.ktx.Firebase
 
 class RatingListFragment : Fragment(R.layout.fragment_list_rating) {
 
-    private val viewModelC by viewModels<ChatVM>()
+    private val viewModelR by viewModels<RatingVM>()
     private var auth: FirebaseAuth = Firebase.auth
-    private var idTimeSlot = " "
-    private var tsTitle = " "
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        arguments.let { b -> tsTitle = b!!.getString("tsTitle") as String }
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.fragment_timeslot_chats, container, false)
-        val rv = root.findViewById<RecyclerView>(R.id.rv_chats)
+        val root = inflater.inflate(R.layout.fragment_list_rating, container, false)
+        val rv = root.findViewById<RecyclerView>(R.id.ratings_rv)
         (activity as FirebaseActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        (activity as FirebaseActivity).supportActionBar?.title = "$tsTitle chats"
+        //TODO change title
+        (activity as FirebaseActivity).supportActionBar?.title = "Ratings"
 
         rv.layoutManager = LinearLayoutManager(root.context)
 
-        arguments.let {
-            idTimeSlot = it!!.getString("idTimeSlot") as String
-        }
-
-        viewModelC.chats.observe(viewLifecycleOwner) { it ->
-            if (it.none { c -> c.idTimeSlot == arguments.let { b -> b!!.getString("idTimeSlot") } })
-                Snackbar.make(root, "No opened chats for the selected timeslot", Snackbar.LENGTH_LONG).show()
-            val adapter = ChatAdapter(it.filter { arguments.let { b -> b!!.get("idTimeSlot")
-            } == it.idTimeSlot && it.idVendor == auth.uid} as MutableList<Chat>)
+        viewModelR.ratings.observe(viewLifecycleOwner) {
+            val adapter = RatingAdapter(it as MutableList<Rating>)
             rv.adapter = adapter
         }
         return root

@@ -45,7 +45,8 @@
                 android:rating="0"
                 android:theme="@style/RatingBar"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textViewAssignRating" />
+                app:layout_constraintTop_toBottomOf="@+id/textViewAssignRating"
+                tools:ignore="SpeakableTextPresentCheck" />
 
             <TextView
                 android:id="@+id/textViewRatingComment"

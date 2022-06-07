@@ -34,7 +34,6 @@ class RatingFragment : Fragment() {
             }
         }
 
-
         //Salvo informazioni rating tramite BackPress
         requireActivity()
             .onBackPressedDispatcher

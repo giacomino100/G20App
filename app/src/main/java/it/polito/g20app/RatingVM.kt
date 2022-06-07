@@ -1,5 +1,6 @@
 package it.polito.g20app
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -48,7 +49,11 @@ class RatingVM: ViewModel() {
             "rate" to newRating.rate,
             "comment" to newRating.comment,
             )
-        return db.collection("ratings").add(newRating)
+        return db.collection("ratings").add(newRating).addOnSuccessListener {
+            Log.d("database", "inserito")
+        }.addOnFailureListener {
+            Log.d("database", "non inserito correttamente")
+        }
     }
 
     private fun DocumentSnapshot.toRating(): Rating? {
