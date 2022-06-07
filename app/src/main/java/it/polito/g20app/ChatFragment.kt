@@ -9,13 +9,10 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -76,7 +73,7 @@ class ChatFragment : Fragment() {
                     //Mapping the chat messages
                     myChat.messages.map { item ->
                         val messages = item.values.toMutableList()
-                        if (messages[1] == "richiesta rifiutata") {
+                        if (messages[0] == "refused" && messages[1] == "richiesta rifiutata") {
                             root.findViewById<EditText>(R.id.messageBox).isEnabled = false
                             root.findViewById<ConstraintLayout>(R.id.const2).visibility = View.GONE
                         }
@@ -135,7 +132,7 @@ class ChatFragment : Fragment() {
             val myChat = viewModelC.chats.value?.filter { c -> c.id == idChat }?.get(0)
 
             val refused = mapOf(
-                "idUser" to idVendor,
+                "idUser" to "refused",
                 "text" to "richiesta rifiutata"
             )
             //adding the new message
