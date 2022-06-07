@@ -68,7 +68,7 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
         if(isTimeSlotAssigned) {
             fab.visibility = View.GONE
             switchAssigned.visibility = View.VISIBLE
-            (activity as FirebaseActivity).supportActionBar?.title = "My timeslots comprati"
+            (activity as FirebaseActivity).supportActionBar?.title = "My timeslots purchased"
         }
 
         rv.layoutManager = LinearLayoutManager(root.context)
@@ -77,8 +77,8 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
             viewModelT.timeSlots.observe(viewLifecycleOwner){
                 Log.d("assigned", isChecked.toString())
 
-                if(isChecked)(activity as FirebaseActivity).supportActionBar?.title = "My timeslots venduti"
-                else (activity as FirebaseActivity).supportActionBar?.title = "My timeslots comprati"
+                if(isChecked)(activity as FirebaseActivity).supportActionBar?.title = "My timeslots sold"
+                else (activity as FirebaseActivity).supportActionBar?.title = "My timeslots purchased"
 
                 val sortedSlots = if (isChecked) it.filter { it.idUser == auth.uid && it.taken }
                 else it.filter { it.idUser != auth.uid && it.buyer == auth.uid }
@@ -100,7 +100,7 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
                 val adapter = TimeSlotAdapter(it.filter { ts -> ts.userInterested.contains(auth.uid) } as MutableList<TimeSlot>, true, isTimeSlotSaved, false)
                 rv.adapter = adapter
             } else if(isTimeSlotAssigned) {
-                //TODO: gestire i due casi, time slot comprati da me, timeslot venduti
+                //caricamento della recycler view inizialmente con quelli comprati
                 val adapter = TimeSlotAdapter(it.filter { it.idUser != auth.uid && it.buyer == auth.uid } as MutableList<TimeSlot>, true, false, true)
                 rv.adapter = adapter
             } else{

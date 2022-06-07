@@ -14,6 +14,9 @@
         <action
             android:id="@+id/action_nav_adv_list_to_nav_slot_details"
             app:destination="@id/nav_slot_details" />
+        <action
+            android:id="@+id/action_nav_adv_list_to_nav_rating_fragment"
+            app:destination="@id/nav_rating_fragment" />
     </fragment>
     <fragment
         android:id="@+id/nav_show_profile"
@@ -68,11 +71,6 @@
             app:destination="@id/nav_slot_details" />
     </fragment>
     <fragment
-        android:id="@+id/nav_time_slots_assigned"
-        android:name="it.polito.g20app.TimeSlotsAssigned"
-        android:label="Assigned Time Slots"
-        tools:layout="@layout/fragment_time_slots_assigned" />
-    <fragment
         android:id="@+id/nav_chatFragment"
         android:name="it.polito.g20app.ChatFragment"
         android:label="fragment_chat"
@@ -96,5 +94,10 @@
             android:id="@+id/action_nav_timeslot_chats_fragment_to_nav_slot_details"
             app:destination="@id/nav_slot_details" />
     </fragment>
+    <fragment
+        android:id="@+id/nav_rating_fragment"
+        android:name="it.polito.g20app.RatingFragment"
+        android:label="fragment_rating"
+        tools:layout="@layout/fragment_rating" />
 
 </navigation>
