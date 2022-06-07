@@ -35,7 +35,10 @@ class RatingListFragment : Fragment(R.layout.fragment_list_rating) {
             val emptyListMsg = root.findViewById<TextView>(R.id.emptyVendorReview)
 
             val ratings = it.filter{
-                it1 -> it1.idVendor == auth.uid
+                it1 ->
+                it1.idVendor == auth.uid
+                it1.idWriter != auth.uid
+
             }
             if(ratings.isEmpty()){
                 emptyListMsg.visibility = View.VISIBLE
@@ -53,7 +56,9 @@ class RatingListFragment : Fragment(R.layout.fragment_list_rating) {
             //show Buyer ratings
             val emptyListMsg = root.findViewById<TextView>(R.id.emptyBuyerReviews)
             val ratings = it.filter{
-                    it1 -> it1.idBuyer == auth.uid
+                it1 ->
+                it1.idBuyer == auth.uid
+                it1.idWriter != auth.uid
             }
             Log.d("ratingB",ratings.toString())
             if(ratings.isEmpty()){

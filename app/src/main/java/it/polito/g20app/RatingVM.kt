@@ -19,7 +19,8 @@ data class Rating (
     var idBuyer: String = " ",
     var idTimeSlot: String = " ",
     var rate: String = " ",
-    var comment: String = " "
+    var comment: String = " ",
+    var idWriter: String = " "
 )
 
 class RatingVM: ViewModel() {
@@ -48,6 +49,7 @@ class RatingVM: ViewModel() {
             "idTimeSlot" to newRating.idTimeSlot,
             "rate" to newRating.rate,
             "comment" to newRating.comment,
+            "idWriter" to newRating.idWriter
             )
         return db.collection("ratings").add(newRating).addOnSuccessListener {
             Log.d("database", "inserito")
@@ -64,7 +66,8 @@ class RatingVM: ViewModel() {
             val idTimeSlot = get("idTimeSlot") as String
             val rate = get("rate") as String
             val comment = get("comment") as String
-            Rating(id, idVendor, idBuyer, idTimeSlot, rate, comment)
+            val idWriter = get("idWriter") as String
+            Rating(id, idVendor, idBuyer, idTimeSlot, rate, comment, idWriter)
         } catch (e: Exception) {
             e.printStackTrace()
             null
