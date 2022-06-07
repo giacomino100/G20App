@@ -73,7 +73,7 @@ class ChatFragment : Fragment() {
                     //Mapping the chat messages
                     myChat.messages.map { item ->
                         val messages = item.values.toMutableList()
-                        if (messages[0] == "refused" && messages[1] == "richiesta rifiutata") {
+                        if (messages[0] == "refused" && messages[1] == "Request refused by vendor") {
                             root.findViewById<EditText>(R.id.messageBox).isEnabled = false
                             root.findViewById<ConstraintLayout>(R.id.const2).visibility = View.GONE
                         }
@@ -133,7 +133,7 @@ class ChatFragment : Fragment() {
 
             val refused = mapOf(
                 "idUser" to "refused",
-                "text" to "richiesta rifiutata"
+                "text" to "Request refused by vendor"
             )
             //adding the new message
             val oldMessage = myChat?.messages as MutableList<Map<*,*>>

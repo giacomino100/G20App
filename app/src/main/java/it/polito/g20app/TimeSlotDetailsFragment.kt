@@ -74,22 +74,24 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
                 bundle.putInt("fromSkillDet", 1)
                 viewModelT.timeSlots.observe(viewLifecycleOwner) {
                     //Creating a new chat, the buyer is added to the timeslot 'userinterested' array on the db
-                    val timeSlotToUpdate = viewModelT.timeSlots.value?.filter { it.id == idSelected }!![0]
-                    val usersInterested = timeSlotToUpdate.userInterested as MutableList<String>
-                    usersInterested.add(auth.uid.toString())
-                    val updatedTimeSlot = TimeSlot(
-                        timeSlotToUpdate.id,
-                        timeSlotToUpdate.idUser,
-                        timeSlotToUpdate.idSkill,
-                        timeSlotToUpdate.title,
-                        timeSlotToUpdate.description,
-                        timeSlotToUpdate.location,
-                        timeSlotToUpdate.duration,
-                        timeSlotToUpdate.date,
-                        timeSlotToUpdate.taken,
-                        usersInterested
-                    )
-                    viewModelT.updateTimeSlot(updatedTimeSlot)
+                    if (it.none { ts -> ts.id == idSelected && !ts.taken }) {
+                        val timeSlotToUpdate = viewModelT.timeSlots.value?.filter { it.id == idSelected }!![0]
+                        val usersInterested = timeSlotToUpdate.userInterested as MutableList<String>
+                        usersInterested.add(auth.uid.toString())
+                        val updatedTimeSlot = TimeSlot(
+                            timeSlotToUpdate.id,
+                            timeSlotToUpdate.idUser,
+                            timeSlotToUpdate.idSkill,
+                            timeSlotToUpdate.title,
+                            timeSlotToUpdate.description,
+                            timeSlotToUpdate.location,
+                            timeSlotToUpdate.duration,
+                            timeSlotToUpdate.date,
+                            timeSlotToUpdate.taken,
+                            usersInterested
+                        )
+                        viewModelT.updateTimeSlot(updatedTimeSlot)
+                    }
                 }
                 findNavController().navigate(R.id.action_nav_slot_details_to_chat_fragment, bundle)
             } else {
