@@ -76,6 +76,9 @@ class ChatFragment : Fragment() {
                         if (messages[0] == "refused" && messages[1] == "Request refused by vendor") {
                             root.findViewById<EditText>(R.id.messageBox).isEnabled = false
                             root.findViewById<ConstraintLayout>(R.id.const2).visibility = View.GONE
+                        } else if (messages[0] == "accepted" && messages[1] == "Request accepted by vendor") {
+                            root.findViewById<EditText>(R.id.messageBox).isEnabled = false
+                            root.findViewById<ConstraintLayout>(R.id.const2).visibility = View.GONE
                         }
                         myListOfMessage.add(Message(messages[1].toString(), messages[0].toString()))
                     }
@@ -96,6 +99,7 @@ class ChatFragment : Fragment() {
             } else {
                 //Coming from timeSlots list
                 //So we have to filter chats containing auth.uid as idVendor
+
                 val myChat =
                     it.filter { c -> c.id == arguments.let { b -> b!!.getString("idChat") } }[0]
                 val myListOfMessage = mutableListOf<Message>()
@@ -111,21 +115,32 @@ class ChatFragment : Fragment() {
 
         accept.setOnClickListener {
             //Clicking the accept button, the timeslot 'taken' and 'buyer' properties will be updated (with the value true) on the db
-            val ts = viewModelT.timeSlots.value?.filter { t -> t.id == idTimeSlot }?.get(0)
-            val idBuyer = viewModelC.chats.value?.filter { c -> c.id == arguments.let { b -> b!!.getString("idChat") } }?.get(0)?.idBuyer
+            viewModelT.timeSlots.observe(viewLifecycleOwner) {
+                //Updating the timeslot
+                val ts = it.filter { t -> t.id == idTimeSlot }[0]
+                ts.buyer = viewModelC.chats.value?.filter { c -> c.id == arguments.let { b -> b!!.getString("idChat") } }!![0].idBuyer
+                ts.taken = true
+                viewModelT.updateTimeSlot(ts)
 
-            //Updating timeslot properties
-            ts!!.buyer = idBuyer!!
-            ts.taken = true
-            viewModelT.updateTimeSlot(ts)
+                //updating the chat
+                val myChat = viewModelC.chats.value?.filter { c -> c.id == idChat }?.get(0)
 
-            //Once a timeslot transaction is accepted by the vendor, the related chat is deleted from the db
-            viewModelC.deleteChat(viewModelC.chats.value!!.filter { c -> c.id  == arguments.let { b -> b!!.getString("idChat") }}.map { it.id }[0])
-            requireActivity().onBackPressed()
+                val refused = mapOf(
+                    "idUser" to "accepted",
+                    "text" to "Request accepted by vendor"
+                )
+                //adding the new message
+                val oldMessage = myChat?.messages as MutableList<Map<*,*>>
+                oldMessage.add(refused)
+
+                //updating the messages vector of the chat
+                val newChat = Chat(myChat.id, myChat.idBuyer, oldMessage, myChat.idTimeSlot, myChat.idVendor)
+                viewModelC.addMessage(newChat)
+                requireActivity().onBackPressed()
+            }
         }
 
         reject.setOnClickListener {
-            //TODO: se si clicca sul reject si chiude la chat e si manda un messaggio automatico al requestor
             //Once a timeslot transaction is rejected by the vendor, a message "Request refused" is sent to the buyer
             //updating the chat
             val myChat = viewModelC.chats.value?.filter { c -> c.id == idChat }?.get(0)
