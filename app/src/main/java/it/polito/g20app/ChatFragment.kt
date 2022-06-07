@@ -116,14 +116,12 @@ class ChatFragment : Fragment() {
             requireActivity().onBackPressed()
         }
 
-
         reject.setOnClickListener {
             //TODO: se si clicca sul reject si chiude la chat e si manda un messaggio automatico al requestor
             //Once a timeslot transaction is rejected by the vendor, the related chat is deleted from the db
             viewModelC.deleteChat(viewModelC.chats.value!!.filter { c -> c.id  == arguments.let { b -> b!!.getString("idChat") }}.map { it.id }[0])
             requireActivity().onBackPressed()
         }
-
 
          root.findViewById<ImageView>(R.id.button_send).setOnClickListener {
              //creating a new message

@@ -48,7 +48,7 @@
         android:id="@+id/switch_assignedTS"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:text="Switch"
+        android:text="Purchased"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/rv"
         app:layout_constraintEnd_toEndOf="parent"

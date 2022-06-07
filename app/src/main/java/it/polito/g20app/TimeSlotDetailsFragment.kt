@@ -62,11 +62,13 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
 
         //setting chat button for client
         root.findViewById<Button>(R.id.chat_button)?.setOnClickListener{
+            //Setting bundle
             val bundle = Bundle()
             bundle.putString("idTimeSlot", idSelected)
             idVendor = viewModelT.timeSlots.value!!.filter { t -> t.id == idSelected }[0].idUser
             bundle.putString("idVendor", idVendor)
             bundle.putString("tsTitle", tsTitle)
+
             if (arguments?.get("fromSkillDet") == 1) {
                 //if the navigation path is: nav_skills_list -> nav_skill_details, the app goes to the nav_chat_fragment
                 bundle.putInt("fromSkillDet", 1)
@@ -100,16 +102,14 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
         //setting like button
         root.findViewById<Button>(R.id.like_button).let {
             if (it != null) {
-                 viewModelT.timeSlots.observe(viewLifecycleOwner){ it1 ->
-                     if(it1.filter{ t -> t.id == idSelected }.map{ t -> t.idUser }[0] == auth.uid) it.isEnabled = false
+                 viewModelT.timeSlots.observe(viewLifecycleOwner){ ts ->
+                     //if the timeslot idUser match the logged one, he cannot add the timeslot to his favourites
+                     if (!ts.none { t -> t.id == idSelected && t.idUser == auth.uid }) it.isEnabled = false
 
-                     val checkUserInterested = it1.filter { t-> t.id == idSelected }.map { t-> t.userInterested }
-                     if (checkUserInterested.isNotEmpty()) {
-                         val userInterested = checkUserInterested[0]
-                         if (userInterested.contains(auth.uid)) it.text = "Remove from favorites"
-                         else it.text = "Add to your favorites"
-                     }
-
+                     if (ts.filter { t -> t.id == idSelected }[0].userInterested.contains(auth.uid))
+                         it.text = "Remove from favorites"
+                     else
+                         it.text = "Add to your favorites"
                 }
             }
         }

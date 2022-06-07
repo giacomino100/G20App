@@ -2,7 +2,6 @@ package it.polito.g20app
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +19,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
+@Suppress("BooleanLiteralArgument")
 class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
 
     private val viewModelT by viewModels<TimeSlotVM>()
@@ -31,19 +31,13 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
         super.onCreate(savedInstanceState)
         arguments.let {
             if (it != null) {
-                if (it.get("flag") as String == "true"){
-                    Log.d("saved", it.get("flag") as String)
-                    isTimeSlotSaved = true
-                }
-                if (it.get("flag") as String == "trueAssigned"){
-                    Log.d("saved", it.get("flag") as String)
-                    isTimeSlotAssigned = true
-                }
+                if (it.get("flag") as String == "true") isTimeSlotSaved = true
+                if (it.get("flag") as String == "trueAssigned") isTimeSlotAssigned = true
             }
         }
     }
 
-    @SuppressLint("UseSwitchCompatOrMaterialCode")
+    @SuppressLint("UseSwitchCompatOrMaterialCode", "SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -75,15 +69,17 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
 
         switchAssigned?.setOnCheckedChangeListener { _, isChecked ->
             viewModelT.timeSlots.observe(viewLifecycleOwner){
-                Log.d("assigned", isChecked.toString())
-
-                if(isChecked)(activity as FirebaseActivity).supportActionBar?.title = "My timeslots sold"
-                else (activity as FirebaseActivity).supportActionBar?.title = "My timeslots purchased"
+                if(isChecked) {
+                    (activity as FirebaseActivity).supportActionBar?.title = "My timeslots sold"
+                    switchAssigned.text = "Sold"
+                }
+                else {
+                    (activity as FirebaseActivity).supportActionBar?.title = "My timeslots purchased"
+                    switchAssigned.text = "Purchased"
+                }
 
                 val sortedSlots = if (isChecked) it.filter { t-> t.idUser == auth.uid && t.taken }
                 else it.filter { t-> t.idUser != auth.uid && t.buyer == auth.uid }
-
-                Log.d("assigned", it.filter { t-> t.idUser != auth.uid && t.buyer == auth.uid }.toString())
 
                 sortedSlots.let { list ->
                     val adapter = TimeSlotAdapter(list as MutableList<TimeSlot>, true, false, true)
@@ -100,7 +96,7 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
                 val adapter = TimeSlotAdapter(it.filter { ts -> ts.userInterested.contains(auth.uid) } as MutableList<TimeSlot>, true, isTimeSlotSaved, false)
                 rv.adapter = adapter
             } else if(isTimeSlotAssigned) {
-                //caricamento della recycler view inizialmente con quelli comprati
+                //user purchased timeslots
                 val adapter = TimeSlotAdapter(it.filter { ts -> ts.idUser != auth.uid && ts.buyer == auth.uid } as MutableList<TimeSlot>, true, false, true)
                 rv.adapter = adapter
             } else{
