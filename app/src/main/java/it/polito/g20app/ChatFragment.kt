@@ -127,7 +127,21 @@ class ChatFragment : Fragment() {
             //TODO: se si clicca sul reject si chiude la chat e si manda un messaggio automatico al requestor
             //Once a timeslot transaction is rejected by the vendor, the related chat is deleted from the db
             //viewModelC.deleteChat(viewModelC.chats.value!!.filter { c -> c.id  == arguments.let { b -> b!!.getString("idChat") }}.map { it.id }[0])
-            viewModelC.chats.observe(viewLifecycleOwner) {
+            //updating the chat
+            val myChat = viewModelC.chats.value?.filter { c -> c.id == idChat }?.get(0)
+
+            val refused = mapOf(
+                "idUser" to idVendor,
+                "text" to "richiesta rifiutata"
+            )
+            //adding the new message
+            val oldMessage = myChat?.messages as MutableList<Map<*,*>>
+            oldMessage.add(refused)
+
+            //updating the messages vector of the chat
+            val newChat = Chat(myChat.id, myChat.idBuyer, oldMessage, myChat.idTimeSlot, myChat.idVendor)
+            viewModelC.addMessage(newChat)
+            /*viewModelC.chats.observe(viewLifecycleOwner) {
                 val myChat = it.filter { c -> c.idTimeSlot == idTimeSlot && c.idVendor == auth.uid }[0]
                 val myListOfMessage = mutableListOf<Message>()
                 //Mapping the chat messages
@@ -139,7 +153,7 @@ class ChatFragment : Fragment() {
                 myListOfMessage.add(refused)
                 val adapter = MessageAdapter(myListOfMessage, auth.uid.toString(), idVendor)
                 rv.adapter = adapter
-            }
+            }*/
             requireActivity().onBackPressed()
         }
 
