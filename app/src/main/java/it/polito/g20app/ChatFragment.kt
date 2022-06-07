@@ -7,11 +7,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.activity.OnBackPressedCallback
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -34,9 +38,7 @@ class ChatFragment : Fragment() {
                 idTimeSlot = it.getString("idTimeSlot") as String
                 idVendor = it.getString("idVendor") as String
                 fromSkillDet = it.getInt("fromSkillDet")
-                if(fromSkillDet == 0) {
-                    idChat = it.getString("idChat") as String
-                }
+                if(fromSkillDet == 0) idChat = it.getString("idChat") as String
             }
         }
     }
@@ -51,6 +53,9 @@ class ChatFragment : Fragment() {
 
         val reject = root.findViewById<Button>(R.id.button2)
         val accept = root.findViewById<Button>(R.id.button3)
+
+        //Disabling toolbar back button
+        (activity as FirebaseActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
         //If the logged user is a buyer, he cannot accept/reject a timeslot transaction
         if (idVendor != auth.uid){
@@ -70,11 +75,10 @@ class ChatFragment : Fragment() {
                     val myListOfMessage = mutableListOf<Message>()
                     //Mapping the chat messages
                     myChat.messages.map { item ->
-                        val refused = Message("Richiesta rifiutata", idVendor)
                         val messages = item.values.toMutableList()
-                        if (messages.contains(refused)) {
-                            viewModelC.deleteChat(viewModelC.chats.value!!.filter { c -> c.id  == arguments.let { b -> b!!.getString("idChat") }}.map { it.id }[0])
-                            requireActivity().onBackPressed()
+                        if (messages[1] == "richiesta rifiutata") {
+                            root.findViewById<EditText>(R.id.messageBox).isEnabled = false
+                            root.findViewById<ConstraintLayout>(R.id.const2).visibility = View.GONE
                         }
                         myListOfMessage.add(Message(messages[1].toString(), messages[0].toString()))
                     }
@@ -141,19 +145,6 @@ class ChatFragment : Fragment() {
             //updating the messages vector of the chat
             val newChat = Chat(myChat.id, myChat.idBuyer, oldMessage, myChat.idTimeSlot, myChat.idVendor)
             viewModelC.addMessage(newChat)
-            /*viewModelC.chats.observe(viewLifecycleOwner) {
-                val myChat = it.filter { c -> c.idTimeSlot == idTimeSlot && c.idVendor == auth.uid }[0]
-                val myListOfMessage = mutableListOf<Message>()
-                //Mapping the chat messages
-                val refused = Message("Richiesta rifiutata", idVendor)
-                myChat.messages.map { item ->
-                    val messages = item.values.toMutableList()
-                    myListOfMessage.add(Message(messages[1].toString(), messages[0].toString()))
-                }
-                myListOfMessage.add(refused)
-                val adapter = MessageAdapter(myListOfMessage, auth.uid.toString(), idVendor)
-                rv.adapter = adapter
-            }*/
             requireActivity().onBackPressed()
         }
 
@@ -179,6 +170,21 @@ class ChatFragment : Fragment() {
              //cleaning the edit field
              root.findViewById<EditText>(R.id.messageBox).text.clear()
         }
+
+        requireActivity()
+            .onBackPressedDispatcher
+            .addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (!root.findViewById<EditText>(R.id.messageBox).isEnabled)
+                        viewModelC.deleteChat(viewModelC.chats.value!!.filter { c -> c.idBuyer == auth.uid && c.idTimeSlot == idTimeSlot && c.idVendor == idVendor }.map { c -> c.id }[0])
+                    if (isEnabled) {
+                        isEnabled = false
+                        requireActivity().onBackPressed()
+                    }
+                }
+            }
+            )
+
         return root
     }
 }
