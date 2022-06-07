@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -52,6 +53,7 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
         val tv2: TextView = root.findViewById(R.id.nickname)
         val tv3: TextView = root.findViewById(R.id.email)
         val tv4: TextView = root.findViewById(R.id.location)
+        val ratings: Button = root.findViewById(R.id.button5)
 
 
         val img: ImageView = root.findViewById(R.id.imageView_show)
@@ -102,6 +104,10 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
             tv2.text = it.nickname
             tv3.text = it.email
             tv4.text = it.location
+        }
+
+        ratings.setOnClickListener {
+            findNavController().navigate(R.id.action_nav_show_profile_to_ratingListFragment)
         }
 
         return root

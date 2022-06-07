@@ -23,8 +23,8 @@ data class Rating (
 )
 
 class RatingVM: ViewModel() {
-    private val _ratings = MutableLiveData<Rating>()
-    val ratings : LiveData<Rating> = _ratings
+    private val _ratings = MutableLiveData<List<Rating>>()
+    val ratings : LiveData<List<Rating>> = _ratings
 
     private var auth: FirebaseAuth = Firebase.auth
 
@@ -36,8 +36,8 @@ class RatingVM: ViewModel() {
         l1 = db.collection("ratings")
             .addSnapshotListener { v, e ->
                 if (e==null) {
-                    _ratings.value = v!!.filter { p -> p.id == auth.uid }[0].toRating()
-                } else _ratings.value = emptyList<Rating>()[0]
+                    _ratings.value = v!!.mapNotNull { r -> r.toRating() }
+                } else _ratings.value = emptyList()
             }
     }
 

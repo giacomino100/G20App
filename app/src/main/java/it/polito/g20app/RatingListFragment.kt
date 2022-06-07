@@ -1,10 +1,13 @@
 package it.polito.g20app
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,16 +27,44 @@ class RatingListFragment : Fragment(R.layout.fragment_list_rating) {
         savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_list_rating, container, false)
-        val rv = root.findViewById<RecyclerView>(R.id.ratings_rv)
         (activity as FirebaseActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        //TODO change title
         (activity as FirebaseActivity).supportActionBar?.title = "Ratings"
 
-        rv.layoutManager = LinearLayoutManager(root.context)
+        viewModelR.ratings.observe(viewLifecycleOwner){
+            //show Vendor ratings
+            val emptyListMsg = root.findViewById<TextView>(R.id.emptyVendorReview)
 
-        viewModelR.ratings.observe(viewLifecycleOwner) {
-            val adapter = RatingAdapter(it as MutableList<Rating>)
-            rv.adapter = adapter
+            val ratings = it.filter{
+                it1 -> it1.idVendor == auth.uid
+            }
+            if(ratings.isEmpty()){
+                emptyListMsg.visibility = View.VISIBLE
+            }else{
+                emptyListMsg.visibility = View.GONE
+                val rv = root.findViewById<RecyclerView>(R.id.vendorRV)
+                rv.layoutManager = LinearLayoutManager(root.context)
+                val adapter = RatingAdapter(ratings as MutableList<Rating>)
+                rv.adapter = adapter
+            }
+
+        }
+
+        viewModelR.ratings.observe(viewLifecycleOwner){
+            //show Buyer ratings
+            val emptyListMsg = root.findViewById<TextView>(R.id.emptyBuyerReviews)
+            val ratings = it.filter{
+                    it1 -> it1.idBuyer == auth.uid
+            }
+            Log.d("ratingB",ratings.toString())
+            if(ratings.isEmpty()){
+                emptyListMsg.visibility = View.VISIBLE
+            }else{
+                emptyListMsg.visibility = View.GONE
+                val rv = root.findViewById<RecyclerView>(R.id.buyerRV)
+                rv.layoutManager = LinearLayoutManager(root.context)
+                val adapter = RatingAdapter(ratings as MutableList<Rating>)
+                rv.adapter = adapter
+            }
         }
         return root
     }

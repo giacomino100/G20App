@@ -17,9 +17,11 @@ class RatingAdapter(val data: MutableList<Rating>): RecyclerView.Adapter<RatingA
 
     class RatingViewHolder(v: View): RecyclerView.ViewHolder(v) {
         private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
-        private val title: TextView = v.findViewById(R.id.user_rating)
-        private val card: CardView = v.findViewById(R.id.card_rating)
-        private val rate: RatingBar = v.findViewById(R.id.ratingBarFixed)
+        private val title: TextView = v.findViewById(R.id.ratingCardUserFullname)
+        val comment: TextView = v.findViewById(R.id.ratingCardComment)
+        private val commentTitle: TextView = v.findViewById(R.id.ratingCardCommentTitle)
+        private val card: CardView = v.findViewById(R.id.ratingCardView)
+        private val rate: RatingBar = v.findViewById(R.id.ratingBarRatingsCard)
 
         fun bind(rating: Rating, action: (v: View)->Unit) {
             title.text = "Loading..."
@@ -31,7 +33,17 @@ class RatingAdapter(val data: MutableList<Rating>): RecyclerView.Adapter<RatingA
                 Log.d("database", "Error getting profile info")
             }
             card.setOnClickListener(action)
-            rate.rating = rating.rate.toFloat()
+            if(rating!= null) {
+                rate.rating = rating.rate.toFloat()
+                rate.setIsIndicator(true)
+                if(comment.text != ""){
+                    comment.text = rating.comment
+                }else{
+                    comment.visibility = View.GONE
+                    commentTitle.visibility = View.GONE
+                }
+            }
+            //TODO prendere i rating necessari
         }
     }
 
@@ -54,7 +66,6 @@ class RatingAdapter(val data: MutableList<Rating>): RecyclerView.Adapter<RatingA
             bundle.putString("comment", item.comment)
 
 
-            //it.findNavController().navigate(R.id.action_nav_skills_list_to_nav_skill_details, bundle)
         }
     }
 

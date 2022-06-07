@@ -25,6 +25,9 @@
         <action
             android:id="@+id/action_nav_show_profile_to_nav_edit_profile"
             app:destination="@id/nav_edit_profile" />
+        <action
+            android:id="@+id/action_nav_show_profile_to_ratingListFragment"
+            app:destination="@id/ratingListFragment" />
     </fragment>
     <fragment
         android:id="@+id/nav_edit_profile"
@@ -99,5 +102,10 @@
         android:name="it.polito.g20app.RatingFragment"
         android:label="fragment_rating"
         tools:layout="@layout/fragment_rating" />
+    <fragment
+        android:id="@+id/ratingListFragment"
+        android:name="it.polito.g20app.RatingListFragment"
+        android:label="fragment_list_rating"
+        tools:layout="@layout/fragment_list_rating" />
 
 </navigation>
