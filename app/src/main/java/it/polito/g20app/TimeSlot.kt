@@ -2,7 +2,6 @@
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,10 +11,7 @@ import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.LocalTime.*
 import java.time.format.DateTimeFormatter
 
 
@@ -30,8 +26,7 @@ import java.time.format.DateTimeFormatter
         private val edit: ImageView = v.findViewById(R.id.editTimeSlot)
         private val card: CardView = v.findViewById(R.id.card)
 
-
-        fun convertMonthFromNameToNumber(month: String): String {
+        private fun convertMonthFromNameToNumber(month: String): String {
             val result = when(month){
                 "Jan" -> "01"
                 "Feb" -> "02"
@@ -58,21 +53,21 @@ import java.time.format.DateTimeFormatter
             if (flag) edit.visibility = View.GONE
 
             if (timeslot.taken){
-                //THIS IF IS NEEDED TO MANAGE THE RATING OF THE USER
-                //Se sono passate le ore del time slot possiamo votarlo
+                //Needed for user rating: once the timeslot is expired (according to the timeslot duration),
+                //the vendor can be rated
                 val dayTS = timeslot.date.split(" ")[2]
                 val monthTS = timeslot.date.split(" ")[1]
                 val yearTS = timeslot.date.split(" ")[5]
                 val hourTS = timeslot.date.split(" ")[3].split(":")[0]
-                val minutsTS = timeslot.date.split(" ")[3].split(":")[1]
+                val minTS = timeslot.date.split(" ")[3].split(":")[1]
                 val secondsTS = timeslot.date.split(" ")[3].split(":")[2]
 
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
-                val dataFormatted = yearTS + "-" + convertMonthFromNameToNumber(monthTS) + "-" + dayTS + " ${hourTS}:${minutsTS}:${secondsTS}.000"
+                val dataFormatted = yearTS + "-" + convertMonthFromNameToNumber(monthTS) + "-" + dayTS + " ${hourTS}:${minTS}:${secondsTS}.000"
 
 
                 if(LocalDateTime.parse(dataFormatted, formatter).plusHours(2).isBefore(LocalDateTime.now())){
-                    //true è scaduto
+                    //true -> timeslot expired
                     edit.visibility = View.VISIBLE
                     edit.setImageResource(R.drawable.ic_baseline_rate_review_24)
                     edit.setOnClickListener {

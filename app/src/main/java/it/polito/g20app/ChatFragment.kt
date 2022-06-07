@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
@@ -57,9 +58,9 @@ class ChatFragment : Fragment() {
             accept.isVisible = false
         }
 
-        viewModelC.chats.observe(viewLifecycleOwner){
+        viewModelC.chats.observe(viewLifecycleOwner) {
             if (fromSkillDet == 1) {
-                //Coming from skillDet, I'm a buyer
+                //Coming from skillDet, the logged user is a buyer
                 //So we have to filter chats containing auth.uid as idBuyer
                 if (it.any { c -> c.idTimeSlot == idTimeSlot && c.idBuyer == auth.uid }) {
                     //if there is a chat for auth.uid as buyer, for the clicked timeslot ->
@@ -85,6 +86,10 @@ class ChatFragment : Fragment() {
                         Log.d("database", "Error creating a new chat")
                     }
                 }
+                /*viewModelC.chats.observe(viewLifecycleOwner) { list->
+                    if (list.none { c -> c.idTimeSlot == idTimeSlot && c.idBuyer == auth.uid })
+                        root.findNavController().popBackStack()
+                }*/
             } else {
                 //Coming from timeSlots list
                 //So we have to filter chats containing auth.uid as idVendor

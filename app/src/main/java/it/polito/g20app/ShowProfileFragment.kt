@@ -135,7 +135,4 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
             else -> super.onOptionsItemSelected(item)
         }
     }
-
-
-
 }

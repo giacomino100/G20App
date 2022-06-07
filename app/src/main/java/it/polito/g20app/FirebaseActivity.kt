@@ -50,8 +50,8 @@ class FirebaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         auth = Firebase.auth
         // [END initialize_auth]
 
-        //FASE DI INIZIALIZZAZIONE DELL'HEADER DEL MENU
-        //SETTING IMAGE PROFILE
+        //Menù header initialization
+        //Setting Image Profile
         val headerView: View = binding.navView.getHeaderView(0)
         val img: ImageView = headerView.findViewById(R.id.nav_head_avatar)
         storageReference.child("images/${auth.uid}").downloadUrl.addOnSuccessListener {
@@ -63,8 +63,7 @@ class FirebaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             }
         }
 
-
-        //SETTING NAMES
+        //Setting names
         val tv1: TextView = headerView.findViewById(R.id.nav_head_username)
         tv1.text = auth.currentUser?.displayName.toString()
 
@@ -80,10 +79,10 @@ class FirebaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setCheckedItem(R.id.nav_skills_list)
 
-        //questo metodo invece ci serve per abilitare un listener quando clicchiamo il menu laterale
+        //Enabling listener for hamburger button
         navView.setNavigationItemSelectedListener(this)
 
-        //SETTING SIGNOUT BUTTON
+        //Setting sign out button
         headerView.findViewById<Button>(R.id.signout_button).setOnClickListener {
             signOut()
             //redirect to main activity
@@ -91,15 +90,12 @@ class FirebaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             startActivity(intent)
         }
 
-
-
-        //SETTING USER PROFILE
+        //Setting user profile
         createProfile()
     }
 
     private fun createProfile() {
-        //CREAZIONE NUOVO DOCUMENTO PER UN NUOVO UTENTE
-        //documento creato al primo login
+        //Creating a document on firestore database for the new user (first login)
         val docData = hashMapOf(
             "fullname" to auth.currentUser!!.displayName,
             "nickname" to "Your nickname",
@@ -118,8 +114,7 @@ class FirebaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
                         if (!document.exists()) {
                             db.collection("profiles").document(auth.uid.toString()).set(docData)
                                 .addOnSuccessListener {
-
-                                    //SE IL DOCUMENTO VIENE CREATO CORRETTAMENTE SI CREANO LE DUE SKILL VUOTE
+                                    //TODO verificare se possiamo togliere questa cosa delle due skill
                                     val skill1 = hashMapOf(
                                         "idUser" to auth.uid.toString(),
                                         "name" to "skill1",
@@ -162,12 +157,12 @@ class FirebaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         }
         if(item.itemId == R.id.nav_time_slots_saved){
             val bundle = Bundle()
-            bundle.putString("flag", "true") //bundle necessario per dire che dobbiamo visualizzare la GUI per i time slot salvati
+            bundle.putString("flag", "true") //flag for stored timeslots
             findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.action_nav_skills_list_to_nav_adv_list, bundle)
         }
         if(item.itemId == R.id.nav_time_slots_assigned){
             val bundle = Bundle()
-            bundle.putString("flag", "trueAssigned") //bundle necessario per dire che dobbiamo visualizzare la GUI per i time slot assegnati
+            bundle.putString("flag", "trueAssigned") //flag for favourite timeslots
             findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.action_nav_skills_list_to_nav_adv_list, bundle)
         }
 
@@ -189,8 +184,8 @@ class FirebaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         auth = Firebase.auth
         // [END initialize_auth]
 
-        //FASE DI INIZIALIZZAZIONE DELL'HEADER DEL MENU
-        //SETTING IMAGE PROFILE
+        //Menù header initialization
+        //Setting Image Profile
         val headerView: View = binding.navView.getHeaderView(0)
         val img: ImageView = headerView.findViewById(R.id.nav_head_avatar)
         storageReference.child("images/${auth.uid}").downloadUrl.addOnSuccessListener {

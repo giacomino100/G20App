@@ -104,9 +104,6 @@ class TimeSlotEditFragment : Fragment() {
                             view.findViewById<EditText>(R.id.slot_duration_edit).text.toString(),
                             view.findViewById<TextView>(R.id.slot_date_and_time_edit).text.toString()
                         )
-                       val data =  view.findViewById<TextView>(R.id.slot_date_and_time_edit).text.toString()
-                        Log.d("review", data.toString())
-                        //db timeslot insert
                         viewModelT.addTimeSlot(newTimeSlot)
 
                         //Management snack bar

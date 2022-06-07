@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
+@Suppress("BooleanLiteralArgument")
 class SkillDetailsFragment : Fragment() {
 
     private val vm by viewModels<TimeSlotVM>()

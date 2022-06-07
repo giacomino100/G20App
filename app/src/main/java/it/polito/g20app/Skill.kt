@@ -37,8 +37,6 @@ class SkillAdapter(val data: MutableList<Skill>): RecyclerView.Adapter<SkillAdap
     override fun onBindViewHolder(holder: SkillViewHolder, position: Int) {
         val item = displayData[position]
         holder.bind(item) {
-            //cliccando sull'edit si apre il TimeSlotDetailsFragment
-            //passaggio di informazioni tra fragment with a Bundle
             val bundle = Bundle()
             bundle.putString("id", item.id) //idSkill
             bundle.putString("name", item.name)
