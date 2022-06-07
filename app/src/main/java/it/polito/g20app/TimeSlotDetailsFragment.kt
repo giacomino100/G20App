@@ -75,7 +75,7 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
                 viewModelT.timeSlots.observe(viewLifecycleOwner) {
                     //Creating a new chat, the buyer is added to the timeslot 'userinterested' array on the db
                     if (it.none { ts -> ts.id == idSelected && !ts.taken }) {
-                        val timeSlotToUpdate = viewModelT.timeSlots.value?.filter { it.id == idSelected }!![0]
+                        val timeSlotToUpdate = viewModelT.timeSlots.value?.filter { ts -> ts.id == idSelected }!![0]
                         val usersInterested = timeSlotToUpdate.userInterested as MutableList<String>
                         usersInterested.add(auth.uid.toString())
                         val updatedTimeSlot = TimeSlot(
