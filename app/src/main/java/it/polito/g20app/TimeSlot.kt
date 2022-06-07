@@ -67,24 +67,12 @@ import java.time.format.DateTimeFormatter
                 val minutsTS = timeslot.date.split(" ")[3].split(":")[1]
                 val secondsTS = timeslot.date.split(" ")[3].split(":")[2]
 
-                val dayNow = LocalDate.now().toString().split("-")[2]
-                val monthNow = LocalDate.now().toString().split("-")[1]
-                val yearNow = LocalDate.now().toString().split("-")[0]
-                val hourNow = now().toString().split(":")[0]
-
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
                 val dataFormatted = yearTS + "-" + convertMonthFromNameToNumber(monthTS) + "-" + dayTS + " ${hourTS}:${minutsTS}:${secondsTS}.000"
 
-                Log.d("dataFormatted", LocalDateTime.parse(dataFormatted, formatter).isBefore(LocalDateTime.now().plusHours(2)).toString())
 
-                val current = LocalDateTime.now()
-
-
-                val formatted = current.format(formatter)
-                Log.d("review", formatted)
-
-                if((yearNow >= yearTS && monthNow >= monthTS && dayNow > dayTS) ||  (yearNow >= yearTS && monthNow >= monthTS && dayNow >= dayTS && hourNow >= (timeslot.duration + hourTS))){
-                    //true se il giorno è maggiore, oppure se è uguale ma l'ora è maggiore
+                if(LocalDateTime.parse(dataFormatted, formatter).plusHours(2).isBefore(LocalDateTime.now())){
+                    //true è scaduto
                     edit.visibility = View.VISIBLE
                     edit.setImageResource(R.drawable.ic_baseline_rate_review_24)
                     edit.setOnClickListener {
@@ -106,9 +94,7 @@ import java.time.format.DateTimeFormatter
                     bundle.putString("idSkill", timeslot.idSkill)
                     it.findNavController().navigate(R.id.action_nav_adv_list_to_timeSlotEditFragment, bundle)
                 }
-
             }
-
         }
     }
 
