@@ -126,8 +126,7 @@ class ChatFragment : Fragment() {
 
         reject.setOnClickListener {
             //TODO: se si clicca sul reject si chiude la chat e si manda un messaggio automatico al requestor
-            //Once a timeslot transaction is rejected by the vendor, the related chat is deleted from the db
-            //viewModelC.deleteChat(viewModelC.chats.value!!.filter { c -> c.id  == arguments.let { b -> b!!.getString("idChat") }}.map { it.id }[0])
+            //Once a timeslot transaction is rejected by the vendor, a message "Request refused" is sent to the buyer
             //updating the chat
             val myChat = viewModelC.chats.value?.filter { c -> c.id == idChat }?.get(0)
 
@@ -173,6 +172,8 @@ class ChatFragment : Fragment() {
             .addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     if (!root.findViewById<EditText>(R.id.messageBox).isEnabled)
+                        //If the messageBox isn't enabled, it means the vendor refuses the timeslot transactions.
+                        //So, going back to the timeslot detail fragment, the chat is deleted from the db
                         viewModelC.deleteChat(viewModelC.chats.value!!.filter { c -> c.idBuyer == auth.uid && c.idTimeSlot == idTimeSlot && c.idVendor == idVendor }.map { c -> c.id }[0])
                     if (isEnabled) {
                         isEnabled = false
