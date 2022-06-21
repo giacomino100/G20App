@@ -114,28 +114,7 @@ class FirebaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
                         if (!document.exists()) {
                             db.collection("profiles").document(auth.uid.toString()).set(docData)
                                 .addOnSuccessListener {
-                                    //TODO verificare se possiamo togliere questa cosa delle due skill
-                                    val skill1 = hashMapOf(
-                                        "idUser" to auth.uid.toString(),
-                                        "name" to "skill1",
-                                        "description" to "description skill1"
-                                    )
-                                    db.collection("skills").document().set(skill1)
-                                        .addOnSuccessListener {
-                                            val skill2 = hashMapOf(
-                                                "idUser" to auth.uid.toString(),
-                                                "name" to "skill2",
-                                                "description" to "description skill2"
-                                            )
-                                            db.collection("skills").document().set(skill2)
-                                                .addOnSuccessListener {
-                                                    Toast.makeText(
-                                                        this,
-                                                        "Data Saved",
-                                                        Toast.LENGTH_SHORT
-                                                    ).show()
-                                                }
-                                        }
+                                    Toast.makeText(this, "Profile created", Toast.LENGTH_LONG).show()
                                 }.addOnFailureListener {
                                     Toast.makeText(this, "Error", Toast.LENGTH_LONG).show()
                                 }
