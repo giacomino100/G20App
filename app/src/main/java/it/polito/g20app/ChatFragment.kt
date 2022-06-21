@@ -69,6 +69,7 @@ class ChatFragment : Fragment() {
                     //Loading the chat (if exists)
                     (activity as FirebaseActivity).supportActionBar?.title = "Chat"
                     val myChat = it.filter { c -> c.idTimeSlot == idTimeSlot && c.idBuyer == auth.uid }[0]
+                    idChat = myChat.id
                     val myListOfMessage = mutableListOf<Message>()
                     //Mapping the chat messages
                     myChat.messages.map { item ->
@@ -167,7 +168,6 @@ class ChatFragment : Fragment() {
 
              //updating the chat
              val myChat = viewModelC.chats.value?.filter { c -> c.id == idChat }?.get(0)
-             Log.d("chat",myChat.toString())
 
              //adding the new message
              val oldMessage = myChat?.messages as MutableList<Map<*,*>>

@@ -3,6 +3,7 @@ package it.polito.g20app
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.TextView
@@ -68,13 +69,16 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
             idVendor = viewModelT.timeSlots.value!!.filter { t -> t.id == idSelected }[0].idUser
             bundle.putString("idVendor", idVendor)
             bundle.putString("tsTitle", tsTitle)
+            Log.d("pulsanteChat", "clicked")
 
             if (arguments?.get("fromSkillDet") == 1) {
                 //if the navigation path is: nav_skills_list -> nav_skill_details, the app goes to the nav_chat_fragment
                 bundle.putInt("fromSkillDet", 1)
                 viewModelT.timeSlots.observe(viewLifecycleOwner) {
                     //Creating a new chat, the buyer is added to the timeslot 'userinterested' array on the db
-                    if (it.none { ts -> ts.id == idSelected && !ts.taken }) {
+                    Log.d("pulsanteChat", it.none { ts -> ts.id == idSelected && !ts.taken }.toString())
+                    if (it.none { ts -> ts.id == idSelected && ts.taken }) {
+                        Log.d("pulsanteChat", "fromSkillDet, ts not taken")
                         val timeSlotToUpdate = viewModelT.timeSlots.value?.filter { ts -> ts.id == idSelected }!![0]
                         val usersInterested = timeSlotToUpdate.userInterested as MutableList<String>
                         usersInterested.add(auth.uid.toString())

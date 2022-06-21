@@ -73,6 +73,7 @@ class TimeSlotVM: ViewModel(){
             "userInterested" to timeSlot.userInterested,
             "buyer" to timeSlot.buyer
         )
+        Log.d("updatingTimeslot", "aggiornamento utenti interessati: ${timeSlot.userInterested}")
         db.collection("timeslots").document(timeSlot.id).set(updatedTimeSlot).addOnSuccessListener {
             Log.d("database", "Timeslots successfully updated")
         }.addOnFailureListener {
