@@ -77,15 +77,13 @@ import java.time.format.DateTimeFormatter
                     edit.setOnClickListener {
                         val bundle = Bundle()
                         bundle.putString("idTimeSlot", timeslot.id)
+                        bundle.putString("idVendor", timeslot.idUser)
+                        bundle.putString("idBuyer", timeslot.buyer)
                         if (timeslot.idUser != auth.uid) {
                             //caso del buyer che fa la recensione al vendor
-                            bundle.putString("idVendor", auth.uid)
-                            bundle.putString("idBuyer", timeslot.buyer)
                             bundle.putString("idWriter", timeslot.buyer)
                         } else {
                             //caso del vendor che fa la recensione al buyer
-                            bundle.putString("idVendor", timeslot.idUser)
-                            bundle.putString("idBuyer", timeslot.buyer)
                             bundle.putString("idWriter", timeslot.idUser)
                         }
                         it.findNavController().navigate(R.id.action_nav_adv_list_to_nav_rating_fragment, bundle)
