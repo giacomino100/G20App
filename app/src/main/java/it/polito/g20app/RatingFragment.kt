@@ -19,6 +19,7 @@ class RatingFragment : Fragment() {
     var idVendor = " "
     var idTimeSlot = " "
     var rating = " " //numero di stelle che viene settato nell'onchange
+    var idWriter = " " //chi scrive la recensione: può essere il buyer oppure il vendor
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,6 +33,7 @@ class RatingFragment : Fragment() {
                 idBuyer = it.getString("idBuyer") as String
                 idVendor = it.getString("idVendor") as String
                 idTimeSlot = it.getString("idTimeSlot") as String
+                idWriter = it.getString("idWriter") as String
             }
         }
 
@@ -47,7 +49,7 @@ class RatingFragment : Fragment() {
             .addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     val comment = root.findViewById<EditText>(R.id.editTextRatingComment).text.toString()
-                    val docData = Rating("", idVendor, idBuyer, idTimeSlot, rating, comment)
+                    val docData = Rating("", idVendor, idBuyer, idTimeSlot, rating, comment, idWriter)
                     Log.d("ratings", docData.toString())
                     viewModelR.addRating(docData)
                     if (isEnabled) {
