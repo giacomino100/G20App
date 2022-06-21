@@ -18,6 +18,7 @@ class RatingFragment : Fragment() {
     var idBuyer = " "
     var idVendor = " "
     var idTimeSlot = " "
+    var rating = " " //numero di stelle che viene settato nell'onchange
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,14 +35,19 @@ class RatingFragment : Fragment() {
             }
         }
 
+
+        val rate = root.findViewById<RatingBar>(R.id.ratingBarAssign)
+        rate.setOnRatingBarChangeListener { ratingBar, fl, b ->
+            rating = fl.toString()
+        }
+
         //Salvo informazioni rating tramite BackPress
         requireActivity()
             .onBackPressedDispatcher
             .addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    val rate = root.findViewById<RatingBar>(R.id.ratingBarAssign).numStars
                     val comment = root.findViewById<EditText>(R.id.editTextRatingComment).text.toString()
-                    val docData = Rating("", idVendor, idBuyer, idTimeSlot, rate.toString(), comment)
+                    val docData = Rating("", idVendor, idBuyer, idTimeSlot, rating, comment)
                     Log.d("ratings", docData.toString())
                     viewModelR.addRating(docData)
                     if (isEnabled) {
