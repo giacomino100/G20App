@@ -56,9 +56,9 @@ import java.time.format.DateTimeFormatter
 
             if (flag) edit.visibility = View.GONE
 
-            if (timeslot.taken && timeslot.idUser != auth.uid){
+            if (timeslot.taken){
                 //Needed for user rating: once the timeslot is expired (according to the timeslot duration),
-                //the vendor can be rated
+                //the buyer can rate the vendor
                 val dayTS = timeslot.date.split(" ")[2]
                 val monthTS = timeslot.date.split(" ")[1]
                 val yearTS = timeslot.date.split(" ")[5]
@@ -77,12 +77,21 @@ import java.time.format.DateTimeFormatter
                     edit.setOnClickListener {
                         val bundle = Bundle()
                         bundle.putString("idTimeSlot", timeslot.id)
-                        bundle.putString("idVendor", timeslot.idUser)
-                        bundle.putString("idBuyer", auth.uid)
+                        if (timeslot.idUser != auth.uid) {
+                            //caso del buyer che fa la recensione al vendor
+                            bundle.putString("idVendor", timeslot.idUser)
+                            bundle.putString("idBuyer", auth.uid)
+                            bundle.putString("idWriter", timeslot.idUser)
+                        } else {
+                            //caso del vendor che fa la recensione al buyer
+                            bundle.putString("idVendor", auth.uid)
+                            bundle.putString("idBuyer", timeslot.buyer)
+                            bundle.putString("idWriter", auth.uid)
+                        }
                         it.findNavController().navigate(R.id.action_nav_adv_list_to_nav_rating_fragment, bundle)
                     }
                 }
-            }else{
+            } else{
                 edit.setOnClickListener {
                     //Clicking the edit button
                     val bundle = Bundle()
