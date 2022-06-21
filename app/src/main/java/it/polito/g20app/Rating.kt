@@ -26,7 +26,7 @@ class RatingAdapter(val data: MutableList<Rating>): RecyclerView.Adapter<RatingA
         fun bind(rating: Rating, action: (v: View)->Unit) {
             title.text = "Loading..."
             //Getting buyer name from the db: it's used to set the chat card title
-            db.collection("profiles").document(rating.idBuyer).get().addOnSuccessListener {
+            db.collection("profiles").document(rating.idWriter).get().addOnSuccessListener {
                 val fullname = it.get("fullname") as String
                 title.text = fullname
             }.addOnFailureListener {
