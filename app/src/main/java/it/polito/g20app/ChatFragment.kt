@@ -13,6 +13,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -29,6 +30,9 @@ class ChatFragment : Fragment() {
     private val viewModelT by viewModels<TimeSlotVM>()
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
     private var otherUserCredit = 0
+    private var requestingUserCredit = 0
+    private var timeSlotCredit = 0
+    private lateinit var requestingUserProfile: Profile
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +41,7 @@ class ChatFragment : Fragment() {
             if (it != null) {
                 idTimeSlot = it.getString("idTimeSlot") as String
                 idVendor = it.getString("idVendor") as String
+                //TODO: timeSlotCredit = it.getString("credit") as Int
                 fromSkillDet = it.getInt("fromSkillDet")
                 if(fromSkillDet == 0) idChat = it.getString("idChat") as String
             }
@@ -49,6 +54,32 @@ class ChatFragment : Fragment() {
             .addOnCompleteListener {
                 if (it.isSuccessful){
                     otherUserCredit = (it.result.data?.get("credit")?.toString() ?: 0) as Int
+                }
+            }
+
+        //get credits of authenticated user
+        db
+            .collection("profiles")
+            .document(auth.uid.toString())
+            .get()
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    val document = it.result
+                    if(document != null) {
+                        if (document.exists()) {
+                            requestingUserProfile.fullname = document.data!!["fullname"].toString()
+                            requestingUserProfile.nickname = document.data!!["nickname"].toString()
+                            requestingUserProfile.email = document.data!!["email"].toString()
+                            requestingUserProfile.location = document.data!!["location"].toString()
+                            requestingUserProfile.credit = document.data!!["credit"].toString()
+
+                            requestingUserCredit = document.data!!["credit"] as Int
+                        } else {
+                            Log.d("backbutton", "Document doesn't exist.")
+                        }
+                    }
+                } else {
+                    Log.d("TAG", "Error: ", it.exception)
                 }
             }
     }
@@ -129,50 +160,34 @@ class ChatFragment : Fragment() {
         accept.setOnClickListener {
             //Clicking the accept button, the timeslot 'taken' and 'buyer' properties will be updated (with the value true) on the db
             //TODO: check if the requesting user has a sufficient credit
-            //get credits of authenticated user
-            db
-                .collection("profiles")
-                .document(auth.uid.toString())
-                .get()
-                .addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        val document = it.result
-                        if(document != null) {
-                            if (document.exists()) {
-                                //TODO: controllare se questo if funziona
-                                if(document.data!!["credit"] as Int >= otherUserCredit){
-                                    viewModelT.timeSlots.observe(viewLifecycleOwner) {
-                                        //Updating the timeslot
-                                        val ts = it.filter { t -> t.id == idTimeSlot }[0]
-                                        ts.buyer = viewModelC.chats.value?.filter { c -> c.id == arguments.let { b -> b!!.getString("idChat") } }!![0].idBuyer
-                                        ts.taken = true
-                                        viewModelT.updateTimeSlot(ts)
+            if (requestingUserCredit >= timeSlotCredit){
+                viewModelT.timeSlots.observe(viewLifecycleOwner) {
+                    //Updating the timeslot
+                    val ts = it.filter { t -> t.id == idTimeSlot }[0]
+                    ts.buyer = viewModelC.chats.value?.filter { c -> c.id == arguments.let { b -> b!!.getString("idChat") } }!![0].idBuyer
+                    ts.taken = true
+                    viewModelT.updateTimeSlot(ts)
 
-                                        //updating the chat
-                                        val myChat = viewModelC.chats.value?.filter { c -> c.id == idChat }?.get(0)
+                    //updating the chat
+                    val myChat = viewModelC.chats.value?.filter { c -> c.id == idChat }?.get(0)
 
-                                        val refused = mapOf(
-                                            "idUser" to "accepted",
-                                            "text" to "Request accepted by vendor"
-                                        )
-                                        //adding the new message
-                                        val oldMessage = myChat?.messages as MutableList<Map<*,*>>
-                                        oldMessage.add(refused)
+                    val refused = mapOf(
+                        "idUser" to "accepted",
+                        "text" to "Request accepted by vendor"
+                    )
+                    //adding the new message
+                    val oldMessage = myChat?.messages as MutableList<Map<*,*>>
+                    oldMessage.add(refused)
 
-                                        //updating the messages vector of the chat
-                                        val newChat = Chat(myChat.id, myChat.idBuyer, oldMessage, myChat.idTimeSlot, myChat.idVendor)
-                                        viewModelC.addMessage(newChat)
-                                        requireActivity().onBackPressed()
-                                    }
-                                }
-                            } else {
-                                Log.d("backbutton", "Document doesn't exist.")
-                            }
-                        }
-                    } else {
-                        Log.d("TAG", "Error: ", it.exception)
-                    }
+                    //updating the messages vector of the chat
+                    val newChat = Chat(myChat.id, myChat.idBuyer, oldMessage, myChat.idTimeSlot, myChat.idVendor)
+                    viewModelC.addMessage(newChat)
+
+                    //TODO (TO TEST): decrement the credits of requesting user
+                    decrementCredits()
+                    requireActivity().onBackPressed()
                 }
+            }
 
         }
 
@@ -234,5 +249,30 @@ class ChatFragment : Fragment() {
             )
 
         return root
+    }
+
+    fun decrementCredits(){
+        val docData = hashMapOf(
+            "fullname" to requestingUserProfile.fullname,
+            "nickname" to requestingUserProfile.nickname,
+            "email" to requestingUserProfile.email,
+            "location" to requestingUserProfile.location,
+            "credit" to requestingUserCredit - timeSlotCredit
+        )
+
+        val docref = db.collection("profiles").document(auth.uid!!)
+        docref.get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                db.collection("profiles").document(auth.uid!!).set(docData)
+                    .addOnSuccessListener {
+                        //Management snackbar
+                        //Snackbar.make(root, "Profile updated", Snackbar.LENGTH_LONG).show()
+                    }.addOnFailureListener {
+                        //Snackbar.make(root, "Profile update failed", Snackbar.LENGTH_LONG).show()
+                    }
+            } else {
+                Log.d("TAG", "Error: ", task.exception)
+            }
+        }
     }
 }
