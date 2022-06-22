@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 
 class ChatFragment : Fragment() {
@@ -26,6 +27,8 @@ class ChatFragment : Fragment() {
     private var fromSkillDet: Int = 0
     private var auth: FirebaseAuth = Firebase.auth
     private val viewModelT by viewModels<TimeSlotVM>()
+    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private var otherUserCredit = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +41,16 @@ class ChatFragment : Fragment() {
                 if(fromSkillDet == 0) idChat = it.getString("idChat") as String
             }
         }
+
+        db
+            .collection("profiles")
+            .document(idVendor)
+            .get()
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    otherUserCredit = (it.result.data?.get("credit")?.toString() ?: 0) as Int
+                }
+            }
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -116,29 +129,51 @@ class ChatFragment : Fragment() {
         accept.setOnClickListener {
             //Clicking the accept button, the timeslot 'taken' and 'buyer' properties will be updated (with the value true) on the db
             //TODO: check if the requesting user has a sufficient credit
-            viewModelT.timeSlots.observe(viewLifecycleOwner) {
-                //Updating the timeslot
-                val ts = it.filter { t -> t.id == idTimeSlot }[0]
-                ts.buyer = viewModelC.chats.value?.filter { c -> c.id == arguments.let { b -> b!!.getString("idChat") } }!![0].idBuyer
-                ts.taken = true
-                viewModelT.updateTimeSlot(ts)
+            //get credits of authenticated user
+            db
+                .collection("profiles")
+                .document(auth.uid.toString())
+                .get()
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        val document = it.result
+                        if(document != null) {
+                            if (document.exists()) {
+                                //TODO: controllare se questo if funziona
+                                if(document.data!!["credit"] as Int >= otherUserCredit){
+                                    viewModelT.timeSlots.observe(viewLifecycleOwner) {
+                                        //Updating the timeslot
+                                        val ts = it.filter { t -> t.id == idTimeSlot }[0]
+                                        ts.buyer = viewModelC.chats.value?.filter { c -> c.id == arguments.let { b -> b!!.getString("idChat") } }!![0].idBuyer
+                                        ts.taken = true
+                                        viewModelT.updateTimeSlot(ts)
 
-                //updating the chat
-                val myChat = viewModelC.chats.value?.filter { c -> c.id == idChat }?.get(0)
+                                        //updating the chat
+                                        val myChat = viewModelC.chats.value?.filter { c -> c.id == idChat }?.get(0)
 
-                val refused = mapOf(
-                    "idUser" to "accepted",
-                    "text" to "Request accepted by vendor"
-                )
-                //adding the new message
-                val oldMessage = myChat?.messages as MutableList<Map<*,*>>
-                oldMessage.add(refused)
+                                        val refused = mapOf(
+                                            "idUser" to "accepted",
+                                            "text" to "Request accepted by vendor"
+                                        )
+                                        //adding the new message
+                                        val oldMessage = myChat?.messages as MutableList<Map<*,*>>
+                                        oldMessage.add(refused)
 
-                //updating the messages vector of the chat
-                val newChat = Chat(myChat.id, myChat.idBuyer, oldMessage, myChat.idTimeSlot, myChat.idVendor)
-                viewModelC.addMessage(newChat)
-                requireActivity().onBackPressed()
-            }
+                                        //updating the messages vector of the chat
+                                        val newChat = Chat(myChat.id, myChat.idBuyer, oldMessage, myChat.idTimeSlot, myChat.idVendor)
+                                        viewModelC.addMessage(newChat)
+                                        requireActivity().onBackPressed()
+                                    }
+                                }
+                            } else {
+                                Log.d("backbutton", "Document doesn't exist.")
+                            }
+                        }
+                    } else {
+                        Log.d("TAG", "Error: ", it.exception)
+                    }
+                }
+
         }
 
         reject.setOnClickListener {
