@@ -115,6 +115,7 @@ class ChatFragment : Fragment() {
 
         accept.setOnClickListener {
             //Clicking the accept button, the timeslot 'taken' and 'buyer' properties will be updated (with the value true) on the db
+            //TODO: check if the requesting user has a sufficient credit
             viewModelT.timeSlots.observe(viewLifecycleOwner) {
                 //Updating the timeslot
                 val ts = it.filter { t -> t.id == idTimeSlot }[0]

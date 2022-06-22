@@ -1,5 +1,6 @@
 package it.polito.g20app
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,7 +16,8 @@ data class Profile(
     var fullname: String = " ",
     var nickname: String = " ",
     var location: String = " ",
-    var email: String = " "
+    var email: String = " ",
+    var credit: String = " "
 )
 
 
@@ -45,7 +47,8 @@ class ProfileVM: ViewModel() {
             val nickname = get("nickname") as String
             val email = get("email") as String
             val location = get("location") as String
-            Profile(id, fullname, nickname, location, email)
+            val credit = get("credit") as Number
+            Profile(id, fullname, nickname, location, email, credit.toString())
         } catch (e: Exception) {
             e.printStackTrace()
             null

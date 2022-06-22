@@ -53,6 +53,7 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
         val tv2: TextView = root.findViewById(R.id.nickname)
         val tv3: TextView = root.findViewById(R.id.email)
         val tv4: TextView = root.findViewById(R.id.location)
+        val tv5: TextView = root.findViewById(R.id.credit)
         val ratings: Button = root.findViewById(R.id.button5)
 
 
@@ -86,6 +87,7 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
                         tv2.text = document.data!!["nickname"].toString()
                         tv3.text = document.data!!["email"].toString()
                         tv4.text = document.data!!["location"].toString()
+                        tv5.text = document.data!!["credit"].toString() + " Credits"
                     } else {
                         Log.d("backbutton", "Document doesn't exist.")
                     }
@@ -104,6 +106,7 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
             tv2.text = it.nickname
             tv3.text = it.email
             tv4.text = it.location
+            tv5.text = it.credit + " Credits"
         }
 
         ratings.setOnClickListener {

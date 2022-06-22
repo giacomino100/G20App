@@ -101,6 +101,7 @@ class FirebaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             "nickname" to "Your nickname",
             "email" to auth.currentUser!!.email,
             "location" to "Your location",
+            "credit" to 10
         )
 
         db
