@@ -21,6 +21,7 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
     private var idTimeslotSkill: String = " "
     private var idVendor: String = " "
     private var tsTitle: String = " "
+    private var credits: Number = 0
     private val viewModelT by viewModels<TimeSlotVM>()
     private val viewModelS by viewModels<SkillVM>()
     private var auth: FirebaseAuth = Firebase.auth
@@ -56,6 +57,7 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
              root.findViewById<TextView>(R.id.slot_location).text = ts.location
              root.findViewById<TextView>(R.id.slot_credits).text = ts.credits.toString()
              idTimeslotSkill = ts.idSkill
+             credits = ts.credits.toString().toInt()
          }
 
         //Loading skills
@@ -71,6 +73,7 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
             idVendor = viewModelT.timeSlots.value!!.filter { t -> t.id == idSelected }[0].idUser
             bundle.putString("idVendor", idVendor)
             bundle.putString("tsTitle", tsTitle)
+            bundle.putString("credits", credits.toString())
             Log.d("pulsanteChat", "clicked")
 
             if (arguments?.get("fromSkillDet") == 1) {

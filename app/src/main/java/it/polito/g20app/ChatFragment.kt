@@ -31,7 +31,7 @@ class ChatFragment : Fragment() {
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
     private var otherUserCredit = 0
     private var requestingUserCredit = 0
-    private var timeSlotCredit = 0
+    private var timeSlotCredit = " "
     private lateinit var requestingUserProfile: Profile
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +41,7 @@ class ChatFragment : Fragment() {
             if (it != null) {
                 idTimeSlot = it.getString("idTimeSlot") as String
                 idVendor = it.getString("idVendor") as String
-                //TODO: timeSlotCredit = it.getString("credit") as Int
+                timeSlotCredit = it.getString("credits") as String
                 fromSkillDet = it.getInt("fromSkillDet")
                 if(fromSkillDet == 0) idChat = it.getString("idChat") as String
             }
@@ -160,7 +160,7 @@ class ChatFragment : Fragment() {
         accept.setOnClickListener {
             //Clicking the accept button, the timeslot 'taken' and 'buyer' properties will be updated (with the value true) on the db
             //TODO: check if the requesting user has a sufficient credit
-            if (requestingUserCredit >= timeSlotCredit){
+            if (requestingUserCredit >= timeSlotCredit.toInt()){
                 viewModelT.timeSlots.observe(viewLifecycleOwner) {
                     //Updating the timeslot
                     val ts = it.filter { t -> t.id == idTimeSlot }[0]
@@ -257,7 +257,7 @@ class ChatFragment : Fragment() {
             "nickname" to requestingUserProfile.nickname,
             "email" to requestingUserProfile.email,
             "location" to requestingUserProfile.location,
-            "credit" to requestingUserCredit - timeSlotCredit
+            "credit" to requestingUserCredit - timeSlotCredit.toInt()
         )
 
         val docref = db.collection("profiles").document(auth.uid!!)
