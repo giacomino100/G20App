@@ -102,6 +102,7 @@ import java.time.format.DateTimeFormatter
                     bundle.putString("location", timeslot.location)
                     bundle.putBoolean("taken", timeslot.taken)
                     bundle.putString("idSkill", timeslot.idSkill)
+                    bundle.putString("credits", timeslot.credits.toString())
                     it.findNavController().navigate(R.id.action_nav_adv_list_to_timeSlotEditFragment, bundle)
                 }
             }
@@ -133,6 +134,7 @@ import java.time.format.DateTimeFormatter
             bundle.putString("location", item.location)
             bundle.putBoolean("taken", item.taken)
             bundle.putString("idSkill", item.idSkill)
+            bundle.putString("credits", item.credits.toString())
             if (flag && !_isTimeSlotSaved && !_isTimeSlotAssigned) it.findNavController().navigate(R.id.action_nav_skill_details_to_nav_slot_details3, bundle)
             else it.findNavController().navigate(R.id.action_nav_adv_list_to_nav_slot_details, bundle)
         }

@@ -34,6 +34,7 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
         // Inflate the layout for this fragment
         val root = inflater.inflate(R.layout.fragment_time_slot_details, container, false)
 
+        root.findViewById<TextView>(R.id.slot_credits).text = root.findViewById<TextView>(R.id.slot_credits).text.toString() + " Credits"
         //getting the timeSlot id from bundle
         arguments.let {
             idSelected = it!!.getString("id").toString()
@@ -53,6 +54,7 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
              root.findViewById<TextView>(R.id.slot_date_and_time).text = ts.date
              root.findViewById<TextView>(R.id.slot_duration).text = ts.duration
              root.findViewById<TextView>(R.id.slot_location).text = ts.location
+             root.findViewById<TextView>(R.id.slot_credits).text = ts.credits.toString()
              idTimeslotSkill = ts.idSkill
          }
 
@@ -92,8 +94,10 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
                             timeSlotToUpdate.duration,
                             timeSlotToUpdate.date,
                             timeSlotToUpdate.taken,
-                            usersInterested
-                        )
+                            usersInterested,
+                            timeSlotToUpdate.buyer,
+                            timeSlotToUpdate.credits,
+                            )
                         viewModelT.updateTimeSlot(updatedTimeSlot)
                     }
                 }
@@ -149,7 +153,9 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
                     timeSlotToUpdate.duration,
                     timeSlotToUpdate.date,
                     timeSlotToUpdate.taken,
-                    newUserInterested
+                    newUserInterested,
+                    timeSlotToUpdate.buyer,
+                    timeSlotToUpdate.credits
                 )
             }
             if (updatedTimeSlot != null) viewModelT.updateTimeSlot(updatedTimeSlot)

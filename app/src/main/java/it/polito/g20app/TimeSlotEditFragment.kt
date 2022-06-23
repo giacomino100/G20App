@@ -94,22 +94,26 @@ class TimeSlotEditFragment : Fragment() {
                 .addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
                     @SuppressLint("CutPasteId")
                     override fun handleOnBackPressed() {
-                        val newTimeSlot = TimeSlot(
-                            "",
-                            auth.uid!!,
-                            viewModelS.skills.value?.filter { s -> s.name == spinner.selectedItem }?.map { s -> s.id }!![0],
-                            view.findViewById<EditText>(R.id.slot_title_edit).text.toString(),
-                            view.findViewById<EditText>(R.id.slot_description_edit).text.toString(),
-                            view.findViewById<EditText>(R.id.slot_location_edit).text.toString(),
-                            view.findViewById<EditText>(R.id.slot_duration_edit).text.toString(),
-                            view.findViewById<TextView>(R.id.slot_date_and_time_edit).text.toString()
-                        )
+                        val newTimeSlot = TimeSlot()
+                        newTimeSlot.id = " "
+                        newTimeSlot.idUser = auth.uid!!
+                        newTimeSlot.idSkill = viewModelS.skills.value?.filter { s -> s.name == spinner.selectedItem }?.map { s -> s.id }!![0]
+                        newTimeSlot.title = view.findViewById<EditText>(R.id.slot_title_edit).text.toString()
+                        newTimeSlot.description = view.findViewById<EditText>(R.id.slot_description_edit).text.toString()
+                        newTimeSlot.location = view.findViewById<EditText>(R.id.slot_location_edit).text.toString()
+                        newTimeSlot.duration = view.findViewById<EditText>(R.id.slot_duration_edit).text.toString()
+                        newTimeSlot.date = view.findViewById<TextView>(R.id.slot_date_and_time_edit).text.toString()
+                        newTimeSlot.credits = view.findViewById<EditText>(R.id.slot_credits_edit).text.toString().toInt()
+                        newTimeSlot.userInterested = listOf()
+                        newTimeSlot.buyer = " "
+                        newTimeSlot.taken = false
+
+                        Log.d("credits", newTimeSlot.toString())
                         viewModelT.addTimeSlot(newTimeSlot)
 
                         //Management snack bar
                         val root = view.rootView
-                        Snackbar.make(root, "TimeSlot created", Snackbar.LENGTH_LONG)
-                            .show()
+                        Snackbar.make(root, "TimeSlot created", Snackbar.LENGTH_LONG).show()
 
                         if (isEnabled) {
                             isEnabled = false
@@ -141,6 +145,8 @@ class TimeSlotEditFragment : Fragment() {
                 view.findViewById<TextView>(R.id.slot_date_and_time_edit).text = ts.date
                 view.findViewById<TextView>(R.id.slot_duration_edit).text = ts.duration
                 view.findViewById<TextView>(R.id.slot_location_edit).text = ts.location
+                view.findViewById<TextView>(R.id.slot_credits_edit).text = ts.credits.toString()
+
             }
 
         requireActivity()
@@ -157,7 +163,7 @@ class TimeSlotEditFragment : Fragment() {
                             updatedTimeSlot.location = view.findViewById<EditText>(R.id.slot_location_edit).text.toString()
                             updatedTimeSlot.idSkill = viewModelS.skills.value?.filter { s -> s.name == spinner.selectedItem }?.map { s -> s.id }!![0]
                             updatedTimeSlot.idUser = auth.uid.toString()
-
+                            updatedTimeSlot.credits = view.findViewById<EditText>(R.id.slot_credits_edit).text.toString().toInt()
                             viewModelT.updateTimeSlot(updatedTimeSlot)
 
                             //Management snack bar

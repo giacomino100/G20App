@@ -2,6 +2,7 @@ package it.polito.g20app
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -67,6 +68,7 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
 
         rv.layoutManager = LinearLayoutManager(root.context)
 
+
         switchAssigned?.setOnCheckedChangeListener { _, isChecked ->
             viewModelT.timeSlots.observe(viewLifecycleOwner){
                 if(isChecked) {
@@ -89,7 +91,7 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
         }
 
         //Loading timeslots
-        viewModelT.timeSlots.observe(viewLifecycleOwner) {
+    viewModelT.timeSlots.observe(viewLifecycleOwner) {
             if (isTimeSlotSaved){
                 //user favourite timeslots case
                 root.findViewById<TextView>(R.id.alert).isVisible = it.isEmpty()
@@ -99,9 +101,10 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
                 //user purchased timeslots
                 val adapter = TimeSlotAdapter(it.filter { ts -> ts.idUser != auth.uid && ts.buyer == auth.uid } as MutableList<TimeSlot>, true, false, true)
                 rv.adapter = adapter
-            } else{
+            } else {
                 //this row is needed to show the message in case the list is empty
                 root.findViewById<TextView>(R.id.alert).isVisible = it.isEmpty()
+                Log.d("credits", it.toString())
                 val adapter = TimeSlotAdapter(it.filter { ts -> ts.idUser == auth.uid } as MutableList<TimeSlot>, false, isTimeSlotSaved, false)
                 rv.adapter = adapter
             }
