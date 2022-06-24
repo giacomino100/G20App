@@ -135,7 +135,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
                             "nickname" to view?.findViewById<EditText>(R.id.edit_nickname)!!.text.toString(),
                             "email" to view?.findViewById<EditText>(R.id.edit_email)!!.text.toString(),
                             "location" to view?.findViewById<EditText>(R.id.edit_location)!!.text.toString(),
-                            "credit" to view?.findViewById<TextView>(R.id.credit)!!.text as Int
+                            "credit" to view?.findViewById<TextView>(R.id.credit)!!.text
                         )
 
                         val docref = db.collection("profiles").document(auth.uid!!)

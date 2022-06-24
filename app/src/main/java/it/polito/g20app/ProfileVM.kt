@@ -47,8 +47,8 @@ class ProfileVM: ViewModel() {
             val nickname = get("nickname") as String
             val email = get("email") as String
             val location = get("location") as String
-            val credit = get("credit") as Number
-            Profile(id, fullname, nickname, location, email, credit.toString())
+            val credit = get("credit") as String
+            Profile(id, fullname, nickname, location, email, credit)
         } catch (e: Exception) {
             e.printStackTrace()
             null
