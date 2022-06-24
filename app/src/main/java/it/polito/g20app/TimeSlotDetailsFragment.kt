@@ -55,9 +55,7 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
              root.findViewById<TextView>(R.id.slot_date_and_time).text = ts.date
              root.findViewById<TextView>(R.id.slot_duration).text = ts.duration
              root.findViewById<TextView>(R.id.slot_location).text = ts.location
-             root.findViewById<TextView>(R.id.slot_credits).text = ts.credits.toString()
              idTimeslotSkill = ts.idSkill
-             credits = ts.credits.toString().toInt()
          }
 
         //Loading skills
