@@ -62,6 +62,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
         val tv2: TextView = root.findViewById(R.id.edit_nickname)
         val tv3: TextView = root.findViewById(R.id.edit_email)
         val tv4: TextView = root.findViewById(R.id.edit_location)
+        val tv5: TextView = root.findViewById(R.id.credit)
         val spinner: Spinner = root.findViewById(R.id.spinnerEditProfile)
         val img: ImageView = root.findViewById(R.id.imageView_edit)
 
@@ -87,6 +88,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
             tv2.text = it.nickname
             tv3.text = it.email
             tv4.text = it.location
+            tv5.text = it.credit
         }
 
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -132,7 +134,8 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
                             "fullname" to view?.findViewById<EditText>(R.id.edit_fullname)!!.text.toString(),
                             "nickname" to view?.findViewById<EditText>(R.id.edit_nickname)!!.text.toString(),
                             "email" to view?.findViewById<EditText>(R.id.edit_email)!!.text.toString(),
-                            "location" to view?.findViewById<EditText>(R.id.edit_location)!!.text.toString()
+                            "location" to view?.findViewById<EditText>(R.id.edit_location)!!.text.toString(),
+                            "credit" to view?.findViewById<TextView>(R.id.credit)!!.text as Int
                         )
 
                         val docref = db.collection("profiles").document(auth.uid!!)

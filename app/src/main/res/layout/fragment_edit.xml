@@ -89,10 +89,21 @@
             android:inputType="textPersonName"
             android:minHeight="48dp"
             android:text="@string/location"
-            app:layout_constraintBottom_toTopOf="@+id/divider5"
+            app:layout_constraintBottom_toTopOf="@+id/credit"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/edit_email" />
+
+        <TextView
+            android:id="@+id/credit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            app:layout_constraintBottom_toTopOf="@+id/divider5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edit_location" />
+
 
         <View
             android:id="@+id/divider5"
