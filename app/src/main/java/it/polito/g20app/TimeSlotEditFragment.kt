@@ -103,7 +103,7 @@ class TimeSlotEditFragment : Fragment() {
                         newTimeSlot.location = view.findViewById<EditText>(R.id.slot_location_edit).text.toString()
                         newTimeSlot.duration = view.findViewById<EditText>(R.id.slot_duration_edit).text.toString()
                         newTimeSlot.date = view.findViewById<TextView>(R.id.slot_date_and_time_edit).text.toString()
-                        newTimeSlot.credits = view.findViewById<EditText>(R.id.slot_credits_edit).text.toString().toInt()
+                        newTimeSlot.credits = view.findViewById<EditText>(R.id.slot_credits_edit).text.toString()
                         newTimeSlot.userInterested = listOf()
                         newTimeSlot.buyer = " "
                         newTimeSlot.taken = false
@@ -163,7 +163,7 @@ class TimeSlotEditFragment : Fragment() {
                             updatedTimeSlot.location = view.findViewById<EditText>(R.id.slot_location_edit).text.toString()
                             updatedTimeSlot.idSkill = viewModelS.skills.value?.filter { s -> s.name == spinner.selectedItem }?.map { s -> s.id }!![0]
                             updatedTimeSlot.idUser = auth.uid.toString()
-                            updatedTimeSlot.credits = view.findViewById<EditText>(R.id.slot_credits_edit).text.toString().toInt()
+                            updatedTimeSlot.credits = view.findViewById<EditText>(R.id.slot_credits_edit).text.toString()
                             viewModelT.updateTimeSlot(updatedTimeSlot)
 
                             //Management snack bar

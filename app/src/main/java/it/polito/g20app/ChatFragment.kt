@@ -22,6 +22,7 @@ import com.google.firebase.ktx.Firebase
 class ChatFragment : Fragment() {
 
     private val viewModelC by viewModels<ChatVM>()
+    private val viewModelP by viewModels<ProfileVM>()
     private var idTimeSlot: String = " "
     private var idVendor: String = " "
     private var idChat: String = " "
@@ -29,10 +30,9 @@ class ChatFragment : Fragment() {
     private var auth: FirebaseAuth = Firebase.auth
     private val viewModelT by viewModels<TimeSlotVM>()
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
-    private var otherUserCredit = 0
-    private var requestingUserCredit = 0
+    private var buyerProfile: Profile? = Profile("", "", "", "", "", "")
+    private var vendorProfile: Profile? = Profile("", "", "", "", "", "")
     private var timeSlotCredit = " "
-    private lateinit var requestingUserProfile: Profile
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,47 +41,12 @@ class ChatFragment : Fragment() {
             if (it != null) {
                 idTimeSlot = it.getString("idTimeSlot") as String
                 idVendor = it.getString("idVendor") as String
+
                 timeSlotCredit = it.getString("credits") as String
                 fromSkillDet = it.getInt("fromSkillDet")
                 if(fromSkillDet == 0) idChat = it.getString("idChat") as String
             }
         }
-
-        db
-            .collection("profiles")
-            .document(idVendor)
-            .get()
-            .addOnCompleteListener {
-                if (it.isSuccessful){
-                    otherUserCredit = (it.result.data?.get("credit")?.toString() ?: 0) as Int
-                }
-            }
-
-        //get credits of authenticated user
-        db
-            .collection("profiles")
-            .document(auth.uid.toString())
-            .get()
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    val document = it.result
-                    if(document != null) {
-                        if (document.exists()) {
-                            requestingUserProfile.fullname = document.data!!["fullname"].toString()
-                            requestingUserProfile.nickname = document.data!!["nickname"].toString()
-                            requestingUserProfile.email = document.data!!["email"].toString()
-                            requestingUserProfile.location = document.data!!["location"].toString()
-                            requestingUserProfile.credit = document.data!!["credit"].toString()
-
-                            requestingUserCredit = document.data!!["credit"] as Int
-                        } else {
-                            Log.d("backbutton", "Document doesn't exist.")
-                        }
-                    }
-                } else {
-                    Log.d("TAG", "Error: ", it.exception)
-                }
-            }
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -158,9 +123,10 @@ class ChatFragment : Fragment() {
         }
 
         accept.setOnClickListener {
-            //Clicking the accept button, the timeslot 'taken' and 'buyer' properties will be updated (with the value true) on the db
-            //TODO: check if the requesting user has a sufficient credit
-            if (requestingUserCredit >= timeSlotCredit.toInt()){
+            //Clicking the accept button, if the buyer has the amount of requested credits, the timeslot 'taken' and 'buyer' properties will be updated (with the value true) on the db
+            vendorProfile = viewModelP.profile.value?.filter { p -> p.id == auth.uid }?.get(0)
+            buyerProfile = viewModelP.profile.value?.filter { p -> p.id == viewModelC.chats.value?.filter { c -> c.id == arguments.let { b -> b!!.getString("idChat") } }!![0].idBuyer }?.get(0)
+            if (buyerProfile?.credit!!.toInt() >= timeSlotCredit.toInt()){
                 viewModelT.timeSlots.observe(viewLifecycleOwner) {
                     //Updating the timeslot
                     val ts = it.filter { t -> t.id == idTimeSlot }[0]
@@ -183,8 +149,8 @@ class ChatFragment : Fragment() {
                     val newChat = Chat(myChat.id, myChat.idBuyer, oldMessage, myChat.idTimeSlot, myChat.idVendor)
                     viewModelC.addMessage(newChat)
 
-                    //TODO (TO TEST): decrement the credits of requesting user
-                    decrementCredits()
+                    //TODO (TO TEST): decrement the credits of buyer and increment the credits of the vendor
+                    creditExchange()
                     requireActivity().onBackPressed()
                 }
             }
@@ -251,24 +217,43 @@ class ChatFragment : Fragment() {
         return root
     }
 
-    fun decrementCredits(){
-        val docData = hashMapOf(
-            "fullname" to requestingUserProfile.fullname,
-            "nickname" to requestingUserProfile.nickname,
-            "email" to requestingUserProfile.email,
-            "location" to requestingUserProfile.location,
-            "credit" to requestingUserCredit - timeSlotCredit.toInt()
+    fun creditExchange(){
+        val buyer = hashMapOf(
+            "fullname" to buyerProfile?.fullname,
+            "nickname" to buyerProfile?.nickname,
+            "email" to buyerProfile?.email,
+            "location" to buyerProfile?.location,
+            "credit" to buyerProfile?.credit!!.toInt() - timeSlotCredit.toInt()
+        )
+        val vendor = hashMapOf(
+            "fullname" to vendorProfile?.fullname,
+            "nickname" to vendorProfile?.nickname,
+            "email" to vendorProfile?.email,
+            "location" to vendorProfile?.location,
+            "credit" to vendorProfile?.credit!!.toInt() + timeSlotCredit.toInt()
         )
 
-        val docref = db.collection("profiles").document(auth.uid!!)
-        docref.get().addOnCompleteListener { task ->
+        val buyerRef = db.collection("profiles").document(buyerProfile!!.id)
+        buyerRef.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                db.collection("profiles").document(auth.uid!!).set(docData)
+                db.collection("profiles").document(buyerProfile!!.id).set(buyer)
                     .addOnSuccessListener {
-                        //Management snackbar
-                        //Snackbar.make(root, "Profile updated", Snackbar.LENGTH_LONG).show()
+                        Log.d("database", "Buyer's credit updated")
                     }.addOnFailureListener {
-                        //Snackbar.make(root, "Profile update failed", Snackbar.LENGTH_LONG).show()
+                        Log.d("database", "Error updating buyer's credit")
+                    }
+            } else {
+                Log.d("TAG", "Error: ", task.exception)
+            }
+        }
+        val vendorRef = db.collection("profiles").document(vendorProfile!!.id)
+        vendorRef.get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                db.collection("profiles").document(vendorProfile!!.id).set(vendor)
+                    .addOnSuccessListener {
+                        Log.d("database", "Vendor's credit updated")
+                    }.addOnFailureListener {
+                        Log.d("database", "Error updating vendor's credit")
                     }
             } else {
                 Log.d("TAG", "Error: ", task.exception)

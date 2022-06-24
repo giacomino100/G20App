@@ -20,7 +20,7 @@ data class TimeSlot(
     var taken: Boolean = false,
     var userInterested: List<String> = listOf(),
     var buyer: String = " ",
-    var credits: Number = 0
+    var credits: String = " "
 )
 
 @Suppress("UNCHECKED_CAST")
@@ -97,7 +97,7 @@ class TimeSlotVM: ViewModel(){
             val taken = get("taken") as Boolean
             val userInterested = get("userInterested") as List<String>
             val buyer = get("buyer") as String
-            val credits = get("credits") as Number
+            val credits = get("credits") as String
             TimeSlot(id, idUser, idSkill, title, description, location, duration, date, taken, userInterested, buyer, credits)
         } catch (e: Exception) {
             e.printStackTrace()

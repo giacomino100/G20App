@@ -22,8 +22,9 @@ data class Profile(
 
 
 class ProfileVM: ViewModel() {
-    private val _profile = MutableLiveData<Profile>()
-    val profile : LiveData<Profile> = _profile
+    private val _profile = MutableLiveData<List<Profile>>()
+    val profile : LiveData<List<Profile>> = _profile
+
 
     private var auth: FirebaseAuth = Firebase.auth
 
@@ -35,8 +36,8 @@ class ProfileVM: ViewModel() {
         l1 = db.collection("profiles")
             .addSnapshotListener { v, e ->
                 if (e==null) {
-                    _profile.value = v!!.filter { p -> p.id == auth.uid }[0].toProfile()
-                } else _profile.value = emptyList<Profile>()[0]
+                    _profile.value = v!!/*.filter { p -> p.id == auth.uid }[0]*/.map { p -> p.toProfile()!! }
+                } else _profile.value = emptyList<List<Profile>>()[0]
             }
     }
 

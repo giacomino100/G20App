@@ -102,11 +102,12 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
             rv.adapter = adapter
         }
         viewModelP.profile.observe(viewLifecycleOwner){
-            tv1.text = it.fullname
-            tv2.text = it.nickname
-            tv3.text = it.email
-            tv4.text = it.location
-            tv5.text = it.credit + " Credits"
+            val myProfile = it.filter { p -> p.id == auth.uid }[0]
+            tv1.text = myProfile.fullname
+            tv2.text = myProfile.nickname
+            tv3.text = myProfile.email
+            tv4.text = myProfile.location
+            tv5.text = myProfile.credit + " Credits"
         }
 
         ratings.setOnClickListener {
