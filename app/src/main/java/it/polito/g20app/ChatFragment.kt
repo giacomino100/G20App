@@ -137,6 +137,7 @@ class ChatFragment : Fragment() {
         }
 
         accept.setOnClickListener {
+            Log.d("buyerProfile",buyerProfile.credit + " - " + vendorProfile.credit )
             //Clicking the accept button, if the buyer has the amount of requested credits, the timeslot 'taken' and 'buyer' properties will be updated (with the value true) on the db
             if (buyerProfile.credit.toInt() >= timeSlotCredit.toInt()){
                 viewModelT.timeSlots.observe(viewLifecycleOwner) {
@@ -168,8 +169,9 @@ class ChatFragment : Fragment() {
                         .get()
                         .addOnCompleteListener { it1 ->
                             if (it1.isSuccessful){
-                                vendorProfile.id = it1.result.getString(id.toString()).toString()
-                                vendorProfile.credit = it1.result.getString("credit") as String
+                                Log.d("autenticazione", auth.uid.toString() + " - " + it1.result.getString(id.toString()).toString())
+                                vendorProfile.id = auth.uid.toString()
+                                vendorProfile.credit = it1.result.get("credit").toString()
                                 vendorProfile.fullname = it1.result.getString("fullname") as String
                                 vendorProfile.nickname= it1.result.getString("nickname") as String
                                 vendorProfile.email = it1.result.getString("email") as String
@@ -179,6 +181,9 @@ class ChatFragment : Fragment() {
                             }
                         }
                     requireActivity().onBackPressed()
+                    requireActivity().onBackPressed()
+                    requireActivity().onBackPressed()
+
                 }
             }
 
@@ -251,16 +256,17 @@ class ChatFragment : Fragment() {
             "nickname" to buyerProfile.nickname,
             "email" to buyerProfile.email,
             "location" to buyerProfile.location,
-            "credit" to buyerProfile.credit.toInt() - timeSlotCredit.toInt()
+            "credit" to (buyerProfile.credit.toInt() - timeSlotCredit.toInt()).toString()
         )
         val vendor = hashMapOf(
             "fullname" to vendorProfile.fullname,
             "nickname" to vendorProfile.nickname,
             "email" to vendorProfile.email,
             "location" to vendorProfile.location,
-            "credit" to vendorProfile.credit.toInt() + timeSlotCredit.toInt()
+            "credit" to (vendorProfile.credit.toInt() + timeSlotCredit.toInt()).toString()
         )
 
+        Log.d("autenticazione2", buyerProfile.id + " - " + vendorProfile.id)
         val buyerRef = db.collection("profiles").document(buyerProfile.id)
         buyerRef.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -277,7 +283,7 @@ class ChatFragment : Fragment() {
         val vendorRef = db.collection("profiles").document(vendorProfile.id)
         vendorRef.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                db.collection("profiles").document(vendorProfile.id).set(vendor)
+                db.collection("profiles").document(auth.uid.toString()).set(vendor)
                     .addOnSuccessListener {
                         Log.d("database", "Vendor's credit updated")
                     }.addOnFailureListener {

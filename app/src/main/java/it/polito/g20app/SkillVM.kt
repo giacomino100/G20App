@@ -36,8 +36,9 @@ class SkillVM: ViewModel(){
     init {
         l1 = db.collection("skills")
             .addSnapshotListener { v, e ->
+                Log.d("profili skill", v.toString())
                 if (e==null) {
-                    _skills.value = v!!.mapNotNull { d -> d.toSkill() }
+                    _skills.value = v!!.mapNotNull { d -> Log.d("profili", d.toString()); d.toSkill() }
                 } else _skills.value = emptyList()
             }.also { db.collection("skillsProfile")
                 .addSnapshotListener { v, e ->

@@ -35,9 +35,10 @@ class ProfileVM: ViewModel() {
     init {
         l1 = db.collection("profiles")
             .addSnapshotListener { v, e ->
+                Log.d("profili", v.toString())
                 if (e==null) {
-                    _profile.value = v!!/*.filter { p -> p.id == auth.uid }[0]*/.map { p -> p.toProfile()!! }
-                } else _profile.value = emptyList<List<Profile>>()[0]
+                    _profile.value = v!!.mapNotNull { p -> Log.d("profili", p.data.toString()); p.toProfile()!! }
+                } else _profile.value = emptyList()
             }
     }
 
@@ -56,3 +57,5 @@ class ProfileVM: ViewModel() {
         }
     }
 }
+
+
