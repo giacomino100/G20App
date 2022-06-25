@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 
 class TimeSlotChatsFragment : Fragment(R.layout.fragment_timeslot_chats) {
@@ -19,6 +20,7 @@ class TimeSlotChatsFragment : Fragment(R.layout.fragment_timeslot_chats) {
     private var auth: FirebaseAuth = Firebase.auth
     private var idTimeSlot = " "
     private var tsTitle = " "
+    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         arguments.let { b -> tsTitle = b!!.getString("tsTitle") as String }
@@ -44,9 +46,16 @@ class TimeSlotChatsFragment : Fragment(R.layout.fragment_timeslot_chats) {
         viewModelC.chats.observe(viewLifecycleOwner) { it ->
             if (it.none { c -> c.idTimeSlot == arguments.let { b -> b!!.getString("idTimeSlot") } })
                 Snackbar.make(root, "No opened chats for the selected timeslot", Snackbar.LENGTH_LONG).show()
-            val adapter = ChatAdapter(it.filter { arguments.let { b -> b!!.get("idTimeSlot")
-            } == it.idTimeSlot && it.idVendor == auth.uid} as MutableList<Chat>)
-            rv.adapter = adapter
+
+            db
+                .collection("timeslots")
+                .document(idTimeSlot)
+                .get()
+                .addOnCompleteListener{ it1 ->
+                    val adapter = ChatAdapter(it.filter { arguments.let { b -> b!!.get("idTimeSlot")
+                    } == it.idTimeSlot && it.idVendor == auth.uid} as MutableList<Chat>, it1.result.get("credits") as String)
+                    rv.adapter = adapter
+                }
         }
         return root
     }

@@ -12,8 +12,9 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
 
-class ChatAdapter(val data: MutableList<Chat>): RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
+class ChatAdapter(val data: MutableList<Chat>, credit: String): RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
     private var displayData = data.toMutableList()
+    private var credit = credit
 
     class ChatViewHolder(v: View): RecyclerView.ViewHolder(v) {
         private val title: TextView = v.findViewById(R.id.chat_title)
@@ -48,6 +49,7 @@ class ChatAdapter(val data: MutableList<Chat>): RecyclerView.Adapter<ChatAdapter
 
     override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
         val item = displayData[position]
+        val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 
         holder.bind(chat =  item) {
             val bundle = Bundle()
@@ -55,7 +57,24 @@ class ChatAdapter(val data: MutableList<Chat>): RecyclerView.Adapter<ChatAdapter
             bundle.putString("idTimeSlot", item.idTimeSlot)
             bundle.putString("idVendor", item.idVendor)
             bundle.putString("idChat", item.id)
-            it.findNavController().navigate(R.id.action_nav_timeslot_chats_fragment_to_nav_chatFragment, bundle)
+            bundle.putString("credits", credit)
+
+            db
+                .collection("profiles")
+                .document(item.idBuyer)
+                .get()
+                .addOnCompleteListener { it1 ->
+                    if (it1.isSuccessful){
+                        bundle.putString("idBuyer", item.idBuyer)
+                        bundle.putString("creditBuyer", it1.result.get("credit").toString() )
+                        bundle.putString("fullnameBuyer", it1.result.get("fullname").toString() )
+                        bundle.putString("emailBuyer", it1.result.get("email").toString() )
+                        bundle.putString("locationBuyer", it1.result.get("location").toString() )
+                        bundle.putString("nicknameBuyer", it1.result.get("nickname").toString() )
+
+                        it.findNavController().navigate(R.id.action_nav_timeslot_chats_fragment_to_nav_chatFragment, bundle)
+                    }
+                }
         }
     }
 

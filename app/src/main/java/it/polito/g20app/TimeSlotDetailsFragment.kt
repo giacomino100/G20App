@@ -106,6 +106,7 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
             } else {
                 //the navigation path is: menu'-> nav_adv_list, the app goes to nav_timeslot_chats_fragment
                 bundle.putInt("fromSkillDet", 0)
+                bundle.putString("credits", credits.toString())
                 findNavController().navigate(R.id.action_nav_slot_details_to_nav_timeslot_chats_fragment, bundle)
             }
         }

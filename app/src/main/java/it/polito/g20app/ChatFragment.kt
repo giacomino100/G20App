@@ -30,9 +30,11 @@ class ChatFragment : Fragment() {
     private var auth: FirebaseAuth = Firebase.auth
     private val viewModelT by viewModels<TimeSlotVM>()
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
-    private var buyerProfile: Profile? = Profile("", "", "", "", "", "")
-    private var vendorProfile: Profile? = Profile("", "", "", "", "", "")
+    private var buyerProfile: Profile = Profile("", "", "", "", "", "")
+    private var vendorProfile: Profile = Profile("", "", "", "", "", "")
     private var timeSlotCredit = " "
+    private var creditBuyer = " "
+    private var idBuyer = " "
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,10 +46,22 @@ class ChatFragment : Fragment() {
 
                 timeSlotCredit = it.getString("credits") as String
                 fromSkillDet = it.getInt("fromSkillDet")
-                if(fromSkillDet == 0) idChat = it.getString("idChat") as String
+                if(fromSkillDet == 0) {
+                    idChat = it.getString("idChat") as String
+                    buyerProfile.id = it.getString("idBuyer") as String
+                    buyerProfile.credit = it.getString("creditBuyer") as String
+                    buyerProfile.fullname = it.getString("fullnameBuyer") as String
+                    buyerProfile.nickname = it.getString("nicknameBuyer") as String
+                    buyerProfile.email = it.getString("emailBuyer") as String
+                    buyerProfile.location = it.getString("locationBuyer") as String
+                }
             }
         }
+
+        Log.d("timeSlotCredit", timeSlotCredit)
+
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -98,7 +112,7 @@ class ChatFragment : Fragment() {
                 } else {
                     //Creating a new chat
                     (activity as FirebaseActivity).supportActionBar?.title = "New chat"
-                    val newChat = Chat("", auth.uid.toString(), emptyList(), idTimeSlot, idVendor)
+                    val newChat = Chat("", auth.uid.toString(), emptyList(), idTimeSlot, idVendor )
                     viewModelC.addChat(newChat).addOnSuccessListener { it1 ->
                         idChat = it1.id
                         Log.d("database", "New entry successfully added in chats collection")
@@ -124,13 +138,11 @@ class ChatFragment : Fragment() {
 
         accept.setOnClickListener {
             //Clicking the accept button, if the buyer has the amount of requested credits, the timeslot 'taken' and 'buyer' properties will be updated (with the value true) on the db
-            vendorProfile = viewModelP.profile.value?.filter { p -> p.id == auth.uid }?.get(0)
-            buyerProfile = viewModelP.profile.value?.filter { p -> p.id == viewModelC.chats.value?.filter { c -> c.id == arguments.let { b -> b!!.getString("idChat") } }!![0].idBuyer }?.get(0)
-            if (buyerProfile?.credit!!.toInt() >= timeSlotCredit.toInt()){
+            if (buyerProfile.credit.toInt() >= timeSlotCredit.toInt()){
                 viewModelT.timeSlots.observe(viewLifecycleOwner) {
                     //Updating the timeslot
                     val ts = it.filter { t -> t.id == idTimeSlot }[0]
-                    ts.buyer = viewModelC.chats.value?.filter { c -> c.id == arguments.let { b -> b!!.getString("idChat") } }!![0].idBuyer
+                    ts.buyer = idBuyer
                     ts.taken = true
                     viewModelT.updateTimeSlot(ts)
 
@@ -150,7 +162,22 @@ class ChatFragment : Fragment() {
                     viewModelC.addMessage(newChat)
 
                     //TODO (TO TEST): decrement the credits of buyer and increment the credits of the vendor
-                    creditExchange()
+                    db
+                        .collection("profiles")
+                        .document(auth.uid.toString())
+                        .get()
+                        .addOnCompleteListener { it1 ->
+                            if (it1.isSuccessful){
+                                vendorProfile.id = it1.result.getString(id.toString()).toString()
+                                vendorProfile.credit = it1.result.getString("credit") as String
+                                vendorProfile.fullname = it1.result.getString("fullname") as String
+                                vendorProfile.nickname= it1.result.getString("nickname") as String
+                                vendorProfile.email = it1.result.getString("email") as String
+                                vendorProfile.location = it1.result.getString("location") as String
+
+                                creditExchange()
+                            }
+                        }
                     requireActivity().onBackPressed()
                 }
             }
@@ -218,25 +245,26 @@ class ChatFragment : Fragment() {
     }
 
     fun creditExchange(){
+        Log.d("profiles", buyerProfile.toString() + "\n" + vendorProfile.toString())
         val buyer = hashMapOf(
-            "fullname" to buyerProfile?.fullname,
-            "nickname" to buyerProfile?.nickname,
-            "email" to buyerProfile?.email,
-            "location" to buyerProfile?.location,
-            "credit" to buyerProfile?.credit!!.toInt() - timeSlotCredit.toInt()
+            "fullname" to buyerProfile.fullname,
+            "nickname" to buyerProfile.nickname,
+            "email" to buyerProfile.email,
+            "location" to buyerProfile.location,
+            "credit" to buyerProfile.credit.toInt() - timeSlotCredit.toInt()
         )
         val vendor = hashMapOf(
-            "fullname" to vendorProfile?.fullname,
-            "nickname" to vendorProfile?.nickname,
-            "email" to vendorProfile?.email,
-            "location" to vendorProfile?.location,
-            "credit" to vendorProfile?.credit!!.toInt() + timeSlotCredit.toInt()
+            "fullname" to vendorProfile.fullname,
+            "nickname" to vendorProfile.nickname,
+            "email" to vendorProfile.email,
+            "location" to vendorProfile.location,
+            "credit" to vendorProfile.credit.toInt() + timeSlotCredit.toInt()
         )
 
-        val buyerRef = db.collection("profiles").document(buyerProfile!!.id)
+        val buyerRef = db.collection("profiles").document(buyerProfile.id)
         buyerRef.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                db.collection("profiles").document(buyerProfile!!.id).set(buyer)
+                db.collection("profiles").document(buyerProfile.id).set(buyer)
                     .addOnSuccessListener {
                         Log.d("database", "Buyer's credit updated")
                     }.addOnFailureListener {
@@ -246,10 +274,10 @@ class ChatFragment : Fragment() {
                 Log.d("TAG", "Error: ", task.exception)
             }
         }
-        val vendorRef = db.collection("profiles").document(vendorProfile!!.id)
+        val vendorRef = db.collection("profiles").document(vendorProfile.id)
         vendorRef.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                db.collection("profiles").document(vendorProfile!!.id).set(vendor)
+                db.collection("profiles").document(vendorProfile.id).set(vendor)
                     .addOnSuccessListener {
                         Log.d("database", "Vendor's credit updated")
                     }.addOnFailureListener {
