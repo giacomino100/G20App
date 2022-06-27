@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ConstraintLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp">
+
+    <ImageView
+        android:id="@+id/imageView_edit"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="16dp"
+        android:background="#EAEAEA"
+        android:contentDescription="@string/image_profile"
+        android:padding="16dp"
+        android:scaleType="fitStart"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/scrollView4"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintWidth_percent="0.3"
+        app:srcCompat="@drawable/avatr" />
+
+    <ScrollView
+        android:id="@+id/scrollView4"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintWidth_percent="0.7">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="409dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteY="181dp">
+
+            <EditText
+                android:id="@+id/edit_fullname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="@string/name_and_surname"
+                android:inputType="textPersonName"
+                android:minHeight="48dp"
+                android:text="@string/name"
+                app:layout_constraintBottom_toTopOf="@+id/edit_nickname"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
+
+            <EditText
+                android:id="@+id/edit_nickname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="@string/nickname"
+                android:inputType="textPersonName"
+                android:minHeight="48dp"
+                android:text="@string/nickname1"
+                app:layout_constraintBottom_toTopOf="@+id/edit_email"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/edit_fullname" />
+
+            <EditText
+                android:id="@+id/edit_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="@string/email"
+                android:inputType="textEmailAddress"
+                android:minHeight="48dp"
+                android:text="@string/email"
+                app:layout_constraintBottom_toTopOf="@+id/edit_location"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/edit_nickname" />
+
+            <EditText
+                android:id="@+id/edit_location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="@string/location"
+                android:inputType="textPersonName"
+                android:minHeight="48dp"
+                android:text="@string/location"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/edit_email"/>
+            <EditText
+                android:id="@+id/credit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:textSize="16sp"
+                android:editable="false"
+                android:gravity="center_vertical"
+                app:layout_constraintBottom_toTopOf="@+id/divider5"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/edit_location" />
+
+
+
+            <View
+                android:id="@+id/divider5"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="?android:attr/listDivider"
+                app:layout_constraintBottom_toTopOf="@+id/textView18"
+                app:layout_constraintTop_toBottomOf="@+id/edit_location"
+                tools:layout_editor_absoluteX="0dp" />
+
+            <TextView
+                android:id="@+id/textView18"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/your_skills"
+                android:textAlignment="viewStart"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@+id/textView19"
+                app:layout_constraintTop_toBottomOf="@+id/divider5"
+                tools:layout_editor_absoluteX="0dp" />
+
+            <TextView
+                android:id="@+id/textView19"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:minHeight="48dp"
+                android:text="Add a new skill:"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toTopOf="@id/rv_skill_edit_profile"
+                app:layout_constraintEnd_toStartOf="@id/spinnerEditProfile"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView18" />
+
+            <Spinner
+                android:id="@+id/spinnerEditProfile"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:textAlignment="center"
+                app:layout_constraintBottom_toTopOf="@id/rv_skill_edit_profile"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@+id/textView19"
+                app:layout_constraintTop_toBottomOf="@id/textView18"
+                app:layout_constraintVertical_bias="0.53" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_skill_edit_profile"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/spinnerEditProfile" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+    <ImageButton
+        android:id="@+id/imageButton2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#505050"
+        android:contentDescription="@string/imagebutton2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.024"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageView_edit"
+        app:layout_constraintVertical_bias="0.044"
+        app:srcCompat="@android:drawable/ic_menu_camera" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ConstraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_constraintVertical_weight="1"
@@ -154,21 +155,6 @@
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toEndOf="@+id/textView19"
             app:layout_constraintTop_toBottomOf="@id/textView18" />
-
-        <!--ImageButton
-            android:id="@+id/addButton"
-            android:background="@color/white"
-            style="imagebutton"
-            android:layout_width="48dp"
-            android:layout_height="0dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:src="@android:drawable/ic_input_add"
-            app:layout_constraintBottom_toTopOf="@id/rv_skill_edit_profile"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/spinnerEditProfile"
-            app:layout_constraintTop_toBottomOf="@id/textView18"
-            app:layout_constraintVertical_bias="0.0" />-->
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_skill_edit_profile"
