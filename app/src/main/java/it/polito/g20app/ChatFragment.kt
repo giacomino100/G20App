@@ -22,7 +22,6 @@ import com.google.firebase.ktx.Firebase
 class ChatFragment : Fragment() {
 
     private val viewModelC by viewModels<ChatVM>()
-    private val viewModelP by viewModels<ProfileVM>()
     private var idTimeSlot: String = " "
     private var idVendor: String = " "
     private var idChat: String = " "
@@ -34,7 +33,6 @@ class ChatFragment : Fragment() {
     private var vendorProfile: Profile = Profile("", "", "", "", "", "")
     private var timeSlotCredit = " "
     private var creditBuyer = " "
-    private var idBuyer = " "
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -143,8 +141,7 @@ class ChatFragment : Fragment() {
                 viewModelT.timeSlots.observe(viewLifecycleOwner) {
                     //Updating the timeslot
                     val ts = it.filter { t -> t.id == idTimeSlot }[0]
-                    ts.buyer = idBuyer
-                    Log.d("comprandountimeslot", "$idBuyer   ${ts.buyer}")
+                    ts.buyer = buyerProfile.id
                     ts.taken = true
                     viewModelT.updateTimeSlot(ts)
 
@@ -163,7 +160,6 @@ class ChatFragment : Fragment() {
                     val newChat = Chat(myChat.id, myChat.idBuyer, oldMessage, myChat.idTimeSlot, myChat.idVendor)
                     viewModelC.addMessage(newChat)
 
-                    //TODO (TO TEST): decrement the credits of buyer and increment the credits of the vendor
                     db
                         .collection("profiles")
                         .document(auth.uid.toString())
