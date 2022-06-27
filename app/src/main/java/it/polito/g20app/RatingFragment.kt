@@ -27,6 +27,7 @@ class RatingFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val root = inflater.inflate(R.layout.fragment_rating, container, false)
+        (activity as FirebaseActivity).supportActionBar?.title = "Assigning a rating"
 
         arguments.let {
             if (it != null) {
