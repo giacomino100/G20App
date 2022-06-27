@@ -89,7 +89,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
             tv2.text = myProfile.nickname
             tv3.text = myProfile.email
             tv4.text = myProfile.location
-            tv5.text = myProfile.credit
+            tv5.text = myProfile.credit + " Credits"
         }
 
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -136,13 +136,13 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit) {
                             "nickname" to view?.findViewById<EditText>(R.id.edit_nickname)!!.text.toString(),
                             "email" to view?.findViewById<EditText>(R.id.edit_email)!!.text.toString(),
                             "location" to view?.findViewById<EditText>(R.id.edit_location)!!.text.toString(),
-                            "credit" to view?.findViewById<TextView>(R.id.credit)!!.text
+                            "credit" to view?.findViewById<EditText>(R.id.credit)!!.text.toString().split(" ")[0]
                         )
 
-                        val docref = db.collection("profiles").document(auth.uid!!)
+                        val docref = db.collection("profiles").document(auth.uid.toString())
                         docref.get().addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                db.collection("profiles").document(auth.uid!!).set(docData)
+                                db.collection("profiles").document(auth.uid.toString()).set(docData)
                                     .addOnSuccessListener {
                                         //Management snackbar
                                         Snackbar.make(root, "Profile updated", Snackbar.LENGTH_LONG).show()

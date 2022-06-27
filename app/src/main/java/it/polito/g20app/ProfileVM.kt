@@ -37,7 +37,7 @@ class ProfileVM: ViewModel() {
             .addSnapshotListener { v, e ->
                 Log.d("profili", v.toString())
                 if (e==null) {
-                    _profile.value = v!!.mapNotNull { p -> Log.d("profili", p.data.toString()); p.toProfile()!! }
+                    _profile.value = v!!.mapNotNull { p -> p.toProfile() }
                 } else _profile.value = emptyList()
             }
     }

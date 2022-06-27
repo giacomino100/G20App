@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
@@ -118,10 +119,14 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
                      //if the timeslot idUser match the logged one, he cannot add the timeslot to his favourites
                      if (!ts.none { t -> t.id == idSelected && t.idUser == auth.uid }) it.isEnabled = false
 
-                     if (ts.filter { t -> t.id == idSelected }[0].userInterested.contains(auth.uid))
+                     if (ts.filter { t -> t.id == idSelected }[0].userInterested.contains(auth.uid)) {
                          it.text = "Remove from favorites"
-                     else
+                         root.findViewById<ImageView>(R.id.star_fill).visibility = View.VISIBLE
+                     }else {
                          it.text = "Add to your favorites"
+                         root.findViewById<ImageView>(R.id.star_fill).visibility = View.GONE
+
+                     }
                 }
             }
         }

@@ -56,7 +56,6 @@ class ShowProfileFragment : Fragment(R.layout.fragment_home) {
         val tv5: TextView = root.findViewById(R.id.credit)
         val ratings: Button = root.findViewById(R.id.button5)
 
-
         val img: ImageView = root.findViewById(R.id.imageView_show)
         val progressDialog = ProgressDialog(this.requireContext())
         progressDialog.setMessage("Loading image...")

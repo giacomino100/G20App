@@ -22,7 +22,7 @@ class ChatAdapter(val data: MutableList<Chat>, credit: String): RecyclerView.Ada
         private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 
         @SuppressLint("SetTextI18n")
-        fun bind(chat: Chat, action: (v: View)->Unit) {
+        fun bind(chat: Chat, action: (v: View) -> Unit) {
             title.text = "Loading..."
             //Getting buyer name from the db: it's used to set the chat card title
             db.collection("profiles").document(chat.idBuyer).get().addOnSuccessListener {
