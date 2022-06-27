@@ -80,9 +80,7 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
                 bundle.putInt("fromSkillDet", 1)
                 viewModelT.timeSlots.observe(viewLifecycleOwner) {
                     //Creating a new chat, the buyer is added to the timeslot 'userinterested' array on the db
-                    Log.d("pulsanteChat", it.none { ts -> ts.id == idSelected && !ts.taken }.toString())
-                    if (it.none { ts -> ts.id == idSelected && ts.taken }) {
-                        Log.d("pulsanteChat", "fromSkillDet, ts not taken")
+                    if (it.none { ts -> ts.id == idSelected && ts.taken && ts.userInterested.contains(auth.uid) }) {
                         val timeSlotToUpdate = viewModelT.timeSlots.value?.filter { ts -> ts.id == idSelected }!![0]
                         val usersInterested = timeSlotToUpdate.userInterested as MutableList<String>
                         usersInterested.add(auth.uid.toString())
@@ -99,6 +97,8 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
                             usersInterested,
                             timeSlotToUpdate.buyer,
                             timeSlotToUpdate.credits,
+                            timeSlotToUpdate.reviewedByVendor,
+                            timeSlotToUpdate.reviewedByBuyer
                             )
                         viewModelT.updateTimeSlot(updatedTimeSlot)
                     }
@@ -162,7 +162,9 @@ class TimeSlotDetailsFragment : Fragment(R.layout.fragment_time_slot_details) {
                     timeSlotToUpdate.taken,
                     newUserInterested,
                     timeSlotToUpdate.buyer,
-                    timeSlotToUpdate.credits
+                    timeSlotToUpdate.credits,
+                    timeSlotToUpdate.reviewedByVendor,
+                    timeSlotToUpdate.reviewedByBuyer
                 )
             }
             if (updatedTimeSlot != null) viewModelT.updateTimeSlot(updatedTimeSlot)

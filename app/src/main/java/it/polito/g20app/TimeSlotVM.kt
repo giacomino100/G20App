@@ -20,7 +20,9 @@ data class TimeSlot(
     var taken: Boolean = false,
     var userInterested: List<String> = listOf(),
     var buyer: String = " ",
-    var credits: String = " "
+    var credits: String = " ",
+    var reviewedByVendor: Boolean = false,
+    var reviewedByBuyer: Boolean = false
 )
 
 @Suppress("UNCHECKED_CAST")
@@ -53,7 +55,9 @@ class TimeSlotVM: ViewModel(){
             "taken" to timeSlot.taken,
             "userInterested" to timeSlot.userInterested,
             "buyer" to timeSlot.buyer,
-            "credits" to timeSlot.credits
+            "credits" to timeSlot.credits,
+            "reviewedByVendor" to timeSlot.reviewedByVendor,
+            "reviewedByBuyer" to timeSlot.reviewedByBuyer
         )
         db.collection("timeslots").document().set(newTimeSlot).addOnSuccessListener {
             Log.d("database", "New entry successfully added in timeslots collection")
@@ -74,7 +78,9 @@ class TimeSlotVM: ViewModel(){
             "taken" to timeSlot.taken,
             "userInterested" to timeSlot.userInterested,
             "buyer" to timeSlot.buyer,
-            "credits" to timeSlot.credits
+            "credits" to timeSlot.credits,
+            "reviewedByVendor" to timeSlot.reviewedByVendor,
+            "reviewedByBuyer" to timeSlot.reviewedByBuyer
         )
         Log.d("updatingTimeslot", "aggiornamento utenti interessati: ${timeSlot.userInterested}")
         db.collection("timeslots").document(timeSlot.id).set(updatedTimeSlot).addOnSuccessListener {
@@ -98,7 +104,9 @@ class TimeSlotVM: ViewModel(){
             val userInterested = get("userInterested") as List<String>
             val buyer = get("buyer") as String
             val credits = get("credits") as String
-            TimeSlot(id, idUser, idSkill, title, description, location, duration, date, taken, userInterested, buyer, credits)
+            val reviewedByVendor = get("reviewedByVendor") as Boolean
+            val reviewedByBuyer = get("reviewedByBuyer") as Boolean
+            TimeSlot(id, idUser, idSkill, title, description, location, duration, date, taken, userInterested, buyer, credits, reviewedByVendor, reviewedByBuyer)
         } catch (e: Exception) {
             e.printStackTrace()
             null

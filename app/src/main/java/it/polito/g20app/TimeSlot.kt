@@ -19,6 +19,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.ArrayList
 
 
  class TimeSlotAdapter(val data: MutableList<TimeSlot>, isSkillDetails: Boolean, isTimeSlotSaved: Boolean, isTimeSlotAssigned: Boolean): RecyclerView.Adapter<TimeSlotAdapter.TimeSlotViewHolder>() {
@@ -32,6 +33,7 @@ import java.time.format.DateTimeFormatter
         private val edit: ImageView = v.findViewById(R.id.editTimeSlot)
         private val card: CardView = v.findViewById(R.id.card)
         private var auth: FirebaseAuth = Firebase.auth
+        private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 
         private fun convertMonthFromNameToNumber(month: String): String {
             val result = when(month){
@@ -77,21 +79,55 @@ import java.time.format.DateTimeFormatter
 
                 if(LocalDateTime.parse(dataFormatted, formatter).plusHours(2).isBefore(LocalDateTime.now())){
                     //true -> timeslot expired
-                    edit.visibility = View.VISIBLE
-                    edit.setImageResource(R.drawable.ic_baseline_rate_review_24)
-                    edit.setOnClickListener {
-                        val bundle = Bundle()
-                        bundle.putString("idTimeSlot", timeslot.id)
-                        bundle.putString("idVendor", timeslot.idUser)
-                        bundle.putString("idBuyer", timeslot.buyer)
+                    if (timeslot.reviewedByVendor && timeslot.reviewedByBuyer) edit.visibility = View.GONE
+                    else {
                         if (timeslot.idUser != auth.uid) {
-                            //caso del buyer che fa la recensione al vendor
-                            bundle.putString("idWriter", timeslot.buyer)
+                            if (!timeslot.reviewedByBuyer) edit.visibility = View.VISIBLE
+                            else edit.visibility = View.GONE
                         } else {
-                            //caso del vendor che fa la recensione al buyer
-                            bundle.putString("idWriter", timeslot.idUser)
+                            if (!timeslot.reviewedByVendor) edit.visibility = View.VISIBLE
+                            else edit.visibility = View.GONE
                         }
-                        it.findNavController().navigate(R.id.action_nav_adv_list_to_nav_rating_fragment, bundle)
+                        edit.setImageResource(R.drawable.ic_baseline_rate_review_24)
+                        edit.setOnClickListener {
+                            val bundle = Bundle()
+                            bundle.putString("idTimeSlot", timeslot.id)
+                            bundle.putString("idVendor", timeslot.idUser)
+                            bundle.putString("idBuyer", timeslot.buyer)
+
+                            val updatedTimeSlot = hashMapOf(
+                                "idUser" to timeslot.idUser,
+                                "idSkill" to timeslot.idSkill,
+                                "title" to timeslot.title,
+                                "description" to timeslot.description,
+                                "location" to timeslot.location,
+                                "duration" to timeslot.duration,
+                                "date" to timeslot.date,
+                                "taken" to timeslot.taken,
+                                "userInterested" to timeslot.userInterested,
+                                "buyer" to timeslot.buyer,
+                                "credits" to timeslot.credits,
+                                "reviewedByVendor" to timeslot.reviewedByVendor,
+                                "reviewedByBuyer" to timeslot.reviewedByBuyer
+                            )
+
+                            if (timeslot.idUser != auth.uid) {
+                                //caso del buyer che fa la recensione al vendor
+                                bundle.putString("idWriter", timeslot.buyer)
+                                updatedTimeSlot["reviewedByBuyer"] = true
+                            } else if (!timeslot.reviewedByVendor) {
+                                //caso del vendor che fa la recensione al buyer
+                                bundle.putString("idWriter", timeslot.idUser)
+                                updatedTimeSlot["reviewedByVendor"] = true
+                            }
+
+                            db.collection("timeslots").document(timeslot.id).set(updatedTimeSlot).addOnSuccessListener {
+                                Log.d("database", "Timeslots successfully updated")
+                            }.addOnFailureListener {
+                                Log.d("database", "Error updating the selected timeslot in the timeslots collection")
+                            }
+                            it.findNavController().navigate(R.id.action_nav_adv_list_to_nav_rating_fragment, bundle)
+                        }
                     }
                 }
             } else{
@@ -107,7 +143,9 @@ import java.time.format.DateTimeFormatter
                     bundle.putString("location", timeslot.location)
                     bundle.putBoolean("taken", timeslot.taken)
                     bundle.putString("idSkill", timeslot.idSkill)
-                    bundle.putString("credits", timeslot.credits.toString())
+                    bundle.putString("credits", timeslot.credits)
+                    bundle.putBoolean("reviewedByVendor", timeslot.reviewedByVendor)
+                    bundle.putBoolean("reviewedByBuyer", timeslot.reviewedByBuyer)
                     it.findNavController().navigate(R.id.action_nav_adv_list_to_timeSlotEditFragment, bundle)
                 }
             }
@@ -140,6 +178,8 @@ import java.time.format.DateTimeFormatter
             bundle.putBoolean("taken", item.taken)
             bundle.putString("idSkill", item.idSkill)
             bundle.putString("credits", item.credits)
+            bundle.putBoolean("reviewedByVendor", item.reviewedByVendor)
+            bundle.putBoolean("reviewedByBuyer", item.reviewedByBuyer)
             if (flag && !_isTimeSlotSaved && !_isTimeSlotAssigned) it.findNavController().navigate(R.id.action_nav_skill_details_to_nav_slot_details3, bundle)
             else it.findNavController().navigate(R.id.action_nav_adv_list_to_nav_slot_details, bundle)
         }
