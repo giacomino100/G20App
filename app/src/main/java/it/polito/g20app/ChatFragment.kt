@@ -182,10 +182,10 @@ class ChatFragment : Fragment() {
                             }
                         }
                     requireActivity().onBackPressed()
-                    requireActivity().onBackPressed()
-                    requireActivity().onBackPressed()
 
                 }
+            } else {
+                Snackbar.make(root, "The buyer hasn't enough credits", Snackbar.LENGTH_LONG).show()
             }
 
         }
