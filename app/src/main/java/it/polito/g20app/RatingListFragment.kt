@@ -31,14 +31,14 @@ class RatingListFragment : Fragment(R.layout.fragment_list_rating) {
         (activity as FirebaseActivity).supportActionBar?.title = "Ratings"
 
         viewModelR.ratings.observe(viewLifecycleOwner){
-            //show Vendor ratings
+            //show Buyer ratings
             val emptyListMsg = root.findViewById<TextView>(R.id.emptyVendorReview)
 
             val ratings = it.filter{
                 it1 ->
                 it1.idVendor == auth.uid && it1.idWriter != auth.uid
-
             }
+            Log.d("ratingdiprova", ratings.toString())
             if(ratings.isEmpty()){
                 emptyListMsg.visibility = View.VISIBLE
             }else{
@@ -52,13 +52,13 @@ class RatingListFragment : Fragment(R.layout.fragment_list_rating) {
         }
 
         viewModelR.ratings.observe(viewLifecycleOwner){
-            //show Buyer ratings
+            //show Vendor ratings
             val emptyListMsg = root.findViewById<TextView>(R.id.emptyBuyerReviews)
             val ratings = it.filter{
                 it1 ->
                 it1.idBuyer == auth.uid && it1.idWriter != auth.uid
             }
-            Log.d("ratingB",ratings.toString())
+            Log.d("ratingdiprova", ratings.toString())
             if(ratings.isEmpty()){
                 emptyListMsg.visibility = View.VISIBLE
             }else{

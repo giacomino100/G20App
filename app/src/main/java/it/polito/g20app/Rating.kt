@@ -64,7 +64,7 @@ class RatingAdapter(val data: MutableList<Rating>): RecyclerView.Adapter<RatingA
             bundle.putString("idTimeSlot", item.idTimeSlot)
             bundle.putString("rate", item.rate)
             bundle.putString("comment", item.comment)
-
+            Log.d("contentBundle", bundle.toString())
 
         }
     }

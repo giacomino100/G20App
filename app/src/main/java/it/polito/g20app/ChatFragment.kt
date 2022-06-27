@@ -32,7 +32,6 @@ class ChatFragment : Fragment() {
     private var buyerProfile: Profile = Profile("", "", "", "", "", "")
     private var vendorProfile: Profile = Profile("", "", "", "", "", "")
     private var timeSlotCredit = " "
-    private var creditBuyer = " "
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

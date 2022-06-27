@@ -2,6 +2,7 @@
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,10 +10,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
+import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -51,6 +54,8 @@ import java.time.format.DateTimeFormatter
 
         @RequiresApi(Build.VERSION_CODES.O)
         fun bind(timeslot: TimeSlot, flag: Boolean, action: (v: View)->Unit) {
+
+
             title.text = timeslot.title
             card.setOnClickListener(action)
 
@@ -134,7 +139,7 @@ import java.time.format.DateTimeFormatter
             bundle.putString("location", item.location)
             bundle.putBoolean("taken", item.taken)
             bundle.putString("idSkill", item.idSkill)
-            bundle.putString("credits", item.credits.toString())
+            bundle.putString("credits", item.credits)
             if (flag && !_isTimeSlotSaved && !_isTimeSlotAssigned) it.findNavController().navigate(R.id.action_nav_skill_details_to_nav_slot_details3, bundle)
             else it.findNavController().navigate(R.id.action_nav_adv_list_to_nav_slot_details, bundle)
         }
