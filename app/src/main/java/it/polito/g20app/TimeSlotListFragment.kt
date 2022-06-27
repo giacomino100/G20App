@@ -64,6 +64,13 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
             fab.visibility = View.GONE
             switchAssigned.visibility = View.VISIBLE
             (activity as FirebaseActivity).supportActionBar?.title = "My timeslots purchased"
+            viewModelT.timeSlots.observe(viewLifecycleOwner) {
+                Log.d("timeslotsPurchased", it.filter { t-> t.buyer == auth.uid && t.taken}.toString())
+                it.filter { t-> t.buyer == auth.uid && t.taken}.let { list ->
+                    val adapter = TimeSlotAdapter(list as MutableList<TimeSlot>, true, false, true)
+                    rv.adapter = adapter
+                }
+            }
         }
 
         rv.layoutManager = LinearLayoutManager(root.context)
@@ -71,6 +78,7 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
 
         switchAssigned?.setOnCheckedChangeListener { _, isChecked ->
             viewModelT.timeSlots.observe(viewLifecycleOwner){
+                Log.d("timeslotsPurchased", it.filter { t-> t.buyer == auth.uid && t.taken}.toString())
                 if(isChecked) {
                     (activity as FirebaseActivity).supportActionBar?.title = "My timeslots sold"
                     switchAssigned.text = "Sold"
@@ -81,7 +89,7 @@ class TimeSlotListFragment : Fragment(R.layout.fragment_time_slot_list) {
                 }
 
                 val sortedSlots = if (isChecked) it.filter { t-> t.idUser == auth.uid && t.taken }
-                else it.filter { t-> t.idUser != auth.uid && t.buyer == auth.uid }
+                else it.filter { t-> t.buyer == auth.uid && t.taken}
 
                 sortedSlots.let { list ->
                     val adapter = TimeSlotAdapter(list as MutableList<TimeSlot>, true, false, true)

@@ -144,6 +144,7 @@ class ChatFragment : Fragment() {
                     //Updating the timeslot
                     val ts = it.filter { t -> t.id == idTimeSlot }[0]
                     ts.buyer = idBuyer
+                    Log.d("comprandountimeslot", "$idBuyer   ${ts.buyer}")
                     ts.taken = true
                     viewModelT.updateTimeSlot(ts)
 
